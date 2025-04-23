@@ -36,9 +36,9 @@
     --radius: 0.5rem;
 
     /* Premium RGB accent colors */
-    --rgb-accent-1: 88, 101, 242;
+    --rgb-accent-1: 99, 102, 241; /* indigo */
     --rgb-accent-2: 235, 69, 158;
-    --rgb-accent-3: 87, 202, 244;
+    --rgb-accent-3: 236, 72, 153; /* pink */
 
     /* Premium gradients */
     --premium-gradient-1: linear-gradient(
@@ -113,6 +113,7 @@
   position: relative;
   border: 1px solid transparent;
   background-clip: padding-box;
+  border-color: rgba(var(--rgb-accent-1), 0.1);
 }
 
 .rgb-border::before {
@@ -133,8 +134,16 @@
   );
 }
 
+.rgb-border-subtle {
+  border-color: rgba(var(--rgb-accent-1), 0.05);
+}
+
 .rgb-border-subtle::before {
   opacity: 0.3;
+}
+
+.rgb-border-hover:hover {
+  border-color: rgba(var(--rgb-accent-1), 0.3);
 }
 
 .rgb-border-hover:hover::before {

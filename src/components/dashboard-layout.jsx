@@ -43,22 +43,29 @@ export default function DashboardLayout({
   return (
     <div className="flex min-h-screen flex-col">
       <header className="sticky top-0 z-50 border-b bg-background">
-        <div className="container flex h-16 items-center justify-between px-4">
+        <div className="container flex h-16 items-center justify-between px-4 bg-white">
           <div className="flex items-center gap-2 md:gap-4">
             {isMobile && (
               <Sheet>
-                <SheetTrigger asChild>
-                  <Button variant="outline" size="icon" className="md:hidden">
-                    <Menu className="h-5 w-5" />
+                <SheetTrigger className="bg-white" asChild>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="md:hidden bg-white"
+                  >
+                    <Menu className="h-5 w-5 border" />
                     <span className="sr-only">Toggle menu</span>
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="left" className="w-[240px] sm:w-[300px]">
-                  <div className="flex items-center gap-2 py-4">
+                <SheetContent
+                  side="left"
+                  className="w-[240px] sm:w-[300px] bg-white"
+                >
+                  <div className="flex items-center gap-2 py-4 border-b-1">
                     <div className="relative">
-                      <GraduationCap className="h-6 w-6 text-gray-800" />
+                      <GraduationCap className="h-6 w-6 text-gray-800 " />
                     </div>
-                    <span className="text-lg font-bold text-gray-900">
+                    <span className="text-lg font-bold text-gray-900 ">
                       EduManage
                     </span>
                   </div>
@@ -82,7 +89,7 @@ export default function DashboardLayout({
                 </SheetContent>
               </Sheet>
             )}
-            <Link href="/" className="flex items-center gap-2">
+            <Link href="/" className="flex items-center gap-2 ">
               <div className="relative">
                 <GraduationCap className="h-6 w-6 text-gray-800" />
               </div>
@@ -107,10 +114,12 @@ export default function DashboardLayout({
                   <span className="sr-only">Notifications</span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
+              <DropdownMenuContent className={"bg-white"} align="end">
                 <DropdownMenuLabel>Notifications</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
+                <DropdownMenuSeparator className={"border-2"} />
+                <DropdownMenuItem
+                  className={"cursor-pointer hover:bg-zinc-100 transition-all"}
+                >
                   <div className="flex flex-col">
                     <span className="font-medium">New lecture uploaded</span>
                     <span className="text-xs text-muted-foreground">
@@ -118,7 +127,9 @@ export default function DashboardLayout({
                     </span>
                   </div>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem
+                  className={"cursor-pointer hover:bg-zinc-100 transition-all"}
+                >
                   <div className="flex flex-col">
                     <span className="font-medium">Attendance marked</span>
                     <span className="text-xs text-muted-foreground">
@@ -126,7 +137,9 @@ export default function DashboardLayout({
                     </span>
                   </div>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem
+                  className={"cursor-pointer hover:bg-zinc-100 transition-all"}
+                >
                   <div className="flex flex-col">
                     <span className="font-medium">Upcoming exam</span>
                     <span className="text-xs text-muted-foreground">
@@ -134,11 +147,12 @@ export default function DashboardLayout({
                     </span>
                   </div>
                 </DropdownMenuItem>
-                <DropdownMenuSeparator />
+                <DropdownMenuSeparator className={"border"} />
                 <DropdownMenuItem className="justify-center text-center">
                   <Button
                     variant="ghost"
                     size="sm"
+                    className={"font-bold cursor-pointer"}
                     onClick={() => setNotifications(0)}
                   >
                     Mark all as read
@@ -152,7 +166,7 @@ export default function DashboardLayout({
                   variant="ghost"
                   className="relative h-8 w-8 rounded-full overflow-hidden"
                 >
-                  <Avatar className="h-8 w-8">
+                  <Avatar className="h-8 w-8 border">
                     <AvatarImage
                       src={`/placeholder.svg?height=32&width=32`}
                       alt={userName}
@@ -166,26 +180,38 @@ export default function DashboardLayout({
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
+              <DropdownMenuContent className={"bg-white"} align="end">
                 <DropdownMenuLabel>
                   <div className="flex flex-col">
                     <span>{userName}</span>
-                    <span className="text-xs font-normal text-muted-foreground">
+                    <span className="text-xs font-normal text-muted-foreground text-blue-500 underline italic">
                       {userEmail}
                     </span>
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <User className="mr-2 h-4 w-4" />
+                <DropdownMenuItem
+                  className={
+                    "cursor-pointer border hover:bg-zinc-100 transition-all"
+                  }
+                >
+                  <User className="mr-2 h-4 w-4 " />
                   Profile
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem
+                  className={
+                    "cursor-pointer border hover:bg-zinc-100 transition-all my-1"
+                  }
+                >
                   <Settings className="mr-2 h-4 w-4" />
                   Settings
                 </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
+                <DropdownMenuSeparator className={"border-2"} />
+                <DropdownMenuItem
+                  className={
+                    "cursor-pointer border hover:bg-zinc-100 transition-all mt-1-"
+                  }
+                >
                   <LogOut className="mr-2 h-4 w-4" />
                   <Link href="/login">Logout</Link>
                 </DropdownMenuItem>
@@ -194,20 +220,20 @@ export default function DashboardLayout({
           </div>
         </div>
       </header>
-      <div className="flex flex-1">
+      <div className="flex flex-1 ">
         {!isMobile && mounted && (
           <aside className="w-64 border-r bg-background">
             <div className="flex h-full flex-col">
-              <div className="flex-1 overflow-auto py-6">
-                <nav className="grid gap-2 px-2">
+              <div className="flex-1 overflow-auto py-6 bg-white">
+                <nav className="grid gap-2 px-2 ">
                   {navItems.map((item) => (
                     <div key={item.value}>
                       <Button
                         variant={activeTab === item.value ? "default" : "ghost"}
-                        className={`justify-start w-full ${
+                        className={`justify-start w-full   ${
                           activeTab === item.value
                             ? "bg-black text-white hover:bg-gray-800"
-                            : ""
+                            : " "
                         }`}
                         onClick={() => setActiveTab(item.value)}
                       >
@@ -244,7 +270,7 @@ export default function DashboardLayout({
           </aside>
         )}
         <main className="flex-1 overflow-auto bg-muted/10 p-4 md:p-6">
-          {mounted && <div className="mx-auto max-w-7xl">{children}</div>}
+          {mounted && <div className="mx-auto max-w-7xl  ">{children}</div>}
         </main>
       </div>
     </div>
