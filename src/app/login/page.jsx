@@ -31,7 +31,7 @@ export default function LoginPage() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    router.push("/dashboard");
+    router.push("/dashboard/admin");
   };
 
   return (
