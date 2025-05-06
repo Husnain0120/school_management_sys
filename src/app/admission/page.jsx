@@ -30,10 +30,10 @@ export default function AdmissionForm() {
     router.push("/");
   };
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 py-8">
-      <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-2xl overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 md:py-8">
+      <div className="max-w-4xl mx-auto bg-white md:rounded-2xl shadow-2xl overflow-hidden">
         {/* Header Section */}
-        <div className="bg-gradient-to-r from-indigo-600 to-indigo-700 text-white px-8 py-6 relative">
+        <div className="bg-gradient-to-b from-indigo-600 to-white text-white px-8 py-6 relative">
           {/* Close icon positioned absolutely on the right */}
           <X
             className="absolute right-8 top-1/4 hover:opacity-50 -translate-y-1/2 h-6 w-6 cursor-pointer text-white  "
@@ -45,7 +45,7 @@ export default function AdmissionForm() {
             <GraduationCap className="h-10 w-10" />
             <div>
               <h1 className="text-2xl font-bold tracking-tight">EDU MANAGE</h1>
-              <p className="text-indigo-100 mt-1">
+              <p className="text-zinc-500 mt-1">
                 School Management System (Class 1-10)
               </p>
             </div>
@@ -70,14 +70,19 @@ export default function AdmissionForm() {
                 </Label>
                 <Input className="border-gray-300 rounded-lg" />
               </div>
-
               <div className="space-y-1">
                 <Label className="text-gray-700 font-medium">
                   Father's Name <span className="text-red-500">*</span>
                 </Label>
                 <Input className="border-gray-300 rounded-lg" />
               </div>
-
+              {/* //email */}
+              <div className="space-y-1">
+                <Label className="text-gray-700 font-medium">
+                  Email <span className="text-red-500">*</span>
+                </Label>
+                <Input className="border-gray-300 rounded-lg" type={"email"} />
+              </div>
               <div className="space-y-1">
                 <Label className="text-gray-700 font-medium">
                   Gender <span className="text-red-500">*</span>
@@ -92,7 +97,6 @@ export default function AdmissionForm() {
                   </SelectContent>
                 </Select>
               </div>
-
               <div className="space-y-1">
                 <Label className="text-gray-700 font-medium">
                   Date of Birth <span className="text-red-500">*</span>
