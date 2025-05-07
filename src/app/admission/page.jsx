@@ -191,7 +191,7 @@ export default function AdmissionForm() {
                         <img
                           src={studentPhoto}
                           alt="student preview"
-                          className="h-[20%] w-[50%] object-contain rounded-md  "
+                          className="h-38 w-38 object-center  rounded-full  "
                         />
                       </>
                     ) : (
@@ -331,7 +331,7 @@ export default function AdmissionForm() {
             </Button>
           </div>
           <div>
-            <p className=" text-sm font-extralight text-center text-zinc-500">
+            <p className=" text-sm font-extralight text-center text-zinc-500 border-t-2 pt-4">
               if already Registered{" "}
               <Link
                 href={"/login"}
