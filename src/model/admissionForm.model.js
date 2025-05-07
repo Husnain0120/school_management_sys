@@ -62,15 +62,15 @@ const admissionFormSchema = new Schema(
     // Document Uploads (store URLs or file paths)
     studentPhoto: {
       type: String,
-      required: [true, "Student photo is required"],
+      //required: [true, "Student photo is required"],
     },
     idProof: {
       type: String,
-      required: [true, "ID proof is required"],
+      // required: [true, "ID proof is required"],
     },
     birthCertificate: {
       type: String,
-      required: [true, "Birth certificate is required"],
+      // required: [true, "Birth certificate is required"],
     },
 
     // Academic Information
@@ -99,6 +99,19 @@ const admissionFormSchema = new Schema(
     isVerified: {
       type: Boolean,
       default: false,
+    },
+
+    //login setup
+    portalId: {
+      type: String,
+      unique: true,
+      required: true,
+      default: "",
+    },
+    password: {
+      type: String,
+      required: true,
+      default: "",
     },
   },
   { timestamps: true }
