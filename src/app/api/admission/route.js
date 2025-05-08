@@ -1,3 +1,4 @@
+"use server";
 import dbConnect from "@/DataBase/db";
 import AdmissionForm from "@/model/admissionForm.model";
 import { NextResponse } from "next/server";
