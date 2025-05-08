@@ -1,4 +1,8 @@
-"use server";
+// 👉 Force Node.js runtime (not Edge) for compatibility with streams and bcrypt
+export const config = {
+  runtime: "nodejs",
+};
+
 import dbConnect from "@/DataBase/db";
 import AdmissionForm from "@/model/admissionForm.model";
 import { NextResponse } from "next/server";
