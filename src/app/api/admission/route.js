@@ -1,7 +1,4 @@
-// 👉 Force Node.js runtime (not Edge) for compatibility with streams and bcrypt
-export const config = {
-  runtime: "nodejs",
-};
+"use server";
 
 import dbConnect from "@/DataBase/db";
 import AdmissionForm from "@/model/admissionForm.model";
@@ -89,8 +86,9 @@ export async function POST(req) {
 
     // ✅ Generate unique portal ID
     function generateUniqueId() {
-      const randomId = Math.floor(100000000 + Math.random() * 900000000);
-      return `edu${randomId}`;
+      const yearPrefix = new Date().getFullYear().toString().slice(2); // e.g. "25" for 2025
+      const randomDigits = Math.floor(1000000 + Math.random() * 9000000); // 7-digit number
+      return `edu${yearPrefix}${randomDigits}`;
     }
 
     const portalId = generateUniqueId();
