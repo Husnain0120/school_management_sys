@@ -62,14 +62,17 @@ const admissionFormSchema = new Schema(
     // Document Uploads (store URLs or file paths)
     studentPhoto: {
       type: String,
+      default: "",
       //required: [true, "Student photo is required"],
     },
     idProof: {
       type: String,
+      default: "",
       // required: [true, "ID proof is required"],
     },
     birthCertificate: {
       type: String,
+      default: "",
       // required: [true, "Birth certificate is required"],
     },
 
@@ -112,6 +115,11 @@ const admissionFormSchema = new Schema(
       type: String,
       required: true,
       default: "",
+    },
+    //Access
+    userAccess: {
+      type: Boolean,
+      default: true,
     },
   },
   { timestamps: true }

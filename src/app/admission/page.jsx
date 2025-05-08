@@ -3,7 +3,6 @@
 import {
   GraduationCap,
   User,
-  Phone,
   Home,
   FileText,
   Camera,
@@ -22,36 +21,157 @@ import {
 } from "@/components/ui/select";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
-import Image from "next/image";
+import { useRef, useState, useEffect } from "react";
+import axios from "axios";
+
+import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 export default function AdmissionForm() {
+  // Form state
+  const [fullName, setFullName] = useState("");
+  const [fatherName, setFatherName] = useState("");
+  const [email, setEmail] = useState("");
+  const [gender, setGender] = useState("");
+  const [dataOfBirth, setDateOfBirth] = useState("");
+  const [currentAddress, setCurrentAddress] = useState("");
+  const [permanentAddress, setPermanentAddress] = useState("");
+  const [city, setCity] = useState("");
+  const [zipCode, setZipCode] = useState("");
+  const [admissionClass, setAdmissionClass] = useState("");
+  const [previousSchool, setPreviousSchool] = useState("");
   const [studentPhoto, setStudentPhoto] = useState("");
   const [idProof, setIdProof] = useState("");
   const [birthCertificate, setBirthCertficate] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isFormValid, setIsFormValid] = useState(false);
 
   const router = useRouter();
-  const handelX = () => {
-    router.push("/");
-  };
 
+  // Refs for file inputs
   const studentPhotoRef = useRef(null);
   const idProofRef = useRef(null);
   const birthCertRef = useRef(null);
 
+  // Check form validity whenever required fields change
+  useEffect(() => {
+    const requiredFields = [
+      fullName,
+      fatherName,
+      email,
+      gender,
+      dataOfBirth,
+      currentAddress,
+      permanentAddress,
+      city,
+      zipCode,
+      admissionClass,
+      studentPhoto,
+      idProof,
+      birthCertificate,
+    ];
+
+    setIsFormValid(requiredFields.every((field) => Boolean(field)));
+  }, [
+    fullName,
+    fatherName,
+    email,
+    gender,
+    dataOfBirth,
+    currentAddress,
+    permanentAddress,
+    city,
+    zipCode,
+    admissionClass,
+    studentPhoto,
+    idProof,
+    birthCertificate,
+  ]);
+
+  const handelX = () => {
+    router.push("/");
+  };
+
   const handelImagePerv = (e, setimage) => {
     const file = e.target.files[0];
-    console.log(e.target.files, "cheack");
     if (file && file.type.startsWith("image/")) {
+      if (file.size > 2 * 1024 * 1024) {
+        // 2MB limit
+        toast.error("File size should be less than 2MB");
+        return;
+      }
       const reader = new FileReader();
       reader.onloadend = () => {
         setimage(reader.result);
       };
       reader.readAsDataURL(file);
     } else {
+      toast.error("Please upload a valid image file");
       setimage("");
     }
   };
+
+  const handelFormData = async (e) => {
+    e.preventDefault();
+
+    if (!isFormValid) {
+      toast.error("Please fill all required fields");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("fullName", fullName);
+      formData.append("fatherName", fatherName);
+      formData.append("email", email);
+      formData.append("gender", gender);
+      formData.append("dateOfBirth", dataOfBirth);
+      formData.append("currentAddress", currentAddress);
+      formData.append("permanentAddress", permanentAddress);
+      formData.append("city", city);
+      formData.append("zipCode", zipCode);
+      formData.append("admissionClass", admissionClass);
+      formData.append("previousSchool", previousSchool);
+
+      // Convert base64 images to Blob for proper file upload
+      if (studentPhoto) {
+        const blob = await fetch(studentPhoto).then((r) => r.blob());
+        formData.append("studentPhoto", blob, "student-photo.jpg");
+      }
+
+      if (idProof) {
+        const blob = await fetch(idProof).then((r) => r.blob());
+        formData.append("idProof", blob, "id-proof.jpg");
+      }
+
+      if (birthCertificate) {
+        const blob = await fetch(birthCertificate).then((r) => r.blob());
+        formData.append("birthCertificate", blob, "birth-certificate.jpg");
+      }
+
+      const res = await axios.post(`/api/admission`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      if (res.status === 200) {
+        toast.success(res.data.message);
+        router.push("/succes");
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      toast.error(
+        error.response?.data?.message ||
+          "Failed to submit form. Please try again."
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 md:py-8">
       <div className="max-w-4xl mx-auto bg-white md:rounded-2xl shadow-2xl overflow-hidden">
@@ -87,31 +207,58 @@ export default function AdmissionForm() {
                 <Label className="text-gray-700 font-medium">
                   Student's Full Name <span className="text-red-500">*</span>
                 </Label>
-                <Input className="border-gray-300 rounded-lg" />
+                <Input
+                  className="border-gray-300 rounded-lg"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                />
               </div>
               <div className="space-y-1">
                 <Label className="text-gray-700 font-medium">
                   Father's Name <span className="text-red-500">*</span>
                 </Label>
-                <Input className="border-gray-300 rounded-lg" />
+                <Input
+                  className="border-gray-300 rounded-lg"
+                  value={fatherName}
+                  onChange={(e) => setFatherName(e.target.value)}
+                />
               </div>
               <div className="space-y-1">
                 <Label className="text-gray-700 font-medium">
                   Email <span className="text-red-500">*</span>
                 </Label>
-                <Input className="border-gray-300 rounded-lg" type="email" />
+                <Input
+                  className="border-gray-300 rounded-lg"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
               </div>
               <div className="space-y-1">
                 <Label className="text-gray-700 font-medium">
                   Gender <span className="text-red-500">*</span>
                 </Label>
-                <Select>
+                <Select onValueChange={(value) => setGender(value)}>
                   <SelectTrigger className="border-gray-300 bg-white rounded-lg">
                     <SelectValue placeholder="Select Gender" />
                   </SelectTrigger>
                   <SelectContent className="bg-white border-gray-200">
-                    <SelectItem value="male">Male</SelectItem>
-                    <SelectItem value="female">Female</SelectItem>
+                    <SelectItem
+                      className={
+                        "hover:bg-zinc-200 cursor-pointer transition-all"
+                      }
+                      value="male"
+                    >
+                      Male
+                    </SelectItem>
+                    <SelectItem
+                      className={
+                        "hover:bg-zinc-200 cursor-pointer transition-all"
+                      }
+                      value="female"
+                    >
+                      Female
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -119,7 +266,12 @@ export default function AdmissionForm() {
                 <Label className="text-gray-700 font-medium">
                   Date of Birth <span className="text-red-500">*</span>
                 </Label>
-                <Input type="date" className="border-gray-300 rounded-lg" />
+                <Input
+                  type="date"
+                  className="border-gray-300 rounded-lg"
+                  value={dataOfBirth}
+                  onChange={(e) => setDateOfBirth(e.target.value)}
+                />
               </div>
             </div>
           </div>
@@ -137,25 +289,41 @@ export default function AdmissionForm() {
                 <Label className="text-gray-700 font-medium">
                   Current Address <span className="text-red-500">*</span>
                 </Label>
-                <Input className="border-gray-300 rounded-lg" />
+                <Input
+                  className="border-gray-300 rounded-lg"
+                  value={currentAddress}
+                  onChange={(e) => setCurrentAddress(e.target.value)}
+                />
               </div>
               <div className="space-y-1">
                 <Label className="text-gray-700 font-medium">
                   Permanent Address <span className="text-red-500">*</span>
                 </Label>
-                <Input className="border-gray-300 rounded-lg" />
+                <Input
+                  className="border-gray-300 rounded-lg"
+                  value={permanentAddress}
+                  onChange={(e) => setPermanentAddress(e.target.value)}
+                />
               </div>
               <div className="space-y-1">
                 <Label className="text-gray-700 font-medium">
                   City <span className="text-red-500">*</span>
                 </Label>
-                <Input className="border-gray-300 rounded-lg" />
+                <Input
+                  className="border-gray-300 rounded-lg"
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                />
               </div>
               <div className="space-y-1">
                 <Label className="text-gray-700 font-medium">
                   Zip Code <span className="text-red-500">*</span>
                 </Label>
-                <Input className="border-gray-300 rounded-lg" />
+                <Input
+                  className="border-gray-300 rounded-lg"
+                  value={zipCode}
+                  onChange={(e) => setZipCode(e.target.value)}
+                />
               </div>
             </div>
           </div>
@@ -290,13 +458,19 @@ export default function AdmissionForm() {
                 <Label className="text-gray-700 font-medium">
                   Admission Class <span className="text-red-500">*</span>
                 </Label>
-                <Select>
+                <Select onValueChange={(vlaue) => setAdmissionClass(vlaue)}>
                   <SelectTrigger className="border-gray-300 bg-white rounded-lg">
                     <SelectValue placeholder="Select Class" />
                   </SelectTrigger>
                   <SelectContent className="bg-white border-gray-200">
                     {[...Array(10)].map((_, i) => (
-                      <SelectItem key={i + 1} value={`${i + 1}`}>
+                      <SelectItem
+                        className={
+                          "hover:bg-zinc-200 cursor-pointer transition-all"
+                        }
+                        key={i + 1}
+                        value={(i + 1).toString()}
+                      >
                         Class {i + 1}
                       </SelectItem>
                     ))}
@@ -307,7 +481,11 @@ export default function AdmissionForm() {
                 <Label className="text-gray-700 font-medium">
                   Previous School Name
                 </Label>
-                <Input className="border-gray-300 rounded-lg" />
+                <Input
+                  className="border-gray-300 rounded-lg"
+                  value={previousSchool} // ✅ fixed
+                  onChange={(e) => setPreviousSchool(e.target.value)} // ✅ fixed
+                />
               </div>
             </div>
           </div>
@@ -326,8 +504,24 @@ export default function AdmissionForm() {
 
           {/* Submit */}
           <div className="pt-6">
-            <Button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-6 text-lg rounded-lg shadow-md transition-colors">
-              Submit Admission Form
+            <Button
+              type="submit"
+              disabled={!isFormValid || isSubmitting}
+              onClick={handelFormData}
+              className={`w-full ${
+                isFormValid
+                  ? "bg-indigo-600 hover:bg-indigo-700"
+                  : "bg-gray-400 cursor-not-allowed"
+              } text-white py-6 text-lg rounded-lg shadow-md transition-colors`}
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                  Submitting...
+                </>
+              ) : (
+                "Submit Admission Form"
+              )}
             </Button>
           </div>
           <div>
