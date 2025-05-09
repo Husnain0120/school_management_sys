@@ -20,7 +20,7 @@ import {
 export default function LoginPage() {
   const router = useRouter();
   const [credentials, setCredentials] = useState({
-    studentId: "",
+    portalId: "",
     password: "",
   });
 
@@ -57,8 +57,8 @@ export default function LoginPage() {
                 Student ID
               </Label>
               <Input
-                name="studentId"
-                value={credentials.studentId}
+                name="portalId"
+                value={credentials.portalId}
                 onChange={handleChange}
                 className="w-full border-gray-200 hover:border-gray-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
                 placeholder="Enter student ID"
