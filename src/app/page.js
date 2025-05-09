@@ -166,7 +166,7 @@ export default function LandingPage() {
                     variant="outline"
                     className="transition-all hover:shadow-md"
                   >
-                    <Link href="/login">
+                    <Link href="/pages/login">
                       <LogIn className="mr-2 h-4 w-4" />
                       Login
                     </Link>
@@ -211,7 +211,7 @@ export default function LandingPage() {
                   size="lg"
                   className="bg-black hover:bg-gray-800 text-white transition-all hover:shadow-lg"
                 >
-                  <Link href="/admission">
+                  <Link href="/pages/admission">
                     <UserPlus className="mr-2 h-5 w-5" />
                     Apply for Admission
                   </Link>
@@ -222,7 +222,7 @@ export default function LandingPage() {
                   variant="outline"
                   className="transition-all hover:shadow-md group"
                 >
-                  <Link href="/login">
+                  <Link href="/pages/login">
                     <LogIn className="mr-2 h-5 w-5" />
                     Login as Student
                     <ChevronRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -499,7 +499,7 @@ export default function LandingPage() {
                 </ul>
                 <div className="mt-6">
                   <Button asChild variant="outline" className="w-full group">
-                    <Link href="/login">
+                    <Link href="/pages/login">
                       Login as Admin
                       <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                     </Link>
@@ -541,7 +541,7 @@ export default function LandingPage() {
                 </ul>
                 <div className="mt-6">
                   <Button asChild variant="outline" className="w-full group">
-                    <Link href="/login">
+                    <Link href="/pages/login">
                       Login as Teacher
                       <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                     </Link>
@@ -583,7 +583,7 @@ export default function LandingPage() {
                 </ul>
                 <div className="mt-6">
                   <Button asChild variant="outline" className="w-full group">
-                    <Link href="/login">
+                    <Link href="/pages/login">
                       Login as Student
                       <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                     </Link>
@@ -674,13 +674,21 @@ export default function LandingPage() {
                 <p className="mt-2">Email: info@edumanage.com</p>
                 <p>Phone: (123) 456-7890</p>
               </address>
+
+              <Link
+                className=" hover:border-b text-blue-400 border-blue-400 italic  "
+                href={"/pages/contact"}
+              >
+                contact spport center{" "}
+                <span className="text-red-400 text-[12px]">24/7</span>{" "}
+              </Link>
             </div>
             <div>
               <h4 className="mb-4 text-xl font-bold">Quick Links</h4>
               <ul className="space-y-2 text-gray-300">
                 <li>
                   <Link
-                    href="/admission"
+                    href="/pages/admission"
                     className="hover:text-white transition-colors"
                   >
                     Apply for Admission
@@ -688,7 +696,7 @@ export default function LandingPage() {
                 </li>
                 <li>
                   <Link
-                    href="/login"
+                    href="/pages/login"
                     className="hover:text-white transition-colors"
                   >
                     Student Login
@@ -696,7 +704,7 @@ export default function LandingPage() {
                 </li>
                 <li>
                   <Link
-                    href="/login"
+                    href="/pages/login"
                     className="hover:text-white transition-colors"
                   >
                     Teacher Login
@@ -704,7 +712,7 @@ export default function LandingPage() {
                 </li>
                 <li>
                   <Link
-                    href="/login"
+                    href="/pages/login"
                     className="hover:text-white transition-colors"
                   >
                     Admin Login

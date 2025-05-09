@@ -71,7 +71,7 @@ export default function LoginPage() {
                   Password
                 </Label>
                 <Link
-                  href="/forgot-password"
+                  href="/pages/forgot-password"
                   className="text-xs text-indigo-600 hover:text-indigo-500 hover:underline"
                 >
                   Forgot password?
@@ -99,7 +99,7 @@ export default function LoginPage() {
           <div className="mt-6 space-y-2">
             <Link
               className="flex items-center gap-2 text-sm text-gray-600 hover:text-indigo-600 hover:bg-gray-50 p-2 rounded-md transition-colors"
-              href={"/admission"}
+              href={"/pages/admission"}
             >
               <UserPlus2 className="h-4 w-4 text-red-600" />
               <span className="animate-pulse text-md text-red-600">

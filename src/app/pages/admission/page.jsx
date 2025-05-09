@@ -159,7 +159,7 @@ export default function AdmissionForm() {
 
       if (res.status === 200) {
         toast.success(res.data.message);
-        router.push("/succes");
+        router.push("/pages/succes");
       }
     } catch (error) {
       console.error("Error submitting form:", error);
