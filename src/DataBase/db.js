@@ -1,35 +1,21 @@
-// lib/dbConnect.js
 import mongoose from "mongoose";
 
-// Local MongoDB URI
-const MONGODB_URI = process.env.MONGODB_URI; // Replace with your DB name
-console.log(MONGODB_URI);
-if (!MONGODB_URI) {
-  throw new Error("Please define the MONGODB_URI environment variable");
-}
+let isConnected = false; // Use a simple boolean flag
 
-// Use global cache to persist the connection in development
-let cached = global.mongoose;
-
-if (!cached) {
-  cached = global.mongoose = { conn: null, promise: null };
-}
-
-async function dbConnect() {
-  if (cached.conn) return cached.conn;
-
-  if (!cached.promise) {
-    try {
-      cached.promise = mongoose.connect(MONGODB_URI);
-      cached.conn = await cached.promise;
-      console.log("✅ MongoDB connected successfully");
-    } catch (error) {
-      console.error("❌ MongoDB connection failed:", error.message);
-      throw new Error("MongoDB connection failed");
-    }
+const dbConnect = async () => {
+  if (isConnected) {
+    console.log("✅ Already connected to the database.");
+    return;
   }
 
-  return cached.conn;
-}
+  try {
+    const db = await mongoose.connect(process.env.MONGODB_URI);
+
+    isConnected = db.connections[0].readyState === 1;
+    console.log("✅ Connected to MongoDB successfully.");
+  } catch (error) {
+    console.error("❌ MongoDB connection failed:", error.message);
+  }
+};
 
 export default dbConnect;

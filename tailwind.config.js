@@ -29,6 +29,20 @@ module.exports = {
       borderRadius: {
         lg: "var(--radius)",
       },
+      // Add these new extensions for the RGB border animation
+      animation: {
+        "spin-slow": "spin 3s linear infinite",
+        "border-rainbow": "borderRainbow 6s linear infinite",
+      },
+      keyframes: {
+        borderRainbow: {
+          "0%, 100%": { "background-position": "0% 50%" },
+          "50%": { "background-position": "100% 50%" },
+        },
+      },
+      backgroundSize: {
+        "400%": "400%",
+      },
     },
   },
   plugins: [require("tailwindcss-animate")],

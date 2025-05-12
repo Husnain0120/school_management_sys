@@ -1,4 +1,4 @@
-import AdmissionForm from "../../../components/AdmissionForm";
+import AdmissionForm from "../../../components/pages-items/AdmissionForm";
 
 export async function generateMetadata() {
   return {

@@ -12,7 +12,7 @@ export default function RootLayout({ children }) {
       <body>
         <main>{children}</main>
 
-        <Toaster />
+        <Toaster position="top-right" richColors />
       </body>
     </html>
   );

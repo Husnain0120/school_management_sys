@@ -1,10 +1,10 @@
 "use server";
 
-import dbConnect from "@/DataBase/db";
 import AdmissionForm from "@/model/admissionForm.model";
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { UploadImage } from "@/lib/upload-image";
+import dbConnect from "@/DataBase/db";
 
 export async function POST(req) {
   await dbConnect();

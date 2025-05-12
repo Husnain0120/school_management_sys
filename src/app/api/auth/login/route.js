@@ -57,10 +57,7 @@ export async function POST(req) {
     // 6. Prepare JWT payload
     const payload = {
       id: userExist._id,
-      username: userExist.fullName,
-      email: userExist.email,
-      photoUrl: userExist.studentPhoto,
-      portalId: userExist.portalId,
+      role: userExist.role,
     };
 
     // 7. Sign JWT token
@@ -71,8 +68,9 @@ export async function POST(req) {
     // 8. Send response and set token cookie
     const response = NextResponse.json(
       {
-        message: `Login successful. Welcome back, ${payload.username}!`,
+        message: `Login successful. Welcome back!`,
         success: true,
+        payload,
       },
       { status: 200 }
     );
