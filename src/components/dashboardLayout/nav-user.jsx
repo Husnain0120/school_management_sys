@@ -31,6 +31,7 @@ import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
 import { SidebarUserSkeleton } from "../skeleton/Sidebar-user-skeleton";
 import { Skeleton } from "../ui/skeleton";
+import Link from "next/link";
 
 export function NavUser({ user, loading }) {
   const { isMobile } = useSidebar();
@@ -81,21 +82,24 @@ export function NavUser({ user, loading }) {
             align="end"
             sideOffset={4}
           >
-            <DropdownMenuLabel className=" font-normal cursor-pointer hover:bg-zinc-300  rounded-xl p-0.5">
-              <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">
-                    {user.fullName || (
-                      <>
-                        <Skeleton className="h-4 w-20 bg-gray-200" />
-                        <Skeleton className="mt-1 h-3 w-12 bg-gray-200" />
-                      </>
-                    )}
-                  </span>
-                  <span className="truncate text-xs">{user.email}</span>
+            <Link href={`/d/${user._id}/a/profile`}>
+              <DropdownMenuLabel className=" font-normal cursor-pointer hover:bg-zinc-300  rounded-xl p-0.5">
+                <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+                  {" "}
+                  <div className="grid flex-1 text-left text-sm leading-tight">
+                    <span className="truncate font-semibold">
+                      {user.fullName || (
+                        <>
+                          <Skeleton className="h-4 w-20 bg-gray-200" />
+                          <Skeleton className="mt-1 h-3 w-12 bg-gray-200" />
+                        </>
+                      )}
+                    </span>
+                    <span className="truncate text-xs">{user.email}</span>
+                  </div>
                 </div>
-              </div>
-            </DropdownMenuLabel>
+              </DropdownMenuLabel>
+            </Link>
             <DropdownMenuSeparator className={"bg-zinc-800"} />
             <DropdownMenuGroup>
               <DropdownMenuItem className={"hover:bg-zinc-200 cursor-pointer"}>
