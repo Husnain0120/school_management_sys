@@ -38,16 +38,29 @@ export default function LoginPage() {
     setIsSubmitting(true);
 
     try {
+      // Step 1: Login and get the token in the cookie
       const res = await axios.post(`/api/auth/login`, credentials);
 
       if (res.status === 200) {
+        // Step 2: Fetch user profile to get role and id
+        const profileRes = await axios.get("/api/auth/user-profile");
+
+        const { role, _id } = profileRes.data?.data || {};
+
+        // Step 3: Redirect user based on role
+        if (role === "admin") {
+          router.push(`/d/${_id}/a/home`);
+        } else if (role === "teacher") {
+          router.push(`/d/${_id}/t/home`);
+        } else if (role === "student") {
+          router.push(`/d/${_id}/s/home`);
+        } else {
+          toast.error("Unauthorized user role");
+        }
+
         toast.success("Login successful", {
           description: res.data.message,
         });
-
-        // ✅ Only redirect based on payload
-        const path = res?.data?.payload;
-        router.push(`/d/${path?.id}/dashboard`);
       }
     } catch (error) {
       console.log("Login failed:", error);

@@ -24,95 +24,106 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { TeamSwitcher } from "./team-switcher";
-
-// This is sample data.
-const data = {
-  user: {
-    name: "Admin User",
-    email: "admin@example.com",
-    avatar: "/avatars/admin.jpg",
-  },
-  teams: [
-    {
-      name: "#",
-      logo: GalleryVerticalEnd,
-      plan: "Enterprise",
-    },
-    {
-      name: "Acme Corp.",
-      logo: AudioWaveform,
-      plan: "Startup",
-    },
-    {
-      name: "Evil Corp.",
-      logo: Command,
-      plan: "Free",
-    },
-  ],
-  navMain: [
-    {
-      title: "Admissions",
-      url: `d/681e29c3de82381806943021/admissions`,
-      icon: BookOpen,
-      isActive: true,
-    },
-    {
-      title: "Classes",
-      url: "classes",
-      icon: Frame,
-    },
-    {
-      title: "Students",
-      url: "students",
-      icon: Map,
-    },
-    {
-      title: "Teachers",
-      url: "teachers",
-      icon: AudioWaveform,
-    },
-    {
-      title: "Courses",
-      url: "courses",
-      icon: GalleryVerticalEnd,
-    },
-    {
-      title: "Exams & Results",
-      url: "exams",
-      icon: PieChart,
-    },
-    {
-      title: "Settings",
-      url: "settings",
-      icon: Settings2,
-      items: [
-        {
-          title: "Profile",
-          url: "settings/profile",
-        },
-        {
-          title: "System Config",
-          url: "settings/system",
-        },
-      ],
-    },
-  ],
-  projects: [], // optional
-};
+import axios from "axios";
+import LMSSkeleton from "../Lms-skeleton";
 
 export function AppSidebar({ ...props }) {
+  // This is sample data.
+
+  const [profile, setProfile] = React.useState("");
+  const [isLoading, setIsLoading] = React.useState(false);
+
+  React.useEffect(() => {
+    const profile = async () => {
+      setIsLoading(true);
+      try {
+        const res = await axios.get(`/api/auth/user-profile`);
+        const path = res.data?.data;
+        setProfile(path);
+        setIsLoading(false);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    profile();
+  }, []);
+
+  const data = {
+    user: {
+      name: "Admin User",
+      email: "admin@example.com",
+      avatar: "/avatars/admin.jpg",
+    },
+
+    navMain: [
+      {
+        title: "Home",
+        url: `d/${profile?._id}/a/home`,
+        icon: BookOpen,
+        isActive: true,
+      },
+      {
+        title: "Admissions",
+        url: `d/${profile?._id}/a/admissions`,
+        icon: BookOpen,
+        isActive: true,
+      },
+      {
+        title: "Classes",
+        url: `d/${profile?._id}/a/classes`,
+        icon: Frame,
+      },
+      {
+        title: "Students",
+        url: `d/${profile?._id}/a/students`,
+        icon: Map,
+      },
+      {
+        title: "Teachers",
+        url: `d/${profile?._id}/a/teachers`,
+        icon: AudioWaveform,
+      },
+      {
+        title: "Courses",
+        url: `d/${profile?._id}/a/courses`,
+        icon: GalleryVerticalEnd,
+      },
+      {
+        title: "Exams & Results",
+        url: `d/${profile?._id}/a/exams`,
+        icon: PieChart,
+      },
+      {
+        title: "Settings",
+        url: `d/${profile?._id}/a/settings`,
+        icon: Settings2,
+      },
+    ],
+    projects: [], // optional
+  };
+
   return (
-    <Sidebar collapsible="icon" {...props}>
-      <SidebarHeader className={"bg-zinc-700 text-white"}>
-        <TeamSwitcher teams={data.teams} />
-      </SidebarHeader>
-      <SidebarContent className={"bg-zinc-700 text-white "}>
-        <NavMain items={data.navMain} />
-      </SidebarContent>
-      <SidebarFooter>
-        <NavUser user={data.user} />
-      </SidebarFooter>
-      <SidebarRail />
-    </Sidebar>
+    <div>
+      {isLoading ? (
+        <>
+          <p>Loading....</p>
+        </>
+      ) : (
+        <>
+          <Sidebar collapsible="icon" {...props}>
+            <SidebarHeader className={"bg-zinc-700 text-white"}>
+              <TeamSwitcher user={profile} loading={isLoading} />
+            </SidebarHeader>
+            <SidebarContent className={"bg-zinc-700 text-white "}>
+              <NavMain items={data.navMain} />
+            </SidebarContent>
+            <SidebarFooter>
+              <NavUser user={profile} />
+            </SidebarFooter>
+            <SidebarRail />
+          </Sidebar>
+        </>
+      )}
+    </div>
   );
 }

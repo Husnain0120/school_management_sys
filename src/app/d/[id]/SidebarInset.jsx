@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { Bell, Menu, X } from "lucide-react";
@@ -12,10 +12,32 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import LMSSkeleton from "@/components/Lms-skeleton";
 
 const SideNavbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  const [profile, setProfile] = React.useState("");
+  const [isLoading, setIsLoading] = React.useState(false);
+
+  React.useEffect(() => {
+    const profile = async () => {
+      setIsLoading(true);
+      try {
+        const res = await axios.get(`/api/auth/user-profile`);
+        const path = res.data?.data;
+        setProfile(path);
+        setIsLoading(false);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    profile();
+  }, []);
+
+  if (isLoading) {
+    return <LMSSkeleton />;
+  }
   return (
     <header className="relative top-0 z-40 w-full bg-white shadow-sm">
       {/* Green top border */}
@@ -71,7 +93,7 @@ const SideNavbar = () => {
           {/* User Profile - Desktop */}
           <div className="hidden md:flex items-center gap-3">
             <div className="text-right">
-              <p className="font-medium text-gray-800">MUHAMMAD HUSNAIN</p>
+              <p className="font-medium text-gray-800">{profile.fullName}</p>
               <p className="text-sm text-gray-500">(BC230212199)</p>
             </div>
           </div>

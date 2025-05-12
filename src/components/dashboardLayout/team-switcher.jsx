@@ -12,17 +12,13 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  useSidebar,
 } from "@/components/ui/sidebar";
+import LMSSkeleton from "../Lms-skeleton";
 
-export function TeamSwitcher({ teams }) {
-  const { isMobile } = useSidebar();
-  const [activeTeam, setActiveTeam] = React.useState(teams[0]);
-
-  if (!activeTeam) {
-    return null;
+export function TeamSwitcher({ user, loading }) {
+  if (loading) {
+    return <LMSSkeleton />;
   }
-
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -37,7 +33,7 @@ export function TeamSwitcher({ teams }) {
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold">EDU LMS</span>
-                <span className="truncate text-xs">Admin</span>
+                <span className="truncate text-xs">{user.role}</span>
               </div>
             </SidebarMenuButton>
           </DropdownMenuTrigger>
