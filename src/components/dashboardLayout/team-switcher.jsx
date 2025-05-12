@@ -13,11 +13,11 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import LMSSkeleton from "../Lms-skeleton";
+import { SidebarHeaderSkeleton } from "../skeleton/Sidebar-header-skeleton";
 
 export function TeamSwitcher({ user, loading }) {
   if (loading) {
-    return <LMSSkeleton />;
+    return <SidebarHeaderSkeleton />;
   }
   return (
     <SidebarMenu>

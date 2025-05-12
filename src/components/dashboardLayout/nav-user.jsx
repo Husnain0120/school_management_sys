@@ -29,8 +29,10 @@ import axios from "axios";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
+import { SidebarUserSkeleton } from "../skeleton/Sidebar-user-skeleton";
+import { Skeleton } from "../ui/skeleton";
 
-export function NavUser({ user }) {
+export function NavUser({ user, loading }) {
   const { isMobile } = useSidebar();
 
   // = =
@@ -49,6 +51,10 @@ export function NavUser({ user }) {
       toast.error(error.data?.message);
     }
   };
+
+  if (loading) {
+    return <SidebarUserSkeleton />;
+  }
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -77,13 +83,14 @@ export function NavUser({ user }) {
           >
             <DropdownMenuLabel className=" font-normal cursor-pointer hover:bg-zinc-300  rounded-xl p-0.5">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <Avatar className="h-8 w-8 rounded-full border ">
-                  <AvatarImage src={user.studentPhoto} alt={"photo"} />
-                  <AvatarFallback className="rounded-lg">CN</AvatarFallback>
-                </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">
-                    {user.fullName}
+                    {user.fullName || (
+                      <>
+                        <Skeleton className="h-4 w-20 bg-gray-200" />
+                        <Skeleton className="mt-1 h-3 w-12 bg-gray-200" />
+                      </>
+                    )}
                   </span>
                   <span className="truncate text-xs">{user.email}</span>
                 </div>

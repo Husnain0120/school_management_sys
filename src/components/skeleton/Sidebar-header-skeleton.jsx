@@ -9,8 +9,8 @@ export function SidebarHeaderSkeleton() {
           <GraduationCap className="h-5 w-5" />
         </div>
         <div>
-          <Skeleton className="h-4 w-20 bg-gray-700" />
-          <Skeleton className="mt-1 h-3 w-12 bg-gray-700" />
+          <Skeleton className="h-4 w-20 bg-gray-200" />
+          <Skeleton className="mt-1 h-3 w-12 bg-gray-200" />
         </div>
       </div>
     </div>

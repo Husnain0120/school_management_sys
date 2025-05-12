@@ -7,7 +7,9 @@ import {
   Command,
   Frame,
   GalleryVerticalEnd,
+  Home,
   Map,
+  MessageSquareDot,
   PieChart,
   Settings2,
 } from "lucide-react";
@@ -25,7 +27,7 @@ import {
 } from "@/components/ui/sidebar";
 import { TeamSwitcher } from "./team-switcher";
 import axios from "axios";
-import LMSSkeleton from "../Lms-skeleton";
+import { SidebarMenuSkeleton } from "../skeleton/Sidebar-menu-skeleton";
 
 export function AppSidebar({ ...props }) {
   // This is sample data.
@@ -59,7 +61,7 @@ export function AppSidebar({ ...props }) {
       {
         title: "Home",
         url: `d/${profile?._id}/a/home`,
-        icon: BookOpen,
+        icon: Home,
         isActive: true,
       },
       {
@@ -94,6 +96,11 @@ export function AppSidebar({ ...props }) {
         icon: PieChart,
       },
       {
+        title: "Notices board",
+        url: `d/${profile?._id}/a/noticesboard`,
+        icon: MessageSquareDot,
+      },
+      {
         title: "Settings",
         url: `d/${profile?._id}/a/settings`,
         icon: Settings2,
@@ -103,27 +110,27 @@ export function AppSidebar({ ...props }) {
   };
 
   return (
-    <div>
-      {isLoading ? (
-        <>
-          <p>Loading....</p>
-        </>
-      ) : (
-        <>
-          <Sidebar collapsible="icon" {...props}>
-            <SidebarHeader className={"bg-zinc-700 text-white"}>
-              <TeamSwitcher user={profile} loading={isLoading} />
-            </SidebarHeader>
-            <SidebarContent className={"bg-zinc-700 text-white "}>
+    <>
+      <Sidebar collapsible="icon" {...props}>
+        <SidebarHeader className={"bg-zinc-700 text-white"}>
+          <TeamSwitcher user={profile} loading={isLoading} />
+        </SidebarHeader>
+        <SidebarContent className={"bg-zinc-700 text-white "}>
+          {isLoading ? (
+            <>
+              <SidebarMenuSkeleton />
+            </>
+          ) : (
+            <>
               <NavMain items={data.navMain} />
-            </SidebarContent>
-            <SidebarFooter>
-              <NavUser user={profile} />
-            </SidebarFooter>
-            <SidebarRail />
-          </Sidebar>
-        </>
-      )}
-    </div>
+            </>
+          )}
+        </SidebarContent>
+        <SidebarFooter>
+          <NavUser user={profile} loading={isLoading} />
+        </SidebarFooter>
+        <SidebarRail />
+      </Sidebar>
+    </>
   );
 }

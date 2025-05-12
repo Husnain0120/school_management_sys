@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import Image from "next/image";
 import { motion } from "framer-motion";
 import { Bell, Menu, X } from "lucide-react";
 import {
@@ -12,7 +11,9 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import LMSSkeleton from "@/components/Lms-skeleton";
+import { NavbarSkeleton } from "@/components/skeleton/Navbar-skeleton";
+import axios from "axios";
+import Link from "next/link";
 
 const SideNavbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -36,10 +37,10 @@ const SideNavbar = () => {
   }, []);
 
   if (isLoading) {
-    return <LMSSkeleton />;
+    return <NavbarSkeleton />;
   }
   return (
-    <header className="relative top-0 z-40 w-full bg-white shadow-sm">
+    <header className="sticky top-0 z-40 w-full bg-white shadow-sm">
       {/* Green top border */}
       <div className="absolute top-0 left-0 right-0 h-1 "></div>
 
@@ -85,16 +86,18 @@ const SideNavbar = () => {
         {/* Right Section - User Profile and Notification */}
         <div className="flex items-center gap-3 md:gap-6">
           {/* Notification Bell */}
-          <button className="relative p-1.5 rounded-full hover:bg-gray-100 transition-colors">
-            <Bell className="h-5 w-5 md:h-6 md:w-6 text-gray-600" />
-            <span className="absolute top-0 right-0 h-2 w-2 bg-rose-500 rounded-full"></span>
-          </button>
+          <Link href={"/pages/noticesboard"}>
+            <button className="relative p-1.5 rounded-full hover:bg-gray-100 transition-colors">
+              <Bell className="h-5 w-5 md:h-6 md:w-6 text-gray-600" />
+              <span className="absolute top-0 right-0 h-2 w-2 bg-rose-500 rounded-full"></span>
+            </button>
+          </Link>
 
           {/* User Profile - Desktop */}
           <div className="hidden md:flex items-center gap-3">
             <div className="text-right">
               <p className="font-medium text-gray-800">{profile.fullName}</p>
-              <p className="text-sm text-gray-500">(BC230212199)</p>
+              <p className="text-sm text-gray-500">({profile.portalId})</p>
             </div>
           </div>
 
@@ -114,12 +117,14 @@ const SideNavbar = () => {
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-zinc-500">User:</span>
               <span className="font-semibold text-zinc-900">
-                MUHAMMAD HUSNAIN
+                {profile.fullName}
               </span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-zinc-500">ID:</span>
-              <span className="font-semibold text-zinc-900">BC230212199</span>
+              <span className="font-semibold text-zinc-900">
+                {profile.portalId}
+              </span>
             </div>
           </div>
         </motion.div>

@@ -12,6 +12,8 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import axios from "axios";
+import LoadingComponent from "@/components/Loading";
 
 export default function LandingPage() {
   const [isVisible, setIsVisible] = useState({
@@ -19,6 +21,9 @@ export default function LandingPage() {
     features: false,
     dashboards: false,
   });
+
+  const [profile, setProfile] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const heroRef = useRef(null);
   const featuresRef = useRef(null);
@@ -166,10 +171,11 @@ export default function LandingPage() {
                     variant="outline"
                     className="transition-all hover:shadow-md"
                   >
-                    <Link href="/pages/login">
-                      <LogIn className="mr-2 h-4 w-4" />
-                      Login
-                    </Link>
+                    {profile ? (
+                      <Link href={"#"}>Dashboard</Link>
+                    ) : (
+                      <Link href={"/pages/login"}>Login</Link>
+                    )}
                   </Button>
                 </li>
               </ul>
