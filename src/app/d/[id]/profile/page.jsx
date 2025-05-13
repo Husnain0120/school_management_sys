@@ -20,6 +20,7 @@ import axios from "axios";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import Link from "next/link";
+import AdminVerifiedBadge from "@/components/verify-badge.jsx/Admin-verified-badge";
 
 // Add print styles
 const printStyles = `
@@ -461,8 +462,9 @@ export default function ProfilePage() {
               </Badge>
             )}
           </div>
-          <h1 className="text-3xl font-bold text-gray-900">
+          <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
             {profileData.fullName}
+            <AdminVerifiedBadge size={23} className="mt-2" />
           </h1>
           <div className="flex items-center mt-2 text-gray-600">
             <span className="flex items-center">

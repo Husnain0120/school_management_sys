@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { GraduationCap } from "lucide-react";
+import { GraduationCap, Verified } from "lucide-react";
 
 import {
   DropdownMenu,
@@ -14,9 +14,10 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { SidebarHeaderSkeleton } from "../skeleton/Sidebar-header-skeleton";
+import AdminVerifiedBadge from "../verify-badge.jsx/Admin-verified-badge";
 
 export function TeamSwitcher({ user, loading }) {
-  if (loading) {
+  if (loading || !user || !user.role) {
     return <SidebarHeaderSkeleton />;
   }
   return (
@@ -33,7 +34,9 @@ export function TeamSwitcher({ user, loading }) {
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold">EDU LMS</span>
-                <span className="truncate text-xs">{user.role}</span>
+                <span className="truncate text-xs flex items-center gap-1">
+                  {user.role.toUpperCase()} <AdminVerifiedBadge size={12} />
+                </span>
               </div>
             </SidebarMenuButton>
           </DropdownMenuTrigger>

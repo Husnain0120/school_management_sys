@@ -35,6 +35,7 @@ import {
 import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import axios from "axios";
+import AdminVerifiedBadge from "@/components/verify-badge.jsx/Admin-verified-badge";
 
 const ProfileEditPage = () => {
   const [loading, setLoading] = useState(true);
@@ -189,7 +190,7 @@ const ActualProfileEditPage = ({ userData }) => {
                 <AvatarImage
                   src={userData?.studentPhoto || "/placeholder.svg"}
                   alt={userData?.fullName || "User"}
-                  className="hover:opacity-90 transition-opacity"
+                  className="hover:opacity-90 transition-opacity object-cover "
                 />
                 <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white text-xl">
                   {userData?.fullName
@@ -203,8 +204,9 @@ const ActualProfileEditPage = ({ userData }) => {
               </Badge>
             </div>
             <div className="text-center md:text-left">
-              <h1 className="text-2xl md:text-3xl font-bold text-white hover:text-indigo-100 transition-colors cursor-pointer">
-                {userData?.fullName || "User"}
+              <h1 className="text-3xl font-bold text-white flex items-center gap-2">
+                {userData?.fullName}
+                <AdminVerifiedBadge size={23} className="mt-2" />
               </h1>
               <p className="text-white/80 hover:text-white transition-colors cursor-pointer">
                 {userData?.email || "N/A"}

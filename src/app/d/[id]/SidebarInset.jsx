@@ -36,7 +36,7 @@ const SideNavbar = () => {
     profile();
   }, []);
 
-  if (isLoading) {
+  if (isLoading || !profile.fullName || !profile.portalId) {
     return <NavbarSkeleton />;
   }
   return (
@@ -97,7 +97,9 @@ const SideNavbar = () => {
           <div className="hidden md:flex items-center gap-3">
             <div className="text-right">
               <p className="font-medium text-gray-800">{profile.fullName}</p>
-              <p className="text-sm text-gray-500">({profile.portalId})</p>
+              <p className="text-sm text-gray-500">
+                ({profile.portalId.toUpperCase()})
+              </p>
             </div>
           </div>
 

@@ -98,7 +98,7 @@ export default function LoginPage() {
               </Label>
               <Input
                 name="portalId"
-                value={credentials.portalId}
+                value={credentials.portalId.toLocaleLowerCase()}
                 onChange={handleChange}
                 className="w-full border-gray-200 hover:border-gray-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
                 placeholder="Enter student ID"

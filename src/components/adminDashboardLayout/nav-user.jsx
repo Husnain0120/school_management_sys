@@ -35,15 +35,12 @@ import Link from "next/link";
 
 export function NavUser({ user, loading }) {
   const { isMobile } = useSidebar();
-
-  // = =
   const router = useRouter();
 
-  //hadel logout
   const handelLogout = async () => {
     try {
       const res = await axios.get(`/api/auth/logout`);
-      toast.success(res.data.messahe || "Logout Successfully!");
+      toast.success(res.data.message || "Logout Successfully!");
       if (res.status === 200) {
         router.push("/pages/login");
       }
@@ -53,9 +50,10 @@ export function NavUser({ user, loading }) {
     }
   };
 
-  if (loading) {
+  if (loading || !user || !user._id || !user.fullName || !user.email) {
     return <SidebarUserSkeleton />;
   }
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -63,71 +61,99 @@ export function NavUser({ user, loading }) {
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground cursor-pointer"
             >
-              <Avatar className="h-8 w-8 rounded-full border-[2px] ">
-                <AvatarImage src={user.studentPhoto} alt={"photo"} />
-                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+              <Avatar className="h-8 w-8 rounded-full border-2 border-primary">
+                <AvatarImage
+                  src={user.studentPhoto}
+                  alt={user.fullName}
+                  className="object-cover w-full h-full" // Ensure image covers properly
+                />
+                <AvatarFallback className="bg-primary text-white text-sm">
+                  {user.fullName
+                    .split(" ")
+                    .map((n) => n[0])
+                    .join("")}
+                </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold">{user.fullName}</span>
-                <span className="truncate text-xs">{user.email}</span>
+                <span className="truncate text-xs text-muted-foreground">
+                  {user.email}
+                </span>
               </div>
-              <ChevronsUpDown className="ml-auto size-4" />
+              <ChevronsUpDown className="ml-auto size-4 text-muted-foreground" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg bg-white "
+            className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg bg-white shadow-lg"
             side={isMobile ? "bottom" : "right"}
             align="end"
-            sideOffset={4}
+            sideOffset={8}
+            alignOffset={8}
           >
-            <Link href={`/d/${user._id}/profile`}>
-              <DropdownMenuLabel className=" font-normal cursor-pointer hover:bg-zinc-300  rounded-xl p-0.5">
-                <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                  {" "}
-                  <div className="grid flex-1 text-left text-sm leading-tight">
+            <Link href={`/d/${user._id}/profile`} className="cursor-pointer">
+              <DropdownMenuLabel className="font-normal hover:bg-accent rounded-lg p-0.5 transition-colors">
+                <div className="flex items-center gap-3 p-2 hover:underline">
+                  <Avatar className="h-12 w-12 rounded-full border-2 border-primary">
+                    <AvatarImage
+                      src={user.studentPhoto}
+                      alt={user.fullName}
+                      className="object-cover w-full h-full"
+                    />
+                    <AvatarFallback className="bg-primary text-white">
+                      {user.fullName
+                        .split(" ")
+                        .map((n) => n[0])
+                        .join("")}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="grid flex-1">
                     <span className="truncate font-semibold">
-                      {user.fullName || (
-                        <>
-                          <Skeleton className="h-4 w-20 bg-gray-200" />
-                          <Skeleton className="mt-1 h-3 w-12 bg-gray-200" />
-                        </>
-                      )}
+                      {user.fullName}
                     </span>
-                    <span className="truncate text-xs">{user.email}</span>
+                    <span className="truncate text-xs text-muted-foreground">
+                      {user.email}
+                    </span>
                   </div>
                 </div>
               </DropdownMenuLabel>
             </Link>
-            <DropdownMenuSeparator className={"bg-zinc-800"} />
+
+            <DropdownMenuSeparator className="bg-border" />
+
             <DropdownMenuGroup>
-              <DropdownMenuItem className={"hover:bg-zinc-200 cursor-pointer"}>
-                <Sparkles />
-                Upgrade to Pro
+              <DropdownMenuItem className="cursor-pointer hover:bg-zinc-100 focus:bg-accent">
+                <Sparkles className="mr-2 h-4 w-4" />
+                <span>Upgrade to Pro</span>
               </DropdownMenuItem>
             </DropdownMenuGroup>
-            <DropdownMenuSeparator />
+
+            <DropdownMenuSeparator className="bg-border" />
+
             <DropdownMenuGroup>
-              <DropdownMenuItem className={"hover:bg-zinc-200 cursor-pointer"}>
-                <BadgeCheck />
-                Account
+              <DropdownMenuItem className="cursor-pointer hover:bg-zinc-100 focus:bg-zinc-200">
+                <BadgeCheck className="mr-2 h-4 w-4" />
+                <span>Account</span>
               </DropdownMenuItem>
-              <DropdownMenuItem className={"hover:bg-zinc-200 cursor-pointer"}>
-                <CreditCard />
-                Billing
+              <DropdownMenuItem className="cursor-pointer hover:bg-zinc-100 focus:bg-zinc-200">
+                <CreditCard className="mr-2 h-4 w-4" />
+                <span>Billing</span>
               </DropdownMenuItem>
-              <DropdownMenuItem className={"hover:bg-zinc-200 cursor-pointer"}>
-                <Bell />
-                Notifications
+              <DropdownMenuItem className="cursor-pointer hover:bg-zinc-100 focus:bg-zinc-200">
+                <Bell className="mr-2 h-4 w-4" />
+                <span>Notifications</span>
               </DropdownMenuItem>
             </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className={"hover:bg-red-200 cursor-pointer"}>
-              <Button variant={"ghost"} onClick={handelLogout}>
-                <LogOut />
-                Log out
-              </Button>
+
+            <DropdownMenuSeparator className="bg-border" />
+
+            <DropdownMenuItem
+              className="cursor-pointer hover:bg-red-100 focus:bg-red-100 text-red-600"
+              onClick={handelLogout}
+            >
+              <LogOut className="mr-2 h-4 w-4" />
+              <span>Log out</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

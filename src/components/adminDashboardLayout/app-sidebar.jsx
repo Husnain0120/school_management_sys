@@ -116,15 +116,7 @@ export function AppSidebar({ ...props }) {
           <TeamSwitcher user={profile} loading={isLoading} />
         </SidebarHeader>
         <SidebarContent className={"bg-zinc-700  text-white "}>
-          {isLoading ? (
-            <>
-              <SidebarMenuSkeleton />
-            </>
-          ) : (
-            <>
-              <NavMain items={data.navMain} />
-            </>
-          )}
+          <NavMain items={data.navMain} loading={isLoading} />
         </SidebarContent>
         <SidebarFooter>
           <NavUser user={profile} loading={isLoading} />
