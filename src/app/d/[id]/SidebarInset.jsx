@@ -72,7 +72,7 @@ const SideNavbar = () => {
               <BreadcrumbList>
                 <BreadcrumbItem>
                   <BreadcrumbLink
-                    href="#"
+                    href="/"
                     className="text-lg md:text-xl font-semibold tracking-tight text-gray-800 hover:text-gray-600 transition-colors duration-200"
                   >
                     Learning Management System

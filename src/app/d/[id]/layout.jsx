@@ -1,6 +1,6 @@
 import "../.././globals.css";
 import { Toaster } from "@/components/ui/sonner";
-import { AppSidebar } from "@/components/dashboardLayout/app-sidebar";
+import { AppSidebar } from "@/components/adminDashboardLayout/app-sidebar";
 
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import SideNavber from "./SidebarInset";

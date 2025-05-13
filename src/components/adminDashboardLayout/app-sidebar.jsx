@@ -14,9 +14,9 @@ import {
   Settings2,
 } from "lucide-react";
 
-import { NavMain } from "@/components/dashboardLayout/nav-man";
+import { NavMain } from "@/components/adminDashboardLayout/nav-man";
 
-import { NavUser } from "@/components/dashboardLayout/nav-user";
+import { NavUser } from "@/components/adminDashboardLayout/nav-user";
 
 import {
   Sidebar,
