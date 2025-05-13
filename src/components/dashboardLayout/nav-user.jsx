@@ -82,7 +82,7 @@ export function NavUser({ user, loading }) {
             align="end"
             sideOffset={4}
           >
-            <Link href={`/d/${user._id}/a/profile`}>
+            <Link href={`/d/${user._id}/profile`}>
               <DropdownMenuLabel className=" font-normal cursor-pointer hover:bg-zinc-300  rounded-xl p-0.5">
                 <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                   {" "}

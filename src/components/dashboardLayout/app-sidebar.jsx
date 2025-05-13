@@ -115,7 +115,7 @@ export function AppSidebar({ ...props }) {
         <SidebarHeader className={"bg-zinc-700 text-white"}>
           <TeamSwitcher user={profile} loading={isLoading} />
         </SidebarHeader>
-        <SidebarContent className={"bg-zinc-700 text-white "}>
+        <SidebarContent className={"bg-zinc-700  text-white "}>
           {isLoading ? (
             <>
               <SidebarMenuSkeleton />

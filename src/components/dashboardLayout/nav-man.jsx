@@ -15,7 +15,7 @@ export function NavMain({ items }) {
 
   return (
     <SidebarGroup>
-      <SidebarMenu className={" border-t pt-1"}>
+      <SidebarMenu className={" border-t pt-1 "}>
         {items.map((item) => {
           const isActive = pathname.startsWith(`/${item.url}`);
           return (
@@ -23,17 +23,17 @@ export function NavMain({ items }) {
               key={item.title}
               asChild
               defaultOpen={item.isActive}
-              className="group/collapsible"
+              className="group/collapsible text-[15px] "
             >
-              <SidebarMenuItem>
+              <SidebarMenuItem className={"text-[14px] font-poppins"}>
                 <CollapsibleTrigger asChild>
                   <Link href={`/${item.url}`}>
                     <SidebarMenuButton
-                      className={`cursor-pointer ${
+                      className={`cursor-pointer  ${
                         isActive
-                          ? "bg-white text-black font-semibold shadow-sm"
+                          ? "bg-white  text-black font-semibold shadow-sm "
                           : ""
-                      }`}
+                      } text-[16.5px] my-2`}
                       tooltip={item.title}
                     >
                       {item.icon && <item.icon />}
