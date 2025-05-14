@@ -34,7 +34,7 @@ export function NavMain({ items, loading }) {
                   defaultOpen={item.isActive}
                   className="group/collapsible text-[15px] "
                 >
-                  <>
+                  <div>
                     {" "}
                     <SidebarMenuItem className={"text-[14px] font-poppins"}>
                       <CollapsibleTrigger asChild>
@@ -53,7 +53,7 @@ export function NavMain({ items, loading }) {
                         </Link>
                       </CollapsibleTrigger>
                     </SidebarMenuItem>
-                  </>
+                  </div>
                 </Collapsible>
               );
             })}
