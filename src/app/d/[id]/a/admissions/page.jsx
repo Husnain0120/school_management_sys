@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { User, Printer } from "lucide-react";
+import { User, Printer, RefreshCw } from "lucide-react"; // Added RefreshCw icon
 import axios from "axios";
 import Link from "next/link";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
@@ -19,20 +19,31 @@ import { AvatarFallback } from "@radix-ui/react-avatar";
 const AdmissionsPage = () => {
   const [loading, setLoading] = useState(true);
   const [admissions, setAdmissions] = useState([]);
+  const [refreshing, setRefreshing] = useState(false); // State for refresh loading
+
+  // Function to fetch applications
+  const fetchApplications = async () => {
+    try {
+      setRefreshing(true);
+      const res = await axios.get(`/api/admin/admission-applications`);
+      setAdmissions(res.data?.applications || []);
+      setLoading(false);
+    } catch (error) {
+      console.error("Failed to fetch admissions:", error);
+      setLoading(false);
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchApplications = async () => {
-      try {
-        const res = await axios.get(`/api/admin/admission-applications`);
-        setAdmissions(res.data?.applications || []); // Ensure we always have an array
-        setLoading(false);
-      } catch (error) {
-        console.error("Failed to fetch admissions:", error);
-        setLoading(false);
-      }
-    };
     fetchApplications();
   }, []);
+
+  // Handle refresh button click
+  const handleRefresh = () => {
+    fetchApplications();
+  };
 
   const handlePrint = () => {
     const date = new Date();
@@ -152,9 +163,22 @@ const AdmissionsPage = () => {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 print:hidden">
           <h1 className="text-2xl font-bold">Admission Applications</h1>
 
-          <Button onClick={handlePrint} variant="outline" className="gap-2">
-            <Printer className="h-4 w-4" /> Print
-          </Button>
+          <div className="flex gap-3">
+            <Button
+              onClick={handleRefresh}
+              variant="outline"
+              className="gap-2"
+              disabled={refreshing}
+            >
+              <RefreshCw
+                className={`h-4 w-4 ${refreshing ? "animate-spin" : ""}`}
+              />
+              {refreshing ? "Refreshing..." : "Refresh"}
+            </Button>
+            <Button onClick={handlePrint} variant="outline" className="gap-2">
+              <Printer className="h-4 w-4" /> Print
+            </Button>
+          </div>
         </div>
         <div className=" w-fit px-2 py-1 rounded-md">
           <p className="text-sm font-bold text-indigo-500 ">
