@@ -4,11 +4,23 @@ import { NextResponse } from "next/server";
 
 // This function updates the isVerified status of an applicant by toggling it
 export async function PUT(request, { params }) {
-  await dbConnect();
+  // Initialize database connection with error handling
+  try {
+    await dbConnect();
+  } catch (dbError) {
+    console.error("Database connection error:", dbError);
+    return NextResponse.json(
+      {
+        message: "Database connection failed",
+        success: false,
+        error: dbError.message,
+      },
+      { status: 500 }
+    );
+  }
 
   try {
-    const { aid } = await params; // ✅ Correct destructuring
-    console.log(aid, "<:applicant id");
+    const { aid } = params; // ✅ Correct destructuring
 
     // 🛠 Fetch applicant first
     const applicant = await AdmissionForm.findById(aid);
