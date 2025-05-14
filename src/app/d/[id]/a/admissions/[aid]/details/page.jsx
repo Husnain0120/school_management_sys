@@ -30,22 +30,60 @@ export default function ApplicantPage() {
   // Replace your current handleVerifiyApplicant function with this:
   const handleVerifiyApplicant = async () => {
     try {
-      const verfiyApplicant = await axios.put(
-        `/api/admin/admission-applications/admission-details/${aid}/verfiy-applicant`
+      const response = await axios.put(
+        `/api/admin/admission-applications/admission-details/${aid}/verfiy-applicant`,
+        null,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          timeout: 10000, // 10 second timeout
+        }
       );
 
-      // Refetch the applicant data to show updated verification status
-      const res = await axios.get(
-        `/api/admin/admission-applications/admission-details/${aid}`
-      );
+      if (response.data.success) {
+        setApplicantData((prev) => ({
+          ...prev,
+          isVerified: response.data.isVerified,
+        }));
+        toast.success(response.data.message);
+      } else {
+        toast.error(response.data.message || "Verification failed");
+      }
+    } catch (error) {
+      let errorMessage = "Failed to verify applicant";
 
-      if (res?.data?.details) {
-        setApplicantData(res?.data?.details);
+      if (error.response) {
+        // Server responded with a status code outside 2xx
+        console.error("Server error response:", {
+          status: error.response.status,
+          data: error.response.data,
+          headers: error.response.headers,
+        });
+        errorMessage = error.response.data?.message || errorMessage;
+      } else if (error.request) {
+        // Request was made but no response received
+        console.error("No response received:", error.request);
+        errorMessage = "No response from server";
+      } else {
+        // Something happened in setting up the request
+        console.error("Request setup error:", error.message);
+        errorMessage = error.message;
       }
 
-      toast.success(verfiyApplicant?.data?.message);
-    } catch (error) {
-      console.log(error);
+      toast.error(errorMessage);
+
+      // Attempt to refetch the original data
+      try {
+        const res = await axios.get(
+          `/api/admin/admission-applications/admission-details/${aid}`
+        );
+        if (res?.data?.details) {
+          setApplicantData(res.data.details);
+        }
+      } catch (fetchError) {
+        console.error("Failed to refetch:", fetchError);
+      }
     }
   };
 

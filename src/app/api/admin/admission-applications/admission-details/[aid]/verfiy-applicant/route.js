@@ -2,13 +2,17 @@ import dbConnect from "@/DataBase/db";
 import AdmissionForm from "@/model/admissionForm.model";
 import { NextResponse } from "next/server";
 
-// This function updates the isVerified status of an applicant by toggling it
 export async function PUT(request, { params }) {
-  // Initialize database connection with error handling
+  console.log(
+    "PUT /api/admin/admission-applications/admission-details/[aid]/verfiy-applicant called"
+  );
+
   try {
+    console.log("Attempting to connect to database...");
     await dbConnect();
+    console.log("Database connected successfully");
   } catch (dbError) {
-    console.error("Database connection error:", dbError);
+    console.error("Database connection failed:", dbError);
     return NextResponse.json(
       {
         message: "Database connection failed",
@@ -20,38 +24,58 @@ export async function PUT(request, { params }) {
   }
 
   try {
-    const { aid } = params; // ✅ Correct destructuring
+    const { aid } = params;
+    console.log("Applicant ID:", aid);
 
-    // 🛠 Fetch applicant first
-    const applicant = await AdmissionForm.findById(aid);
-    if (!applicant) {
+    if (!aid || typeof aid !== "string") {
+      console.log("Invalid applicant ID received");
       return NextResponse.json(
-        {
-          message: "No applicant found to verify.",
-          success: false,
-        },
+        { message: "Invalid applicant ID", success: false },
+        { status: 400 }
+      );
+    }
+
+    console.log("Finding and updating applicant...");
+    const applicant = await AdmissionForm.findById(aid);
+    console.log("Found applicant:", applicant);
+
+    if (!applicant) {
+      console.log("No applicant found with ID:", aid);
+      return NextResponse.json(
+        { message: "No applicant found", success: false },
         { status: 404 }
       );
     }
 
-    // ✅ Toggle verification
+    console.log("Current verification status:", applicant.isVerified);
     applicant.isVerified = !applicant.isVerified;
+
+    console.log("Saving updated applicant...");
     await applicant.save();
+    console.log("Applicant saved successfully");
 
     const statusMessage = applicant.isVerified ? "verified" : "unverified";
+    console.log("Operation successful, new status:", statusMessage);
+
     return NextResponse.json(
       {
-        message: `Applicant ${statusMessage} successfully.`,
+        message: `Applicant ${statusMessage} successfully`,
         success: true,
+        isVerified: applicant.isVerified,
       },
       { status: 200 }
     );
   } catch (error) {
-    console.error("Failed to verify applicant:", error);
+    console.error("Full error details:", {
+      message: error.message,
+      stack: error.stack,
+      name: error.name,
+    });
     return NextResponse.json(
       {
-        message: "Failed to verify applicant.",
+        message: "Failed to verify applicant",
         success: false,
+        error: error.message,
       },
       { status: 500 }
     );
