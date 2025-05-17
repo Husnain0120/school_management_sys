@@ -73,7 +73,7 @@ export default function ApplicantPage() {
         const res = await axios.get(
           `/api/admin/admission-applications/admission-details/${aid}`
         );
-
+        // console.log(res?.data?.details);
         if (res?.data?.details) {
           setApplicantData(res?.data?.details);
         } else {
@@ -391,7 +391,7 @@ export default function ApplicantPage() {
                   </Label>
                   <Input
                     className="focus-visible:ring-0 bg-gray-50 print:hidden"
-                    type="number"
+                    type="text"
                     value={applicantData.admissionClass || ""}
                     readOnly
                   />

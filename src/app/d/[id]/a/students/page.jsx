@@ -56,7 +56,7 @@ const VerifiedStudentsPage = () => {
         // Simulate API call
         setTimeout(() => {
           // Sample verified students data
-          const sampleStudents = Array.from({ length: 50 }, (_, i) => ({
+          const sampleStudents = Array.from({ length: 5 }, (_, i) => ({
             id: `stu-${i + 1}`,
             fullName: `Student ${i + 1}`,
             email: `student${i + 1}@example.com`,

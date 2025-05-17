@@ -78,17 +78,21 @@ const admissionFormSchema = new Schema(
 
     // Academic Information
     admissionClass: {
-      type: Number,
+      type: String,
       required: [true, "Admission class is required"],
-      enum: {
-        values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-        message: "Admission class must be between 1 and 10",
-      },
     },
     previousSchool: {
       type: String,
       default: "",
     },
+
+    class: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Class",
+        default: [],
+      },
+    ],
 
     // User Role and Verification
     role: {

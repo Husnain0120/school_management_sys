@@ -46,12 +46,38 @@ export default function AdmissionForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isFormValid, setIsFormValid] = useState(false);
 
+  // State for classes from API
+  const [classes, setClasses] = useState([]);
+  const [isLoadingClasses, setIsLoadingClasses] = useState(false);
+
   const router = useRouter();
 
   // Refs for file inputs
   const studentPhotoRef = useRef(null);
   const idProofRef = useRef(null);
   const birthCertRef = useRef(null);
+
+  // Fetch classes from API
+  useEffect(() => {
+    const fetchClasses = async () => {
+      setIsLoadingClasses(true);
+      try {
+        const response = await axios.get(
+          "/api/admin/classes-mange/create-class"
+        );
+        if (response.data.classes) {
+          setClasses(response.data.classes);
+        }
+      } catch (error) {
+        console.error("Error fetching classes:", error);
+        toast.error("Failed to load class options");
+      } finally {
+        setIsLoadingClasses(false);
+      }
+    };
+
+    fetchClasses();
+  }, []);
 
   // Check form validity whenever required fields change
   useEffect(() => {
@@ -357,7 +383,7 @@ export default function AdmissionForm() {
                     {studentPhoto ? (
                       <>
                         <img
-                          src={studentPhoto}
+                          src={studentPhoto || "/placeholder.svg"}
                           alt="student preview"
                           className="h-38 w-38 object-center  rounded-full  "
                         />
@@ -393,7 +419,7 @@ export default function AdmissionForm() {
                     {idProof ? (
                       <>
                         <img
-                          src={idProof}
+                          src={idProof || "/placeholder.svg"}
                           alt="idProof"
                           className="h-[20%] w-[50%] object-contain"
                         />
@@ -428,7 +454,7 @@ export default function AdmissionForm() {
                     {birthCertificate ? (
                       <>
                         <img
-                          src={birthCertificate}
+                          src={birthCertificate || "/placeholder.svg"}
                           alt="birthCertificate"
                           className="h-[20%] w-[50%] object-contain"
                         />
@@ -458,22 +484,35 @@ export default function AdmissionForm() {
                 <Label className="text-gray-700 font-medium">
                   Admission Class <span className="text-red-500">*</span>
                 </Label>
-                <Select onValueChange={(vlaue) => setAdmissionClass(vlaue)}>
+                <Select onValueChange={(value) => setAdmissionClass(value)}>
                   <SelectTrigger className="border-gray-300 bg-white rounded-lg">
-                    <SelectValue placeholder="Select Class" />
+                    <SelectValue
+                      placeholder={
+                        isLoadingClasses ? "Loading classes..." : "Select Class"
+                      }
+                    />
                   </SelectTrigger>
                   <SelectContent className="bg-white border-gray-200">
-                    {[...Array(10)].map((_, i) => (
-                      <SelectItem
-                        className={
-                          "hover:bg-zinc-200 cursor-pointer transition-all"
-                        }
-                        key={i + 1}
-                        value={(i + 1).toString()}
-                      >
-                        Class {i + 1}
-                      </SelectItem>
-                    ))}
+                    {isLoadingClasses ? (
+                      <div className="flex items-center justify-center p-2">
+                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                        <span>Loading classes...</span>
+                      </div>
+                    ) : classes.length > 0 ? (
+                      classes.map((classItem) => (
+                        <SelectItem
+                          className="hover:bg-zinc-200 cursor-pointer transition-all"
+                          key={classItem._id}
+                          value={classItem.name}
+                        >
+                          {classItem.name}
+                        </SelectItem>
+                      ))
+                    ) : (
+                      <div className="p-2 text-center text-gray-500">
+                        No classes available
+                      </div>
+                    )}
                   </SelectContent>
                 </Select>
               </div>
@@ -483,8 +522,8 @@ export default function AdmissionForm() {
                 </Label>
                 <Input
                   className="border-gray-300 rounded-lg"
-                  value={previousSchool} // ✅ fixed
-                  onChange={(e) => setPreviousSchool(e.target.value)} // ✅ fixed
+                  value={previousSchool}
+                  onChange={(e) => setPreviousSchool(e.target.value)}
                 />
               </div>
             </div>
