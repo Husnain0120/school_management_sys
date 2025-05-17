@@ -19,7 +19,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { CalendarIcon, Pencil, Loader2 } from "lucide-react";
+import { CalendarIcon, Pencil, Loader2, Plus, Eye } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import axios from "axios";
 import { toast } from "sonner";
@@ -382,6 +382,15 @@ export default function ClassesPage() {
                               </div>
                             </TableCell>
                             <TableCell className="text-right">
+                              <Link href={`#`}>
+                                <Button
+                                  size="sm"
+                                  className="border-gray-300 hover:bg-gray-100 hover:text-black mr-1.5"
+                                >
+                                  <Eye className="h-3.5 w-3.5 mr-1" />
+                                  View
+                                </Button>
+                              </Link>
                               <Link
                                 href={`classes/${classItem._id}/create-subject`}
                               >
@@ -390,8 +399,8 @@ export default function ClassesPage() {
                                   size="sm"
                                   className="border-gray-300 hover:bg-gray-100 hover:text-black"
                                 >
-                                  <Pencil className="h-3.5 w-3.5 mr-1" />
-                                  Update
+                                  <Plus className="h-3.5 w-3.5 mr-1" />
+                                  Add Subject
                                 </Button>
                               </Link>
                             </TableCell>

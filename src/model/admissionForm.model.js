@@ -93,6 +93,13 @@ const admissionFormSchema = new Schema(
         default: [],
       },
     ],
+    subjects: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Subject",
+        default: [],
+      },
+    ],
 
     // User Role and Verification
     role: {

@@ -26,44 +26,105 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { BookOpen, Plus, Search, User, Pencil, Trash2 } from "lucide-react";
+import {
+  BookOpen,
+  Plus,
+  Search,
+  User,
+  Pencil,
+  Trash2,
+  AlertCircle,
+} from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import axios from "axios";
+import { toast } from "sonner";
 
 export default function SubjectsPage() {
+  // State for form inputs
   const [subjectName, setSubjectName] = useState("");
   const [selectedTeacher, setSelectedTeacher] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
 
-  // Mock data for teachers (static for now)
-  const teachers = [
-    { _id: "1", fullName: "John Smith", portalId: "edu23456789" },
-    { _id: "2", fullName: "Sarah Johnson", portalId: "edu23987654" },
-    { _id: "3", fullName: "Michael Brown", portalId: "edu23123456" },
-    { _id: "4", fullName: "Emily Davis", portalId: "edu23654321" },
-    { _id: "5", fullName: "Robert Wilson", portalId: "edu23111222" },
-    { _id: "6", fullName: "Jennifer Taylor", portalId: "edu23222333" },
-    { _id: "7", fullName: "David Martinez", portalId: "edu23333444" },
-    { _id: "8", fullName: "Lisa Anderson", portalId: "edu23444555" },
-  ];
+  // State for search functionality
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // State for loading and data
+  const [isLoading, setIsLoading] = useState(true);
+  const [teachers, setTeachers] = useState([]);
+  const [isLoadingTeachers, setIsLoadingTeachers] = useState(false);
+  const [teacherError, setTeacherError] = useState(null);
 
   // Mock data for subjects (static for now)
+  // In a real app, you would fetch this from an API too
   const subjects = [
-    { _id: "1", name: "Mathematics", teacher: teachers[0] },
-    { _id: "2", name: "Science", teacher: teachers[1] },
-    { _id: "3", name: "English", teacher: teachers[2] },
-    { _id: "4", name: "History", teacher: teachers[3] },
-    { _id: "5", name: "Computer Science", teacher: teachers[4] },
+    {
+      _id: "1",
+      name: "Mathematics",
+      teacher: { fullName: "John Smith", portalId: "edu23456789" },
+    },
+    {
+      _id: "2",
+      name: "Science",
+      teacher: { fullName: "Sarah Johnson", portalId: "edu23987654" },
+    },
+    {
+      _id: "3",
+      name: "English",
+      teacher: { fullName: "Michael Brown", portalId: "edu23123456" },
+    },
+    {
+      _id: "4",
+      name: "History",
+      teacher: { fullName: "Emily Davis", portalId: "edu23654321" },
+    },
+    {
+      _id: "5",
+      name: "Computer Science",
+      teacher: { fullName: "Robert Wilson", portalId: "edu23111222" },
+    },
   ];
 
-  // Simulate loading data
+  // Fetch teachers from API when component mounts
   useEffect(() => {
+    // Function to fetch teachers
+    const fetchTeachers = async () => {
+      setIsLoadingTeachers(true);
+      setTeacherError(null);
+
+      try {
+        // Make API request to get teachers
+        const response = await axios.get("/api/admin/fetch-teachers");
+
+        // Check if response has teachers data
+        if (response.data.teachers) {
+          setTeachers(response.data.teachers);
+        } else {
+          // Handle case where teachers array is missing
+          setTeacherError("No teachers data found");
+        }
+      } catch (error) {
+        // Handle API request errors
+        console.error("Error fetching teachers:", error);
+        setTeacherError(
+          error.response?.data?.message || "Failed to load teachers"
+        );
+        toast.error("Failed to load teachers");
+      } finally {
+        // Set loading state to false regardless of success or failure
+        setIsLoadingTeachers(false);
+      }
+    };
+
+    // Call the fetch function
+    fetchTeachers();
+
+    // Simulate loading for the whole page (remove in production)
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 2000); // 2 seconds loading simulation
+    }, 1500);
 
+    // Clean up timer on component unmount
     return () => clearTimeout(timer);
-  }, []);
+  }, []); // Empty dependency array means this runs once on mount
 
   // Filter subjects based on search query
   const filteredSubjects = subjects.filter(
@@ -75,11 +136,25 @@ export default function SubjectsPage() {
       subject.teacher.portalId.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    // Validate form inputs
+    if (!subjectName.trim()) {
+      toast.error("Subject name is required");
+      return;
+    }
+
+    if (!selectedTeacher) {
+      toast.error("Please select a teacher");
+      return;
+    }
+
     // This would normally submit to an API
     alert(`Subject: ${subjectName}, Teacher ID: ${selectedTeacher}`);
-    // Reset form
+
+    // Reset form after submission
     setSubjectName("");
     setSelectedTeacher("");
   };
@@ -162,20 +237,6 @@ export default function SubjectsPage() {
                 </div>
               </div>
             ))}
-
-            {/* Pagination Skeleton */}
-            <div className="flex justify-between items-center mt-4 pt-4 border-t border-gray-100">
-              <Skeleton className="h-8 w-24 bg-zinc-500" />
-              <div className="flex gap-1">
-                {[1, 2, 3].map((item) => (
-                  <Skeleton
-                    key={item}
-                    className="h-8 w-8 rounded-md bg-zinc-500"
-                  />
-                ))}
-              </div>
-              <Skeleton className="h-8 w-24 bg-zinc-500" />
-            </div>
           </div>
         </CardContent>
       </Card>
@@ -212,6 +273,7 @@ export default function SubjectsPage() {
               <CardContent className="pt-6">
                 <form className="space-y-6" onSubmit={handleSubmit}>
                   <div className="grid gap-4 md:grid-cols-2">
+                    {/* Subject Name Input */}
                     <div className="space-y-2">
                       <Label
                         htmlFor="subjectName"
@@ -228,6 +290,8 @@ export default function SubjectsPage() {
                         required
                       />
                     </div>
+
+                    {/* Teacher Selection Dropdown */}
                     <div className="space-y-2">
                       <Label
                         htmlFor="teacher"
@@ -235,39 +299,81 @@ export default function SubjectsPage() {
                       >
                         Assign Teacher <span className="text-red-500">*</span>
                       </Label>
+
+                      {/* Show error message if API call failed */}
+                      {teacherError && (
+                        <div className="flex items-center text-red-500 text-sm mb-2">
+                          <AlertCircle className="h-4 w-4 mr-1" />
+                          <span>{teacherError}</span>
+                        </div>
+                      )}
+
                       <Select
                         onValueChange={setSelectedTeacher}
                         value={selectedTeacher}
                       >
                         <SelectTrigger className="border-gray-300 bg-white focus-visible:ring-black">
-                          <SelectValue placeholder="Select a teacher" />
+                          {/* Show loading text while fetching teachers */}
+                          <SelectValue
+                            placeholder={
+                              isLoadingTeachers
+                                ? "Loading teachers..."
+                                : teacherError
+                                ? "Error loading teachers"
+                                : "Select a teacher"
+                            }
+                          />
                         </SelectTrigger>
                         <SelectContent className="bg-white border-gray-200 max-h-[300px]">
-                          {teachers.map((teacher) => (
-                            <SelectItem
-                              key={teacher._id}
-                              value={teacher._id}
-                              className="hover:bg-gray-100 cursor-pointer py-3"
-                            >
-                              <div className="flex flex-col">
-                                <span className="font-medium">
-                                  {teacher.fullName}
-                                </span>
-                                <span className="text-gray-500 text-xs mt-0.5">
-                                  ID: {teacher.portalId}
-                                </span>
-                              </div>
-                            </SelectItem>
-                          ))}
+                          {/* Show loading state in dropdown */}
+                          {isLoadingTeachers ? (
+                            <div className="flex items-center justify-center p-4 text-sm text-gray-500">
+                              <Skeleton className="h-4 w-4 rounded-full mr-2 bg-zinc-500" />
+                              <span>Loading teachers...</span>
+                            </div>
+                          ) : teacherError ? (
+                            // Show error message in dropdown
+                            <div className="p-4 text-sm text-red-500">
+                              <p>Failed to load teachers</p>
+                              <p>Please try again later</p>
+                            </div>
+                          ) : teachers.length > 0 ? (
+                            // Map through teachers and create dropdown options
+                            teachers.map((teacher) => (
+                              <SelectItem
+                                key={teacher._id}
+                                value={teacher._id}
+                                className="hover:bg-gray-100 cursor-pointer py-3"
+                              >
+                                <div className="flex flex-col">
+                                  <span className="font-medium">
+                                    {teacher.fullName}
+                                  </span>
+                                  <span className="text-gray-500 text-xs mt-0.5">
+                                    ID: {teacher.portalId}
+                                  </span>
+                                </div>
+                              </SelectItem>
+                            ))
+                          ) : (
+                            // Show message when no teachers are available
+                            <div className="p-4 text-sm text-gray-500 text-center">
+                              <p>No teachers available</p>
+                            </div>
+                          )}
                         </SelectContent>
                       </Select>
                     </div>
                   </div>
+
+                  {/* Submit Button */}
                   <div className="flex justify-end">
                     <Button
                       type="submit"
                       className="bg-black hover:bg-gray-800 text-white"
-                      disabled={!subjectName || !selectedTeacher}
+                      disabled={
+                        !subjectName || !selectedTeacher || isLoadingTeachers
+                      }
                     >
                       <Plus className="mr-2 h-4 w-4" />
                       Add Subject
@@ -289,6 +395,8 @@ export default function SubjectsPage() {
                       View and manage all subjects
                     </CardDescription>
                   </div>
+
+                  {/* Search Input */}
                   <div className="relative w-full md:w-64">
                     <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
                     <Input
