@@ -85,34 +85,43 @@ export async function POST(req, { params }) {
 export async function GET(req, { params }) {
   try {
     await dbConnect();
-    const { classid } = await params;
+    const { classid } = await params; // ✅ destructuring directly
+
     if (!classid) {
       return NextResponse.json(
-        { message: "invaild class id!", success: false },
+        { message: "Invalid class ID!", success: false },
         { status: 400 }
       );
     }
 
-    const subjects = await Class.findById(classid).populate("subjects.subject");
+    // ✅ Populate 'subjects.subject' and then 'subjects.subject.teacher'
+    const subjects = await Class.findById(classid).populate({
+      path: "subjects.subject",
+      populate: {
+        path: "teacher",
+        select: "fullName portalId",
+      },
+    });
 
     if (!subjects) {
       return NextResponse.json(
-        {
-          message: "No Subject found",
-          success: false,
-        },
+        { message: "No subjects found", success: false },
         { status: 404 }
       );
     }
 
     return NextResponse.json(
-      { message: "subject found successfully!", success: true, subjects },
+      {
+        message: "Subjects found successfully!",
+        success: true,
+        subjects,
+      },
       { status: 200 }
     );
   } catch (error) {
-    console.log("failed to get subjects!");
+    console.log("Failed to get subjects!", error);
     return NextResponse.json(
-      { message: "failed to get subjects!", success: false },
+      { message: "Failed to get subjects!", success: false },
       { status: 400 }
     );
   }

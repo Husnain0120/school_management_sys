@@ -5,7 +5,8 @@ const classSchema = new Schema({
   description: { type: String },
   subjects: [
     {
-      subject: { type: Schema.Types.ObjectId, ref: "Subject" },
+      type: Schema.Types.ObjectId,
+      ref: "Subject",
     },
   ],
   students: [

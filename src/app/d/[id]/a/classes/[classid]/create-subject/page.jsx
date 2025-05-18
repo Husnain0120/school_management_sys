@@ -29,118 +29,149 @@ import {
 import {
   BookOpen,
   Plus,
-  Search,
   User,
   Pencil,
   Trash2,
   AlertCircle,
+  Loader2,
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import axios from "axios";
 import { toast } from "sonner";
+import { useParams } from "next/navigation";
 
 export default function SubjectsPage() {
-  // State for form inputs
+  // Get class ID from URL params
+  const params = useParams();
+  const classId = params.classid;
+
+  // Form state
   const [subjectName, setSubjectName] = useState("");
   const [selectedTeacher, setSelectedTeacher] = useState("");
 
-  // State for search functionality
-  const [searchQuery, setSearchQuery] = useState("");
-
-  // State for loading and data
+  // Data loading states
   const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [teachers, setTeachers] = useState([]);
+  const [subjects, setSubjects] = useState([]);
+  const [classInfo, setClassInfo] = useState(null);
   const [isLoadingTeachers, setIsLoadingTeachers] = useState(false);
+  const [isLoadingSubjects, setIsLoadingSubjects] = useState(false);
   const [teacherError, setTeacherError] = useState(null);
+  const [subjectsError, setSubjectsError] = useState(null);
 
-  // Mock data for subjects (static for now)
-  // In a real app, you would fetch this from an API too
-  const subjects = [
-    {
-      _id: "1",
-      name: "Mathematics",
-      teacher: { fullName: "John Smith", portalId: "edu23456789" },
-    },
-    {
-      _id: "2",
-      name: "Science",
-      teacher: { fullName: "Sarah Johnson", portalId: "edu23987654" },
-    },
-    {
-      _id: "3",
-      name: "English",
-      teacher: { fullName: "Michael Brown", portalId: "edu23123456" },
-    },
-    {
-      _id: "4",
-      name: "History",
-      teacher: { fullName: "Emily Davis", portalId: "edu23654321" },
-    },
-    {
-      _id: "5",
-      name: "Computer Science",
-      teacher: { fullName: "Robert Wilson", portalId: "edu23111222" },
-    },
-  ];
-
-  // Fetch teachers from API when component mounts
+  // Fetch subjects and teachers when component mounts
   useEffect(() => {
-    // Function to fetch teachers
-    const fetchTeachers = async () => {
-      setIsLoadingTeachers(true);
-      setTeacherError(null);
-
+    const fetchData = async () => {
       try {
-        // Make API request to get teachers
-        const response = await axios.get("/api/admin/fetch-teachers");
-
-        // Check if response has teachers data
-        if (response.data.teachers) {
-          setTeachers(response.data.teachers);
-        } else {
-          // Handle case where teachers array is missing
-          setTeacherError("No teachers data found");
-        }
+        setIsLoading(true);
+        await Promise.all([fetchSubjects(), fetchTeachers()]);
       } catch (error) {
-        // Handle API request errors
-        console.error("Error fetching teachers:", error);
-        setTeacherError(
-          error.response?.data?.message || "Failed to load teachers"
-        );
-        toast.error("Failed to load teachers");
+        console.error("Error initializing data:", error);
       } finally {
-        // Set loading state to false regardless of success or failure
-        setIsLoadingTeachers(false);
+        setIsLoading(false);
       }
     };
 
-    // Call the fetch function
-    fetchTeachers();
+    fetchData();
+  }, [classId]);
 
-    // Simulate loading for the whole page (remove in production)
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1500);
+  // Fetch subjects for the current class
+  const fetchSubjects = async () => {
+    setIsLoadingSubjects(true);
+    setSubjectsError(null);
 
-    // Clean up timer on component unmount
-    return () => clearTimeout(timer);
-  }, []); // Empty dependency array means this runs once on mount
+    try {
+      const response = await axios.get(
+        `/api/admin/classes-mange/create-class/${classId}/create-subject`
+      );
 
-  // Filter subjects based on search query
-  const filteredSubjects = subjects.filter(
-    (subject) =>
-      subject.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      subject.teacher.fullName
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase()) ||
-      subject.teacher.portalId.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+      if (response.data.success) {
+        // Process subjects data
+        const subjectsData = response.data.subjects?.subjects || [];
+        const processedSubjects = subjectsData.map((item) => {
+          const teacher = item.subject.teacher;
+          const isTeacherObject = teacher && typeof teacher === "object";
+
+          return {
+            _id: item.subject._id,
+            name: item.subject.name,
+            subCode: item.subject.subCode,
+            teacher: {
+              id: isTeacherObject ? teacher._id : teacher,
+              fullName: isTeacherObject ? teacher.fullName : "Loading...",
+              portalId: isTeacherObject ? teacher.portalId : "N/A",
+            },
+          };
+        });
+
+        setSubjects(processedSubjects);
+        setClassInfo(response.data.subjects);
+      } else {
+        throw new Error(response.data.message || "Failed to load subjects");
+      }
+    } catch (error) {
+      console.error("Subjects fetch error:", error);
+      setSubjectsError(error.message);
+      toast.error("Failed to load subjects");
+    } finally {
+      setIsLoadingSubjects(false);
+    }
+  };
+
+  // Fetch all available teachers
+  const fetchTeachers = async () => {
+    setIsLoadingTeachers(true);
+    setTeacherError(null);
+
+    try {
+      const response = await axios.get("/api/admin/fetch-teachers");
+
+      if (response.data.teachers) {
+        setTeachers(response.data.teachers);
+        updateTeacherNamesInSubjects(response.data.teachers);
+      } else {
+        throw new Error("No teachers data found");
+      }
+    } catch (error) {
+      console.error("Teachers fetch error:", error);
+      setTeacherError(error.message);
+      toast.error("Failed to load teachers");
+    } finally {
+      setIsLoadingTeachers(false);
+    }
+  };
+
+  // Update teacher names in subjects after teachers are loaded
+  const updateTeacherNamesInSubjects = (teachersList) => {
+    if (subjects.length === 0) return;
+
+    const teacherMap = {};
+    teachersList.forEach((teacher) => {
+      teacherMap[teacher._id] = {
+        fullName: teacher.fullName?.trim() || "Unknown Teacher",
+        portalId: teacher.portalId || "N/A",
+      };
+    });
+
+    setSubjects((prevSubjects) =>
+      prevSubjects.map((subject) => ({
+        ...subject,
+        teacher: {
+          ...subject.teacher,
+          fullName:
+            teacherMap[subject.teacher.id]?.fullName || "Unknown Teacher",
+          portalId: teacherMap[subject.teacher.id]?.portalId || "N/A",
+        },
+      }))
+    );
+  };
 
   // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validate form inputs
+    // Validate inputs
     if (!subjectName.trim()) {
       toast.error("Subject name is required");
       return;
@@ -151,89 +182,121 @@ export default function SubjectsPage() {
       return;
     }
 
-    // This would normally submit to an API
-    alert(`Subject: ${subjectName}, Teacher ID: ${selectedTeacher}`);
+    setIsSubmitting(true);
 
-    // Reset form after submission
-    setSubjectName("");
-    setSelectedTeacher("");
+    try {
+      const response = await axios.post(
+        `/api/admin/classes-mange/create-class/${classId}/create-subject`,
+        {
+          name: subjectName,
+          teacher: selectedTeacher,
+        }
+      );
+
+      if (response.data.success) {
+        toast.success("Subject added successfully");
+
+        // Add new subject to state
+        const newSubject = response.data.subject;
+        const teacher = teachers.find((t) => t._id === selectedTeacher);
+
+        setSubjects((prev) => [
+          ...prev,
+          {
+            _id: newSubject._id,
+            name: newSubject.name,
+            subCode: newSubject.subCode,
+            teacher: {
+              id: newSubject.teacher,
+              fullName: teacher?.fullName || "Unknown Teacher",
+              portalId: teacher?.portalId || "N/A",
+            },
+          },
+        ]);
+
+        // Reset form
+        setSubjectName("");
+        setSelectedTeacher("");
+      } else {
+        throw new Error(response.data.message || "Failed to add subject");
+      }
+    } catch (error) {
+      console.error("Submission error:", error);
+      toast.error(error.message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   // Loading skeleton component
   const LoadingSkeleton = () => (
     <>
       {/* Form Card Skeleton */}
-      <Card className="mb-8 border-black/10 shadow-sm">
-        <CardHeader className="bg-gray-50 border-b border-black/10">
-          <Skeleton className="h-6 w-48 bg-zinc-500" />
-          <Skeleton className="h-4 w-72 mt-1 bg-zinc-500" />
+      <Card className="mb-8 border-border shadow-sm">
+        <CardHeader className="bg-muted/50 border-b">
+          <Skeleton className="h-6 w-48" />
+          <Skeleton className="h-4 w-72 mt-1" />
         </CardHeader>
         <CardContent className="pt-6">
           <div className="space-y-6">
             <div className="grid gap-4 md:grid-cols-2">
               <div className="space-y-2">
-                <Skeleton className="h-4 w-32 bg-zinc-500" />
-                <Skeleton className="h-10 w-full bg-zinc-500" />
+                <Skeleton className="h-4 w-32" />
+                <Skeleton className="h-10 w-full" />
               </div>
               <div className="space-y-2">
-                <Skeleton className="h-4 w-32 bg-zinc-500" />
-                <Skeleton className="h-10 w-full bg-zinc-500" />
+                <Skeleton className="h-4 w-32" />
+                <Skeleton className="h-10 w-full" />
               </div>
             </div>
             <div className="flex justify-end">
-              <Skeleton className="h-10 w-32 bg-zinc-500" />
+              <Skeleton className="h-10 w-32" />
             </div>
           </div>
         </CardContent>
       </Card>
 
       {/* Subjects List Card Skeleton */}
-      <Card className="border-black/10 shadow-sm">
-        <CardHeader className="bg-gray-50 border-b border-black/10">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div>
-              <Skeleton className="h-6 w-32 bg-zinc-500" />
-              <Skeleton className="h-4 w-48 mt-1 bg-zinc-500" />
-            </div>
-            <Skeleton className="h-10 w-full md:w-64 bg-zinc-500" />
+      <Card className="border-border shadow-sm">
+        <CardHeader className="bg-muted/50 border-b">
+          <div>
+            <Skeleton className="h-6 w-32" />
+            <Skeleton className="h-4 w-48 mt-1" />
           </div>
         </CardHeader>
         <CardContent className="p-0">
           <div className="p-4">
             {/* Table Header Skeleton */}
-            <div className="border-b border-gray-200">
+            <div className="border-b">
               <div className="flex py-3">
-                <Skeleton className="h-5 w-10 mr-4 bg-zinc-500" />
-                <Skeleton className="h-5 w-40 mr-4 bg-zinc-500" />
-                <Skeleton className="h-5 w-40 mr-4 bg-zinc-500" />
-                <Skeleton className="h-5 w-32 mr-4 bg-zinc-500" />
-                <Skeleton className="h-5 w-24 ml-auto bg-zinc-500" />
+                <Skeleton className="h-5 w-10 mr-4" />
+                <Skeleton className="h-5 w-40 mr-4" />
+                <Skeleton className="h-5 w-40 mr-4" />
+                <Skeleton className="h-5 w-32 mr-4" />
+                <Skeleton className="h-5 w-24 ml-auto" />
               </div>
             </div>
 
             {/* Table Rows Skeleton */}
             {[1, 2, 3, 4, 5].map((item) => (
-              <div
-                key={item}
-                className="flex items-center py-4 border-b border-gray-100"
-              >
-                <Skeleton className="h-5 w-6 mr-4 bg-zinc-500" />
+              <div key={item} className="flex items-center py-4 border-b">
+                <Skeleton className="h-5 w-6 mr-4" />
                 <div className="w-40 mr-4">
                   <div className="flex items-center">
-                    <Skeleton className="h-5 w-5 rounded-full mr-2 bg-zinc-500" />
-                    <Skeleton className="h-5 w-32 bg-zinc-500" />
+                    <Skeleton className="h-5 w-5 rounded-full mr-2" />
+                    <Skeleton className="h-5 w-32" />
                   </div>
                 </div>
                 <div className="w-40 mr-4">
                   <div className="flex items-center">
-                    <Skeleton className="h-5 w-5 rounded-full mr-2 bg-zinc-500" />
-                    <Skeleton className="h-5 w-32 bg-zinc-500" />
+                    <Skeleton className="h-5 w-5 rounded-full mr-2" />
+                    <Skeleton className="h-5 w-32" />
                   </div>
                 </div>
-                <Skeleton className="h-5 w-32 mr-4 bg-zinc-500" />
+                <Skeleton className="h-5 w-32 mr-4" />
                 <div className="ml-auto flex gap-2">
-                  <Skeleton className="h-8 w-8 rounded-md bg-zinc-500" />
-                  <Skeleton className="h-8 w-8 rounded-md bg-zinc-500" />
+                  <Skeleton className="h-8 w-8 rounded-md" />
+                  <Skeleton className="h-8 w-8 rounded-md" />
                 </div>
               </div>
             ))}
@@ -243,16 +306,17 @@ export default function SubjectsPage() {
     </>
   );
 
+  // Main component render
   return (
-    <div className="min-h-screen bg-white p-4 md:p-8">
+    <div className="min-h-screen bg-background p-4 md:p-8">
       <div className="max-w-6xl mx-auto">
-        {/* Header */}
+        {/* Page Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-black mb-2">
+          <h1 className="text-3xl font-bold text-foreground mb-2">
             Subject Management
           </h1>
-          <p className="text-gray-600">
-            Create and manage subjects for your educational institution
+          <p className="text-muted-foreground">
+            Create and manage subjects for {classInfo?.name || "your class"}
           </p>
         </div>
 
@@ -260,10 +324,10 @@ export default function SubjectsPage() {
           <LoadingSkeleton />
         ) : (
           <>
-            {/* Form Card */}
-            <Card className="mb-8 border-black/10 shadow-sm">
-              <CardHeader className="bg-gray-50 border-b border-black/10">
-                <CardTitle className="text-xl font-semibold text-black">
+            {/* Add Subject Form Card */}
+            <Card className="mb-8 border-border shadow-sm">
+              <CardHeader className="bg-muted/50 border-b">
+                <CardTitle className="text-xl font-semibold">
                   Add New Subject
                 </CardTitle>
                 <CardDescription>
@@ -275,34 +339,27 @@ export default function SubjectsPage() {
                   <div className="grid gap-4 md:grid-cols-2">
                     {/* Subject Name Input */}
                     <div className="space-y-2">
-                      <Label
-                        htmlFor="subjectName"
-                        className="text-black font-medium"
-                      >
-                        Subject Name <span className="text-red-500">*</span>
+                      <Label htmlFor="subjectName" className="font-medium">
+                        Subject Name <span className="text-destructive">*</span>
                       </Label>
                       <Input
                         id="subjectName"
-                        placeholder="Enter subject name"
-                        className="border-gray-300 focus-visible:ring-black"
+                        placeholder="e.g. Mathematics, Physics"
                         value={subjectName}
                         onChange={(e) => setSubjectName(e.target.value)}
                         required
                       />
                     </div>
 
-                    {/* Teacher Selection Dropdown */}
+                    {/* Teacher Selection */}
                     <div className="space-y-2">
-                      <Label
-                        htmlFor="teacher"
-                        className="text-black font-medium"
-                      >
-                        Assign Teacher <span className="text-red-500">*</span>
+                      <Label htmlFor="teacher" className="font-medium">
+                        Assign Teacher{" "}
+                        <span className="text-destructive">*</span>
                       </Label>
 
-                      {/* Show error message if API call failed */}
                       {teacherError && (
-                        <div className="flex items-center text-red-500 text-sm mb-2">
+                        <div className="flex items-center text-destructive text-sm mb-2">
                           <AlertCircle className="h-4 w-4 mr-1" />
                           <span>{teacherError}</span>
                         </div>
@@ -311,9 +368,9 @@ export default function SubjectsPage() {
                       <Select
                         onValueChange={setSelectedTeacher}
                         value={selectedTeacher}
+                        disabled={isLoadingTeachers || teacherError}
                       >
-                        <SelectTrigger className="border-gray-300 bg-white focus-visible:ring-black">
-                          {/* Show loading text while fetching teachers */}
+                        <SelectTrigger>
                           <SelectValue
                             placeholder={
                               isLoadingTeachers
@@ -324,40 +381,36 @@ export default function SubjectsPage() {
                             }
                           />
                         </SelectTrigger>
-                        <SelectContent className="bg-white border-gray-200 max-h-[300px]">
-                          {/* Show loading state in dropdown */}
+                        <SelectContent className="max-h-[300px]">
                           {isLoadingTeachers ? (
-                            <div className="flex items-center justify-center p-4 text-sm text-gray-500">
-                              <Skeleton className="h-4 w-4 rounded-full mr-2 bg-zinc-500" />
+                            <div className="flex items-center justify-center p-4 text-sm text-muted-foreground">
+                              <Loader2 className="h-4 w-4 animate-spin mr-2" />
                               <span>Loading teachers...</span>
                             </div>
                           ) : teacherError ? (
-                            // Show error message in dropdown
-                            <div className="p-4 text-sm text-red-500">
+                            <div className="p-4 text-sm text-destructive">
                               <p>Failed to load teachers</p>
                               <p>Please try again later</p>
                             </div>
                           ) : teachers.length > 0 ? (
-                            // Map through teachers and create dropdown options
                             teachers.map((teacher) => (
                               <SelectItem
                                 key={teacher._id}
                                 value={teacher._id}
-                                className="hover:bg-gray-100 cursor-pointer py-3"
+                                className="cursor-pointer"
                               >
                                 <div className="flex flex-col">
                                   <span className="font-medium">
                                     {teacher.fullName}
                                   </span>
-                                  <span className="text-gray-500 text-xs mt-0.5">
-                                    ID: {teacher.portalId}
+                                  <span className="text-muted-foreground text-xs mt-0.5">
+                                    ID: {teacher.portalId || "N/A"}
                                   </span>
                                 </div>
                               </SelectItem>
                             ))
                           ) : (
-                            // Show message when no teachers are available
-                            <div className="p-4 text-sm text-gray-500 text-center">
+                            <div className="p-4 text-sm text-muted-foreground text-center">
                               <p>No teachers available</p>
                             </div>
                           )}
@@ -370,13 +423,24 @@ export default function SubjectsPage() {
                   <div className="flex justify-end">
                     <Button
                       type="submit"
-                      className="bg-black hover:bg-gray-800 text-white"
                       disabled={
-                        !subjectName || !selectedTeacher || isLoadingTeachers
+                        !subjectName ||
+                        !selectedTeacher ||
+                        isLoadingTeachers ||
+                        isSubmitting
                       }
                     >
-                      <Plus className="mr-2 h-4 w-4" />
-                      Add Subject
+                      {isSubmitting ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Adding...
+                        </>
+                      ) : (
+                        <>
+                          <Plus className="mr-2 h-4 w-4" />
+                          Add Subject
+                        </>
+                      )}
                     </Button>
                   </div>
                 </form>
@@ -384,122 +448,139 @@ export default function SubjectsPage() {
             </Card>
 
             {/* Subjects List Card */}
-            <Card className="border-black/10 shadow-sm">
-              <CardHeader className="bg-gray-50 border-b border-black/10">
-                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                  <div>
-                    <CardTitle className="text-xl font-semibold text-black">
-                      Subjects
-                    </CardTitle>
-                    <CardDescription>
-                      View and manage all subjects
-                    </CardDescription>
-                  </div>
-
-                  {/* Search Input */}
-                  <div className="relative w-full md:w-64">
-                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
-                    <Input
-                      placeholder="Search subjects..."
-                      className="pl-8 border-gray-300 focus-visible:ring-black"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-                  </div>
+            <Card className="border-border shadow-sm">
+              <CardHeader className="bg-muted/50 border-b">
+                <div>
+                  <CardTitle className="text-xl font-semibold">
+                    Subjects
+                  </CardTitle>
+                  <CardDescription>
+                    {subjects.length} subject{subjects.length !== 1 ? "s" : ""}{" "}
+                    in this class
+                  </CardDescription>
                 </div>
               </CardHeader>
               <CardContent className="p-0">
-                <div className="overflow-x-auto">
-                  <Table>
-                    <TableHeader className="bg-gray-50">
-                      <TableRow className="hover:bg-gray-50">
-                        <TableHead className="w-[50px] text-black">#</TableHead>
-                        <TableHead className="text-black">
-                          Subject Name
-                        </TableHead>
-                        <TableHead className="text-black">Teacher</TableHead>
-                        <TableHead className="text-black">Portal ID</TableHead>
-                        <TableHead className="w-[100px] text-black text-right">
-                          Actions
-                        </TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {filteredSubjects.length > 0 ? (
-                        filteredSubjects.map((subject, index) => (
-                          <TableRow
-                            key={subject._id}
-                            className="hover:bg-gray-50/50 border-b border-gray-100"
-                          >
-                            <TableCell className="font-medium text-gray-900">
-                              {index + 1}
-                            </TableCell>
-                            <TableCell>
-                              <div className="flex items-center">
-                                <BookOpen className="h-4 w-4 mr-2 text-gray-500" />
-                                <span className="font-medium text-gray-900">
-                                  {subject.name}
-                                </span>
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              <div className="flex items-center">
-                                <User className="h-4 w-4 mr-2 text-gray-500" />
-                                <span>{subject.teacher.fullName}</span>
-                              </div>
-                            </TableCell>
-                            <TableCell className="text-gray-600">
-                              {subject.teacher.portalId}
-                            </TableCell>
-                            <TableCell className="text-right">
-                              <div className="flex justify-end gap-2">
+                {isLoadingSubjects ? (
+                  <div className="p-8 text-center">
+                    <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-muted-foreground" />
+                    <p className="text-muted-foreground">Loading subjects...</p>
+                  </div>
+                ) : subjectsError ? (
+                  <div className="p-8 text-center text-destructive">
+                    <AlertCircle className="h-8 w-8 mx-auto mb-4" />
+                    <p>{subjectsError}</p>
+                    <Button
+                      variant="outline"
+                      className="mt-4"
+                      onClick={() => {
+                        setSubjectsError(null);
+                        fetchSubjects();
+                      }}
+                    >
+                      Retry
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader className="bg-muted/50">
+                        <TableRow>
+                          <TableHead className="w-[50px]">#</TableHead>
+                          <TableHead>Subject Name</TableHead>
+                          <TableHead>Teacher</TableHead>
+                          <TableHead>Subject Code</TableHead>
+                          <TableHead>Portal ID</TableHead>
+                          <TableHead className="w-[100px] text-right">
+                            Actions
+                          </TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {subjects.length > 0 ? (
+                          subjects.map((subject, index) => (
+                            <TableRow
+                              key={subject._id}
+                              className="border-border"
+                            >
+                              <TableCell className="font-medium">
+                                {index + 1}
+                              </TableCell>
+                              <TableCell>
+                                <div className="flex items-center">
+                                  <BookOpen className="h-4 w-4 mr-2 text-muted-foreground" />
+                                  <span className="font-medium">
+                                    {subject.name}
+                                  </span>
+                                </div>
+                              </TableCell>
+                              <TableCell>
+                                <div className="flex items-center">
+                                  <User className="h-4 w-4 mr-2 text-muted-foreground" />
+                                  <span>
+                                    {subject.teacher?.fullName || "Unknown"}
+                                  </span>
+                                </div>
+                              </TableCell>
+                              <TableCell className="text-muted-foreground">
+                                {subject.subCode || "N/A"}
+                              </TableCell>
+                              <TableCell className="text-muted-foreground">
+                                {subject.teacher?.portalId || "N/A"}
+                              </TableCell>
+                              <TableCell className="text-right">
+                                <div className="flex justify-end gap-2">
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="h-8 w-8 p-0"
+                                    title="Edit subject"
+                                    onClick={() =>
+                                      toast.info(
+                                        "Edit functionality coming soon"
+                                      )
+                                    }
+                                  >
+                                    <Pencil className="h-4 w-4" />
+                                  </Button>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="h-8 w-8 p-0 border-destructive/20 hover:bg-destructive/10 hover:text-destructive"
+                                    title="Delete subject"
+                                    onClick={() =>
+                                      toast.info(
+                                        "Delete functionality coming soon"
+                                      )
+                                    }
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          ))
+                        ) : (
+                          <TableRow>
+                            <TableCell colSpan={6} className="h-24 text-center">
+                              <div className="flex flex-col items-center justify-center text-muted-foreground">
+                                <BookOpen className="h-8 w-8 mb-2" />
+                                <p>No subjects have been added yet</p>
                                 <Button
-                                  variant="outline"
-                                  size="sm"
-                                  className="h-8 w-8 p-0"
+                                  variant="ghost"
+                                  className="mt-1"
+                                  onClick={() => window.scrollTo(0, 0)}
                                 >
-                                  <Pencil className="h-4 w-4 text-gray-500" />
-                                </Button>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  className="h-8 w-8 p-0 border-red-200 hover:bg-red-50 hover:text-red-600"
-                                >
-                                  <Trash2 className="h-4 w-4 text-red-500" />
+                                  Add your first subject
                                 </Button>
                               </div>
                             </TableCell>
                           </TableRow>
-                        ))
-                      ) : (
-                        <TableRow>
-                          <TableCell colSpan={5} className="h-24 text-center">
-                            {searchQuery ? (
-                              <div className="flex flex-col items-center justify-center text-gray-500">
-                                <Search className="h-8 w-8 mb-2 text-gray-400" />
-                                <p>
-                                  No subjects found matching "{searchQuery}"
-                                </p>
-                                <Button
-                                  variant="link"
-                                  className="mt-1 text-black"
-                                  onClick={() => setSearchQuery("")}
-                                >
-                                  Clear search
-                                </Button>
-                              </div>
-                            ) : (
-                              <div className="flex flex-col items-center justify-center text-gray-500">
-                                <BookOpen className="h-8 w-8 mb-2 text-gray-400" />
-                                <p>No subjects have been added yet</p>
-                              </div>
-                            )}
-                          </TableCell>
-                        </TableRow>
-                      )}
-                    </TableBody>
-                  </Table>
-                </div>
+                        )}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </>

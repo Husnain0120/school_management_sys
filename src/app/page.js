@@ -12,8 +12,6 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { motion } from "framer-motion";
-import axios from "axios";
-import LoadingComponent from "@/components/Loading";
 
 export default function LandingPage() {
   const [isVisible, setIsVisible] = useState({
@@ -23,7 +21,6 @@ export default function LandingPage() {
   });
 
   const [profile, setProfile] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
 
   const heroRef = useRef(null);
   const featuresRef = useRef(null);
@@ -52,12 +49,6 @@ export default function LandingPage() {
     if (heroRef.current) observer.observe(heroRef.current);
     if (featuresRef.current) observer.observe(featuresRef.current);
     if (dashboardsRef.current) observer.observe(dashboardsRef.current);
-
-    return () => {
-      if (heroRef.current) observer.unobserve(heroRef.current);
-      if (featuresRef.current) observer.unobserve(featuresRef.current);
-      if (dashboardsRef.current) observer.unobserve(dashboardsRef.current);
-    };
   }, []);
 
   const containerVariants = {
@@ -93,9 +84,9 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-gradient-to-r from-blue-200 via-white to-pink-50 ">
       {/* Hero Section with Abstract Background */}
-      <div className="relative overflow-hidden bg-gradient-to-b from-gray-50 to-white">
+      <div className="relative overflow-hidden  bg-gray-50 ">
         <div className="absolute inset-0 z-0">
           <svg
             className="absolute top-0 left-0 w-full h-full opacity-10"
@@ -280,23 +271,9 @@ export default function LandingPage() {
             </motion.div>
           </div>
         </motion.section>
-
-        {/* Bottom SVG Divider */}
-        <div className="wave-divider">
-          <svg
-            className="w-full"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 1200 120"
-            preserveAspectRatio="none"
-          >
-            <path
-              d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z"
-              className="shape-fill"
-            ></path>
-          </svg>
-        </div>
       </div>
 
+      <div className="bg-gradient-to-r from-blue-200 to-pink-300 h-1 m-1.5"></div>
       <main className="container mx-auto py-12 px-4">
         <motion.section
           id="features"
