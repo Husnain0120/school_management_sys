@@ -20,7 +20,8 @@ import axios from "axios";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import Link from "next/link";
-import AdminVerifiedBadge from "@/components/verify-badge.jsx/Admin-verified-badge";
+import AdminVerifiedBadge from "@/components/verify-badge/Admin-verified-badge";
+import TeacherVerifiedBadge from "@/components/verify-badge/Teacher-verified-badge";
 
 // Add print styles
 const printStyles = `
@@ -464,7 +465,13 @@ export default function ProfilePage() {
           </div>
           <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
             {profileData.fullName}
-            <AdminVerifiedBadge size={23} className="mt-2" />
+            {profileData.role === "admin" ? (
+              <AdminVerifiedBadge size={23} className="mt-2" />
+            ) : (
+              profileData.role === "teacher" && (
+                <TeacherVerifiedBadge size={25} className="mt-2" />
+              )
+            )}
           </h1>
           <div className="flex items-center mt-2 text-gray-600">
             <span className="flex items-center">

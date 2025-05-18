@@ -35,7 +35,8 @@ import {
 import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import axios from "axios";
-import AdminVerifiedBadge from "@/components/verify-badge.jsx/Admin-verified-badge";
+import AdminVerifiedBadge from "@/components/verify-badge/Admin-verified-badge";
+import TeacherVerifiedBadge from "@/components/verify-badge/Teacher-verified-badge";
 
 const ProfileEditPage = () => {
   const [loading, setLoading] = useState(true);
@@ -206,7 +207,13 @@ const ActualProfileEditPage = ({ userData }) => {
             <div className="text-center md:text-left">
               <h1 className="text-3xl font-bold text-white flex items-center gap-2">
                 {userData?.fullName}
-                <AdminVerifiedBadge size={23} className="mt-2" />
+                {userData.role === "admin" ? (
+                  <AdminVerifiedBadge size={23} className="mt-2" />
+                ) : (
+                  userData.role === "teacher" && (
+                    <TeacherVerifiedBadge size={25} className="mt-2" />
+                  )
+                )}
               </h1>
               <p className="text-white/80 hover:text-white transition-colors cursor-pointer">
                 {userData?.email || "N/A"}

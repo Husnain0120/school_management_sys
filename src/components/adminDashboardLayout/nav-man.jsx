@@ -36,7 +36,7 @@ export function NavMain({ items, loading }) {
                 >
                   <div>
                     {" "}
-                    <SidebarMenuItem className={"text-[14px] font-poppins"}>
+                    <SidebarMenuItem>
                       <CollapsibleTrigger asChild>
                         <Link href={`/${item.url}`}>
                           <SidebarMenuButton
@@ -44,7 +44,7 @@ export function NavMain({ items, loading }) {
                               isActive
                                 ? "bg-white  text-black font-semibold shadow-sm "
                                 : ""
-                            } text-[16.5px] my-2`}
+                            } mb-2 text-md font-light `}
                             tooltip={item.title}
                           >
                             {item.icon && <item.icon />}
