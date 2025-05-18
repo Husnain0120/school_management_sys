@@ -14,6 +14,7 @@ import {
   File,
   EyeClosed,
   EyeIcon,
+  PhoneCall,
 } from "lucide-react";
 import { toast } from "sonner";
 import axios from "axios";
@@ -94,14 +95,14 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
               <Label className="text-sm font-medium text-gray-700">
-                Student ID
+                Portal ID
               </Label>
               <Input
                 name="portalId"
                 value={credentials.portalId.toLocaleLowerCase()}
                 onChange={handleChange}
                 className="w-full border-gray-200 hover:border-gray-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
-                placeholder="Enter student ID"
+                placeholder="Enter Portal ID"
                 disabled={isSubmitting}
               />
             </div>
@@ -179,6 +180,15 @@ export default function LoginPage() {
 
             {/* Disabled Links - static structure */}
             {/* Optional: replace {...map()} with static items if needed */}
+            <Link
+              className="flex items-center gap-2 text-sm text-gray-600 hover:text-indigo-600 hover:bg-gray-50 p-2 rounded-md transition-colors"
+              href={"/pages/contact"}
+            >
+              <PhoneCall className="h-4 w-4 text-zinc-600" />
+              <span className="text-md text-zinc-600 hover:underline cursor-pointer">
+                Contact support
+              </span>
+            </Link>
           </div>
 
           <div>

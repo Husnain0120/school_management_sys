@@ -1,27 +1,44 @@
 import dbConnect from "@/DataBase/db";
 import AdmissionForm from "@/model/admissionForm.model";
+import Class from "@/model/classes.model";
 import { NextResponse } from "next/server";
 
-// This function updates the isVerified status of an applicant by toggling it
 export async function PUT(request, { params }) {
   try {
     await dbConnect();
-    const { aid } = await params; // ✅ Correct destructuring
 
-    // 🛠 Fetch applicant first
+    const { aid } = await params;
+
+    // 🧠 Fetch applicant by ID
     const applicant = await AdmissionForm.findById(aid);
     if (!applicant) {
       return NextResponse.json(
-        {
-          message: "No applicant found to verify.",
-          success: false,
-        },
+        { message: "No applicant found to verify.", success: false },
         { status: 404 }
       );
     }
 
-    // ✅ Toggle verification
+    // 🎯 Find class by name (findOne returns single doc)
+    const admissionClass = applicant.admissionClass;
+    const classDoc = await Class.findOne({ name: admissionClass });
+
+    if (!classDoc) {
+      return NextResponse.json(
+        { message: "Class not found by name!", success: false },
+        { status: 404 }
+      );
+    }
+
+    // 🛠 Assign class if not already in list
+    const classId = classDoc._id;
+    if (!applicant.class.includes(classId)) {
+      applicant.class.push(classId);
+    }
+
+    // ✅ Toggle isVerified field
     applicant.isVerified = !applicant.isVerified;
+
+    // 💾 Save updated applicant
     await applicant.save();
 
     const statusMessage = applicant.isVerified ? "verified" : "unverified";
