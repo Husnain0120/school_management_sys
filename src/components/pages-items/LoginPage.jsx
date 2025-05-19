@@ -12,9 +12,10 @@ import {
   UserPlus2,
   SquareArrowOutDownLeft,
   File,
-  EyeClosed,
+  EyeIcon as EyeClosed,
   EyeIcon,
   PhoneCall,
+  Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
 import axios from "axios";
@@ -27,7 +28,11 @@ export default function LoginPage() {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
   const [seePassword, setSeePassword] = useState(true);
+
+  // Check if we're in the process of authentication or redirection
+  const isLoading = isSubmitting || isRedirecting;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -43,6 +48,13 @@ export default function LoginPage() {
       const res = await axios.post(`/api/auth/login`, credentials);
 
       if (res.status === 200) {
+        toast.success("Login successful", {
+          description: res.data.message,
+        });
+
+        // Set redirecting state to true before fetching profile
+        setIsRedirecting(true);
+
         // Step 2: Fetch user profile to get role and id
         const profileRes = await axios.get("/api/auth/user-profile");
 
@@ -57,11 +69,8 @@ export default function LoginPage() {
           router.push(`/d/${_id}/s/home`);
         } else {
           toast.error("Unauthorized user role");
+          setIsRedirecting(false);
         }
-
-        toast.success("Login successful", {
-          description: res.data.message,
-        });
       }
     } catch (error) {
       console.log("Login failed:", error);
@@ -70,13 +79,27 @@ export default function LoginPage() {
         description:
           backendMessage || "Something went wrong. Please try again later.",
       });
-    } finally {
       setIsSubmitting(false);
+      setIsRedirecting(false);
     }
   };
 
   return (
     <div className="min-h-screen flex flex-col lg:flex-row bg-gray-50">
+      {/* Overlay when loading */}
+      {isLoading && (
+        <div className="fixed inset-0 bg-black/10 backdrop-blur-sm z-50 flex flex-col items-center justify-center">
+          <div className="bg-white p-6 rounded-lg shadow-lg flex flex-col items-center">
+            <Loader2 className="h-8 w-8 text-indigo-600 animate-spin mb-4" />
+            <p className="text-gray-700 font-medium">
+              {isRedirecting
+                ? "Redirecting to your dashboard..."
+                : "Authenticating..."}
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Left Form Section */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-8 md:p-12">
         <div className="w-full max-w-md rounded-xl p-8 sm:p-10 transition-all duration-200 ">
@@ -103,7 +126,7 @@ export default function LoginPage() {
                 onChange={handleChange}
                 className="w-full border-gray-200 hover:border-gray-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
                 placeholder="Enter Portal ID"
-                disabled={isSubmitting}
+                disabled={isLoading}
               />
             </div>
             <div className="space-y-2">
@@ -113,7 +136,11 @@ export default function LoginPage() {
                 </Label>
                 <Link
                   href="/pages/forgot-password"
-                  className="text-xs text-indigo-600 hover:text-indigo-500 hover:underline"
+                  className={`text-xs text-indigo-600 hover:text-indigo-500 hover:underline ${
+                    isLoading ? "pointer-events-none opacity-50" : ""
+                  }`}
+                  tabIndex={isLoading ? -1 : 0}
+                  aria-disabled={isLoading}
                 >
                   Forgot password?
                 </Link>
@@ -126,12 +153,15 @@ export default function LoginPage() {
                   onChange={handleChange}
                   className="w-full border-gray-200 hover:border-gray-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
                   placeholder="Enter password"
-                  disabled={isSubmitting}
+                  disabled={isLoading}
                 />
                 <button
                   type="button"
                   onClick={() => setSeePassword((prev) => !prev)}
-                  className="absolute right-3 top-3 text-gray-500 hover:text-gray-700"
+                  className={`absolute right-3 top-3 text-gray-500 hover:text-gray-700 ${
+                    isLoading ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
+                  disabled={isLoading}
                 >
                   {seePassword ? (
                     <EyeClosed size={17} />
@@ -145,10 +175,13 @@ export default function LoginPage() {
             <Button
               type="submit"
               className="w-full bg-indigo-600 hover:bg-indigo-700 text-white gap-2"
-              disabled={isSubmitting}
+              disabled={isLoading}
             >
-              {isSubmitting ? (
-                <span>Loading...</span>
+              {isLoading ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  {isRedirecting ? "Redirecting..." : "Signing in..."}
+                </>
               ) : (
                 <>
                   Sign In <ArrowRight className="h-4 w-4" />
@@ -160,15 +193,23 @@ export default function LoginPage() {
           {/* Quick Links */}
           <div className="mt-6 space-y-2">
             <Link
-              className="flex items-center gap-2 text-sm text-gray-600 hover:text-indigo-600 hover:bg-gray-50 p-2 rounded-md transition-colors"
+              className={`flex items-center gap-2 text-sm text-gray-600 hover:text-indigo-600 hover:bg-gray-50 p-2 rounded-md transition-colors ${
+                isLoading ? "pointer-events-none opacity-50" : ""
+              }`}
               href={"/pages/admission"}
+              tabIndex={isLoading ? -1 : 0}
+              aria-disabled={isLoading}
             >
               <UserPlus2 className="h-4 w-4 text-red-600" />
               <span className="animate-pulse text-md text-red-600">
                 admission open
               </span>
             </Link>
-            <div className="flex items-center gap-2 text-sm text-gray-600 hover:text-indigo-600 hover:bg-gray-50 p-2 rounded-md transition-colors">
+            <div
+              className={`flex items-center gap-2 text-sm text-gray-600 hover:text-indigo-600 hover:bg-gray-50 p-2 rounded-md transition-colors ${
+                isLoading ? "opacity-50" : ""
+              }`}
+            >
               <File className="h-4 w-4 text-indigo-600" />
               <span className="text-md text-indigo-600">
                 New Registered Students{" "}
@@ -181,8 +222,12 @@ export default function LoginPage() {
             {/* Disabled Links - static structure */}
             {/* Optional: replace {...map()} with static items if needed */}
             <Link
-              className="flex items-center gap-2 text-sm text-gray-600 hover:text-indigo-600 hover:bg-gray-50 p-2 rounded-md transition-colors"
+              className={`flex items-center gap-2 text-sm text-gray-600 hover:text-indigo-600 hover:bg-gray-50 p-2 rounded-md transition-colors ${
+                isLoading ? "pointer-events-none opacity-50" : ""
+              }`}
               href={"/pages/contact"}
+              tabIndex={isLoading ? -1 : 0}
+              aria-disabled={isLoading}
             >
               <PhoneCall className="h-4 w-4 text-zinc-600" />
               <span className="text-md text-zinc-600 hover:underline cursor-pointer">
@@ -196,7 +241,11 @@ export default function LoginPage() {
               Stay updated and connected —{" "}
               <Link
                 href={"/"}
-                className="inline-flex items-center text-blue-600 underline px-1"
+                className={`inline-flex items-center text-blue-600 underline px-1 ${
+                  isLoading ? "pointer-events-none opacity-50" : ""
+                }`}
+                tabIndex={isLoading ? -1 : 0}
+                aria-disabled={isLoading}
               >
                 visit our website
                 <SquareArrowOutDownLeft className="w-3 h-3 ml-1" />
@@ -219,7 +268,11 @@ export default function LoginPage() {
               Stay updated and connected —{" "}
               <Link
                 href={"/"}
-                className="inline-flex items-center text-blue-600 underline px-1"
+                className={`inline-flex items-center text-blue-600 underline px-1 ${
+                  isLoading ? "pointer-events-none opacity-50" : ""
+                }`}
+                tabIndex={isLoading ? -1 : 0}
+                aria-disabled={isLoading}
               >
                 visit our website
                 <SquareArrowOutDownLeft className="w-3 h-3 ml-1" />

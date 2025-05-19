@@ -12,9 +12,11 @@ export async function GET(req) {
     await dbConnect();
 
     // ✅ Find all new admission applications (isVerified: false)
-    const applications = await AdmissionForm.find({ isVerified: false }).select(
-      "-password"
-    );
+    const applications = await AdmissionForm.find({ isVerified: false })
+      .select("-password")
+      .sort({
+        createdAt: -1,
+      });
 
     // ✅ If no new applications found
     if (!applications || applications.length === 0) {

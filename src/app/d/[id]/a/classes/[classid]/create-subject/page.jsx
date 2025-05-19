@@ -85,21 +85,22 @@ export default function SubjectsPage() {
       const response = await axios.get(
         `/api/admin/classes-mange/create-class/${classId}/create-subject`
       );
-
+      console.log("Subjects data:", response.data.subjects);
       if (response.data.success) {
         // Process subjects data
         const subjectsData = response.data.subjects?.subjects || [];
         const processedSubjects = subjectsData.map((item) => {
-          const teacher = item.subject.teacher;
+          // Check if teacher exists and is an object
+          const teacher = item.teacher;
           const isTeacherObject = teacher && typeof teacher === "object";
 
           return {
-            _id: item.subject._id,
-            name: item.subject.name,
-            subCode: item.subject.subCode,
+            _id: item._id,
+            name: item.name,
+            subCode: item.subCode,
             teacher: {
               id: isTeacherObject ? teacher._id : teacher,
-              fullName: isTeacherObject ? teacher.fullName : "Loading...",
+              fullName: isTeacherObject ? teacher.fullName : "Unknown Teacher",
               portalId: isTeacherObject ? teacher.portalId : "N/A",
             },
           };

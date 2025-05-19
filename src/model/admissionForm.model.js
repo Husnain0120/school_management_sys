@@ -86,13 +86,6 @@ const admissionFormSchema = new Schema(
       default: "",
     },
 
-    class: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "Class",
-        default: [],
-      },
-    ],
     subjects: [
       {
         type: Schema.Types.ObjectId,
@@ -131,6 +124,11 @@ const admissionFormSchema = new Schema(
     userAccess: {
       type: Boolean,
       default: true,
+    },
+    class: {
+      type: Schema.Types.ObjectId,
+      ref: "Class",
+      default: null, // Starts empty
     },
   },
   { timestamps: true }

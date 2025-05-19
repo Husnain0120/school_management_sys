@@ -51,11 +51,12 @@ export async function POST(req, { params }) {
     });
 
     // ✅ Add subject to class
-    classById.subjects.push({ subject: subject._id });
+    classById.subjects.push(subject._id);
     await classById.save();
 
     // ✅ Add subject to teacher
     const teacherById = await AdmissionForm.findById(teacher);
+
     if (teacherById) {
       teacherById.subjects.push(subject._id); // make sure teacher schema has `subjects` field
       await teacherById.save();
@@ -96,7 +97,7 @@ export async function GET(req, { params }) {
 
     // ✅ Populate 'subjects.subject' and then 'subjects.subject.teacher'
     const subjects = await Class.findById(classid).populate({
-      path: "subjects.subject",
+      path: "subjects",
       populate: {
         path: "teacher",
         select: "fullName portalId",

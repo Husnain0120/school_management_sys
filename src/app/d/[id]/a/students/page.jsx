@@ -41,6 +41,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import Link from "next/link";
 
 const VerifiedStudentsPage = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -48,39 +49,28 @@ const VerifiedStudentsPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [error, setError] = useState(null);
   const [students, setStudents] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
 
   // Fetch data from API
   useEffect(() => {
     const fetchStudents = async () => {
       try {
-        // Simulate API call
-        setTimeout(() => {
-          // Sample verified students data
-          const sampleStudents = Array.from({ length: 5 }, (_, i) => ({
-            id: `stu-${i + 1}`,
-            fullName: `Student ${i + 1}`,
-            email: `student${i + 1}@example.com`,
-            studentPhoto: `/placeholder.svg?height=128&width=128`,
-            admissionDate: new Date(
-              2023,
-              Math.floor(Math.random() * 12),
-              Math.floor(Math.random() * 28) + 1
-            ).toISOString(),
-            admissionClass: Math.floor(Math.random() * 4) + 9,
-            status: ["Active", "On Leave", "Inactive"][
-              Math.floor(Math.random() * 3)
-            ],
-            portalId: `STU${String(1000 + i).padStart(5, "0")}`,
-            section: ["A", "B", "C"][Math.floor(Math.random() * 3)],
-            isVerified: true,
-          }));
+        const response = await fetch("/api/admin/fetch-students");
+        const data = await response.json();
 
-          setStudents(sampleStudents);
-          setIsLoading(false);
-        }, 2000);
+        if (!response.ok) {
+          throw new Error(data.message || "Failed to fetch students");
+        }
+
+        // Filter only verified students
+        const verifiedStudents = data.students.filter(
+          (student) => student.isVerified
+        );
+        setStudents(verifiedStudents);
+        setIsLoading(false);
       } catch (err) {
         console.error("Failed to fetch students:", err);
-        setError("Failed to load student data");
+        setError(err.message || "Failed to load student data");
         setIsLoading(false);
       }
     };
@@ -88,9 +78,17 @@ const VerifiedStudentsPage = () => {
     fetchStudents();
   }, []);
 
+  // Filter students based on search term
+  const filteredStudents = students.filter(
+    (student) =>
+      student.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      student.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      student.portalId.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   // Calculate pagination
-  const totalPages = Math.ceil(students.length / pageSize);
-  const paginatedStudents = students.slice(
+  const totalPages = Math.ceil(filteredStudents.length / pageSize);
+  const paginatedStudents = filteredStudents.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize
   );
@@ -105,7 +103,7 @@ const VerifiedStudentsPage = () => {
   const handlePageSizeChange = (value) => {
     const newSize = Number(value);
     setPageSize(newSize);
-    const newTotalPages = Math.ceil(students.length / newSize);
+    const newTotalPages = Math.ceil(filteredStudents.length / newSize);
     if (currentPage > newTotalPages) {
       setCurrentPage(newTotalPages);
     }
@@ -206,6 +204,11 @@ const VerifiedStudentsPage = () => {
                   <Input
                     placeholder="Search students..."
                     className="pl-9 bg-gray-50 border-gray-200"
+                    value={searchTerm}
+                    onChange={(e) => {
+                      setSearchTerm(e.target.value);
+                      setCurrentPage(1); // Reset to first page when searching
+                    }}
                   />
                 </div>
                 <div className="flex gap-2">
@@ -239,24 +242,18 @@ const VerifiedStudentsPage = () => {
               <div className="bg-emerald-50 px-4 py-2 rounded-lg flex items-center gap-2">
                 <BadgeCheck className="h-5 w-5 text-emerald-500" />
                 <span className="font-medium text-emerald-700">
-                  Total: {students.length} Students
+                  Total: {filteredStudents.length} Students
                 </span>
               </div>
               <div className="bg-blue-50 px-4 py-2 rounded-lg flex items-center gap-2">
                 <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100">
-                  Active: {students.filter((s) => s.status === "Active").length}
+                  Active: {filteredStudents.filter((s) => s.userAccess).length}
                 </Badge>
               </div>
               <div className="bg-amber-50 px-4 py-2 rounded-lg flex items-center gap-2">
                 <Badge className="bg-amber-100 text-amber-700 hover:bg-amber-100">
-                  On Leave:{" "}
-                  {students.filter((s) => s.status === "On Leave").length}
-                </Badge>
-              </div>
-              <div className="bg-gray-50 px-4 py-2 rounded-lg flex items-center gap-2">
-                <Badge className="bg-gray-100 text-gray-700 hover:bg-gray-100">
                   Inactive:{" "}
-                  {students.filter((s) => s.status === "Inactive").length}
+                  {filteredStudents.filter((s) => !s.userAccess).length}
                 </Badge>
               </div>
             </div>
@@ -288,13 +285,13 @@ const VerifiedStudentsPage = () => {
                   <Skeleton className="h-8 w-32" />
                 </div>
               </div>
-            ) : students.length > 0 ? (
+            ) : filteredStudents.length > 0 ? (
               <>
                 <div className="flex justify-between items-center p-4 border-b border-gray-100">
                   <div className="font-medium">
                     Showing {(currentPage - 1) * pageSize + 1} to{" "}
-                    {Math.min(currentPage * pageSize, students.length)} of{" "}
-                    {students.length} students
+                    {Math.min(currentPage * pageSize, filteredStudents.length)}{" "}
+                    of {filteredStudents.length} students
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-sm text-gray-500">Show:</span>
@@ -335,7 +332,7 @@ const VerifiedStudentsPage = () => {
                     <TableBody>
                       {paginatedStudents.map((student, index) => (
                         <TableRow
-                          key={student.id}
+                          key={student._id}
                           className="hover:bg-gray-50/50"
                         >
                           <TableCell className="font-medium">
@@ -366,48 +363,37 @@ const VerifiedStudentsPage = () => {
                             </div>
                           </TableCell>
                           <TableCell>{student.portalId}</TableCell>
+                          <TableCell>{student.admissionClass}</TableCell>
                           <TableCell>
-                            Grade {student.admissionClass}{" "}
-                            {student.section && (
-                              <span className="text-xs text-gray-500">
-                                ({student.section})
-                              </span>
-                            )}
-                          </TableCell>
-                          <TableCell>
-                            {new Date(
-                              student.admissionDate
-                            ).toLocaleDateString()}
+                            {new Date(student.createdAt).toLocaleDateString()}
                           </TableCell>
                           <TableCell>
                             <Badge
                               variant={
-                                student.status === "Active"
-                                  ? "default"
-                                  : student.status === "On Leave"
-                                  ? "secondary"
-                                  : "outline"
+                                student.userAccess ? "default" : "outline"
                               }
                               className={
-                                student.status === "Active"
+                                student.userAccess
                                   ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-100"
-                                  : student.status === "On Leave"
-                                  ? "bg-amber-100 text-amber-700 hover:bg-amber-100"
                                   : "bg-gray-100 text-gray-700 hover:bg-gray-100"
                               }
                             >
-                              {student.status}
+                              {student.userAccess ? "Active" : "Inactive"}
                             </Badge>
                           </TableCell>
                           <TableCell className="text-right">
                             <div className="flex justify-end gap-2">
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8"
+                              <Link
+                                href={`students/${student?._id}/student-details`}
                               >
-                                <Eye className="h-4 w-4" />
-                              </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8"
+                                >
+                                  <Eye className="h-4 w-4" />
+                                </Button>
+                              </Link>
                               <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                   <Button
@@ -419,16 +405,24 @@ const VerifiedStudentsPage = () => {
                                   </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
-                                  <DropdownMenuItem>
-                                    View Details
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem>
-                                    Edit Student
-                                  </DropdownMenuItem>
+                                  <Link
+                                    href={`students/${student?._id}/student-details`}
+                                  >
+                                    <DropdownMenuItem>
+                                      View Details
+                                    </DropdownMenuItem>
+                                  </Link>
+                                  <Link href={`students/${student?._id}`}>
+                                    <DropdownMenuItem>
+                                      Edit Student
+                                    </DropdownMenuItem>
+                                  </Link>
                                   <DropdownMenuSeparator />
-                                  <DropdownMenuItem className="text-red-600">
-                                    Deactivate
-                                  </DropdownMenuItem>
+                                  <Link href={`students/${student?._id}`}>
+                                    <DropdownMenuItem className="text-red-600">
+                                      Deactivate
+                                    </DropdownMenuItem>
+                                  </Link>
                                 </DropdownMenuContent>
                               </DropdownMenu>
                             </div>
@@ -488,13 +482,22 @@ const VerifiedStudentsPage = () => {
                   <User className="h-12 w-12 text-emerald-500" />
                 </div>
                 <h3 className="text-xl font-medium text-gray-900 mb-3">
-                  No Verified Students
+                  {searchTerm
+                    ? "No Matching Students Found"
+                    : "No Verified Students"}
                 </h3>
                 <p className="text-gray-500 max-w-md text-center mb-6">
-                  There are currently no verified students in the system.
-                  Approved applications will appear here once processed.
+                  {searchTerm
+                    ? "No students match your search criteria. Try a different search term."
+                    : "There are currently no verified students in the system. Approved applications will appear here once processed."}
                 </p>
-                <Button>Go to Applications</Button>
+                {searchTerm ? (
+                  <Button onClick={() => setSearchTerm("")}>
+                    Clear Search
+                  </Button>
+                ) : (
+                  <Button>Go to Applications</Button>
+                )}
               </div>
             )}
           </CardContent>
