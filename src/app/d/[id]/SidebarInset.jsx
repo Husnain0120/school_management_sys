@@ -71,6 +71,7 @@ const SideNavbar = () => {
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem>
+                  <img src="/lms.png" className="w-10 h-6" />
                   <BreadcrumbLink
                     href="/"
                     className="text-lg md:text-xl font-semibold tracking-tight text-gray-800 hover:text-gray-600 transition-colors duration-200"
