@@ -137,7 +137,7 @@ export default function AdmissionForm() {
   }, [formData, studentPhoto, idProof, birthCertificate]);
 
   const handleClose = () => {
-    router.push("/");
+    router.back();
   };
 
   const handleImagePreview = (e, setImage, fieldName) => {
@@ -307,7 +307,7 @@ export default function AdmissionForm() {
         <div className="bg-gradient-to-r from-indigo-600 to-indigo-800 text-white px-8 py-6 relative">
           <button
             onClick={handleClose}
-            className="absolute right-8 top-6 hover:bg-white/20 p-1 rounded-full transition-all duration-200"
+            className="absolute right-8 top-6 hover:bg-white/20 p-1 rounded-full hover:cursor-pointer hover:animate-spin hover:translate-0.5   transition-all "
             aria-label="Close form"
           >
             <X className="h-6 w-6" />

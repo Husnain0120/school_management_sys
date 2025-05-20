@@ -11,7 +11,7 @@ export const subjectSchema = new Schema(
       required: true,
     },
 
-    lectures: [{ lecture: { type: Schema.Types.ObjectId, ref: "Lecture" } }],
+    lectures: [{ type: Schema.Types.ObjectId, ref: "Lecture" }],
   },
 
   { timestamps: true }

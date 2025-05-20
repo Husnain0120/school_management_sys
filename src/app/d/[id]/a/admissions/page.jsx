@@ -597,7 +597,7 @@ const AdmissionsPage = () => {
                             {application.fullName}
                           </p>
                           <p className="text-xs text-gray-500">
-                            ID: {application._id.substring(0, 8)}...
+                            ID: {application.portalId.slice(0, 7)}...
                           </p>
                         </div>
                       </div>
