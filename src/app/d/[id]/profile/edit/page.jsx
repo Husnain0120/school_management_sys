@@ -7,30 +7,18 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
-  CardFooter,
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import {
   Lock,
-  MapPin,
-  Home,
-  Building,
-  User,
   CheckCircle,
   Calendar,
   Shield,
   BookOpen,
+  User,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -45,7 +33,7 @@ const ProfileEditPage = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await axios.get(`/api/auth/user-profile`);
+        const res = await axios.get("/api/auth/user-profile");
         if (res?.data?.data) {
           setUserData(res?.data?.data);
         }
@@ -116,55 +104,6 @@ const SkeletonLoading = () => {
                 ))}
               </div>
             </div>
-
-            <div className="h-px bg-zinc-200 my-2" />
-
-            {/* Address Section */}
-            <div className="space-y-6">
-              <div className="flex items-center">
-                <Skeleton className="h-9 w-9 rounded-full bg-zinc-500 mr-3" />
-                <Skeleton className="h-5 w-40 bg-zinc-500" />
-              </div>
-
-              {/* Permanent Address */}
-              <div className="space-y-4 pl-12 bg-zinc-50 p-6 rounded-xl">
-                <div className="flex items-center">
-                  <Skeleton className="h-4 w-4 bg-zinc-500 mr-2" />
-                  <Skeleton className="h-4 w-36 bg-zinc-500" />
-                </div>
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Skeleton className="h-4 w-16 bg-zinc-500" />
-                    <Skeleton className="h-20 w-full bg-zinc-500" />
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {[...Array(3)].map((_, i) => (
-                      <div className="space-y-2" key={i}>
-                        <Skeleton className="h-4 w-16 bg-zinc-500" />
-                        <Skeleton className="h-10 w-full bg-zinc-500" />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Current Address */}
-              <div className="space-y-4 pl-12 bg-zinc-50 p-6 rounded-xl">
-                <div className="flex items-center">
-                  <Skeleton className="h-4 w-4 bg-zinc-500 mr-2" />
-                  <Skeleton className="h-4 w-32 bg-zinc-500" />
-                </div>
-                <div className="space-y-2">
-                  <Skeleton className="h-4 w-16 bg-zinc-500" />
-                  <Skeleton className="h-20 w-full bg-zinc-500" />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex justify-end gap-3 pt-2 pb-6 px-6 bg-zinc-50">
-            <Skeleton className="h-10 w-24 bg-zinc-500" />
-            <Skeleton className="h-10 w-32 bg-zinc-500" />
           </div>
         </div>
       </div>
@@ -173,11 +112,59 @@ const SkeletonLoading = () => {
 };
 
 const ActualProfileEditPage = ({ userData }) => {
+  const [oldPassword, setOldPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState({ text: "", type: "" });
+
   // Format date if needed
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
     const options = { year: "numeric", month: "long" };
     return new Date(dateString).toLocaleDateString(undefined, options);
+  };
+
+  // Handle password updating
+  const handleUpdatingPassword = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      if (newPassword !== confirmPassword) {
+        setMessage({
+          text: "New password and confirm password don't match",
+          type: "error",
+        });
+        return;
+      }
+
+      const res = await axios.put("/api/auth/new-password", {
+        oldPassword,
+        newPassword,
+        confirmPassword,
+      });
+
+      if (res.data.success) {
+        setMessage({ text: "Password updated successfully!", type: "success" });
+        setOldPassword("");
+        setNewPassword("");
+        setConfirmPassword("");
+      } else {
+        setMessage({
+          text: res.data.message || "Failed to update password",
+          type: "error",
+        });
+      }
+    } catch (error) {
+      console.error("Password update error:", error);
+      setMessage({
+        text: error.response?.data?.message || "Failed to update password",
+        type: "error",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -191,7 +178,7 @@ const ActualProfileEditPage = ({ userData }) => {
                 <AvatarImage
                   src={userData?.studentPhoto || "/placeholder.svg"}
                   alt={userData?.fullName || "User"}
-                  className="hover:opacity-90 transition-opacity object-cover "
+                  className="hover:opacity-90 transition-opacity object-cover"
                 />
                 <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white text-xl">
                   {userData?.fullName
@@ -287,6 +274,18 @@ const ActualProfileEditPage = ({ userData }) => {
               </h3>
             </div>
             <div className="space-y-4 pl-12">
+              {message.text && (
+                <div
+                  className={`p-3 rounded-md ${
+                    message.type === "success"
+                      ? "bg-green-100 text-green-800"
+                      : "bg-red-100 text-red-800"
+                  }`}
+                >
+                  {message.text}
+                </div>
+              )}
+
               <div className="space-y-2">
                 <Label
                   htmlFor="currentPassword"
@@ -299,7 +298,8 @@ const ActualProfileEditPage = ({ userData }) => {
                   type="password"
                   placeholder="Enter your current password"
                   className="max-w-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 hover:border-indigo-400 transition-colors cursor-pointer"
-                  value="••••••••"
+                  value={oldPassword}
+                  onChange={(e) => setOldPassword(e.target.value)}
                 />
               </div>
               <div className="space-y-2">
@@ -314,6 +314,8 @@ const ActualProfileEditPage = ({ userData }) => {
                   type="password"
                   placeholder="Enter your new password"
                   className="max-w-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 hover:border-indigo-400 transition-colors cursor-pointer"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
                 />
               </div>
               <div className="space-y-2">
@@ -328,149 +330,16 @@ const ActualProfileEditPage = ({ userData }) => {
                   type="password"
                   placeholder="Confirm your new password"
                   className="max-w-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 hover:border-indigo-400 transition-colors cursor-pointer"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
                 />
               </div>
-            </div>
-          </div>
-
-          <Separator className="my-2 hover:bg-indigo-300 transition-colors" />
-
-          {/* Address Information */}
-          <div className="space-y-6">
-            <div className="flex items-center">
-              <div className="bg-indigo-100 p-2 rounded-full mr-3 hover:bg-indigo-200 transition-colors cursor-pointer">
-                <MapPin className="h-5 w-5 text-indigo-600 hover:text-indigo-700 transition-colors" />
-              </div>
-              <h3 className="text-lg font-medium hover:text-indigo-700 transition-colors cursor-pointer">
-                Address Information
-              </h3>
-            </div>
-
-            {/* Permanent Address */}
-            <div className="space-y-4 pl-12 bg-gray-50 p-6 rounded-xl hover:bg-gray-100 transition-colors">
-              <div className="flex items-center">
-                <Home className="h-4 w-4 text-indigo-600 hover:text-indigo-700 transition-colors cursor-pointer mr-2" />
-                <h4 className="font-medium hover:text-indigo-700 transition-colors cursor-pointer">
-                  Permanent Address
-                </h4>
-              </div>
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="permanentAddress"
-                    className="text-sm font-medium hover:text-gray-600 transition-colors cursor-pointer"
-                  >
-                    Address
-                  </Label>
-                  <Textarea
-                    id="permanentAddress"
-                    placeholder="Enter your permanent address"
-                    className="resize-none border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 hover:border-indigo-400 transition-colors cursor-pointer"
-                    rows={3}
-                    defaultValue={userData?.permanentAddress || ""}
-                  />
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="city"
-                      className="text-sm font-medium hover:text-gray-600 transition-colors cursor-pointer"
-                    >
-                      City
-                    </Label>
-                    <Input
-                      id="city"
-                      placeholder="Enter your city"
-                      className="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 hover:border-indigo-400 transition-colors cursor-pointer"
-                      defaultValue={userData?.city || ""}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="gender"
-                      className="text-sm font-medium hover:text-gray-600 transition-colors cursor-pointer"
-                    >
-                      Gender
-                    </Label>
-                    <Select defaultValue={userData?.gender || ""}>
-                      <SelectTrigger
-                        id="gender"
-                        className="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 hover:border-indigo-400 transition-colors cursor-pointer"
-                      >
-                        <SelectValue placeholder="Select gender" />
-                      </SelectTrigger>
-                      <SelectContent className="bg-white">
-                        <SelectItem
-                          value="male"
-                          className="cursor-pointer hover:bg-gray-100"
-                        >
-                          Male
-                        </SelectItem>
-                        <SelectItem
-                          value="female"
-                          className="cursor-pointer hover:bg-gray-100"
-                        >
-                          Female
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="zipCode"
-                      className="text-sm font-medium hover:text-gray-600 transition-colors cursor-pointer"
-                    >
-                      Zip Code
-                    </Label>
-                    <Input
-                      id="zipCode"
-                      placeholder="Enter your zip code"
-                      className="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 hover:border-indigo-400 transition-colors cursor-pointer"
-                      defaultValue={userData?.zipCode || ""}
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Current Address */}
-            <div className="space-y-4 pl-12 bg-gray-50 p-6 rounded-xl hover:bg-gray-100 transition-colors">
-              <div className="flex items-center">
-                <Building className="h-4 w-4 text-indigo-600 hover:text-indigo-700 transition-colors cursor-pointer mr-2" />
-                <h4 className="font-medium hover:text-indigo-700 transition-colors cursor-pointer">
-                  Current Address
-                </h4>
-              </div>
-              <div className="space-y-2">
-                <Label
-                  htmlFor="currentAddress"
-                  className="text-sm font-medium hover:text-gray-600 transition-colors cursor-pointer"
-                >
-                  Address
-                </Label>
-                <Textarea
-                  id="currentAddress"
-                  placeholder="Enter your current address"
-                  className="resize-none border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 hover:border-indigo-400 transition-colors cursor-pointer"
-                  rows={3}
-                  defaultValue={userData?.currentAddress || ""}
-                />
-              </div>
+              <Button onClick={handleUpdatingPassword} disabled={loading}>
+                {loading ? "Updating..." : "Update Password"}
+              </Button>
             </div>
           </div>
         </CardContent>
-
-        <CardFooter className="flex justify-end gap-3 pt-2 pb-6 px-6 bg-gray-50">
-          <Button
-            variant="outline"
-            className="border-gray-300 text-gray-700 hover:bg-gray-100 hover:border-gray-400 transition-colors cursor-pointer"
-          >
-            Cancel
-          </Button>
-          <Button className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-md transition-all cursor-pointer hover:shadow-lg">
-            Save Changes
-          </Button>
-        </CardFooter>
       </Card>
     </div>
   );
