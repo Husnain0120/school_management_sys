@@ -120,43 +120,43 @@ export function AppSidebar({ ...props }) {
     if (role === "student") {
       return [
         { title: "Home", url: `${base}/s/home`, icon: Home },
-        { title: "To Do Calendar", url: `${base}/s/todo`, icon: ListTodo },
-        { title: "Grade Book", url: `${base}/s/grade-book`, icon: Library },
-        {
-          title: "Account Book",
-          url: `${base}/s/account-book`,
-          icon: ReceiptText,
-        },
-        { title: "Progress", url: `${base}/s/progress`, icon: LineChart },
-        {
-          title: "Lecture Schedule",
-          url: `${base}/s/lecture-schedule`,
-          icon: CalendarDays,
-        },
-        { title: "Mail", url: `${base}/s/mail`, icon: Mail },
-        { title: "Notes", url: `${base}/s/notes`, icon: FileText },
-        {
-          title: "My Study Scheme",
-          url: `${base}/s/study-scheme`,
-          icon: Settings2,
-        },
-        {
-          title: "My Studied Courses",
-          url: `${base}/s/studied-courses`,
-          icon: Grid3x3,
-        },
-        {
-          title: "Student Services",
-          url: `${base}/s/student-services`,
-          icon: UserRoundCog,
-        },
-        {
-          title: "Course Selection",
-          url: `${base}/s/course-selection`,
-          icon: ClipboardCheck,
-        },
-        { title: "Contact Us", url: `${base}/s/contact`, icon: Phone },
-        { title: "Help", url: `${base}/s/help`, icon: HelpCircle },
+        { title: "Attendance", url: `${base}/s/attendance`, icon: ListTodo },
+        // { title: "Grade Book", url: `${base}/s/grade-book`, icon: Library },
+        // {
+        //   title: "Account Book",
+        //   url: `${base}/s/account-book`,
+        //   icon: ReceiptText,
+        // },
+        // { title: "Progress", url: `${base}/s/progress`, icon: LineChart },
+        // {
+        //   title: "Lecture Schedule",
+        //   url: `${base}/s/lecture-schedule`,
+        //   icon: CalendarDays,
+        // },
+        // { title: "Mail", url: `${base}/s/mail`, icon: Mail },
+        // { title: "Notes", url: `${base}/s/notes`, icon: FileText },
+        // {
+        //   title: "My Study Scheme",
+        //   url: `${base}/s/study-scheme`,
+        //   icon: Settings2,
+        // },
+        // {
+        //   title: "My Studied Courses",
+        //   url: `${base}/s/studied-courses`,
+        //   icon: Grid3x3,
+        // },
+        // {
+        //   title: "Student Services",
+        //   url: `${base}/s/student-services`,
+        //   icon: UserRoundCog,
+        // },
+        // {
+        //   title: "Course Selection",
+        //   url: `${base}/s/course-selection`,
+        //   icon: ClipboardCheck,
+        // },
+        // { title: "Contact Us", url: `${base}/s/contact`, icon: Phone },
+        // { title: "Help", url: `${base}/s/help`, icon: HelpCircle },
       ];
     }
 

@@ -97,27 +97,27 @@ const LecturePreviewPage = () => {
   const embedUrl = lecture ? getYoutubeEmbedUrl(lecture.vedioLink) : null;
 
   // handel published lecture...
-  const [isDisabled, setIsDisabled] = useState(false);
-  const handleIsPublishedLecture = async () => {
-    try {
-      setIsDisabled(true);
-      const res = await axios.put(
-        `/api/teacher/subjects/${subjectid}/add-leacture/${lectureid}/ispublished`
-      );
-      const response = await axios.get(
-        `/api/teacher/subjects/${subjectid}/add-leacture/${lectureid}/preview`
-      );
-      if (response.data.success) {
-        setLecture(response.data.data);
-        return;
-      }
-      toast.success(res.data.message);
-    } catch (error) {
-      console.log("failed to handel isPublished leacture!", error);
-    } finally {
-      setIsDisabled(false);
-    }
-  };
+  // const [isDisabled, setIsDisabled] = useState(false);
+  // const handleIsPublishedLecture = async () => {
+  //   try {
+  //     setIsDisabled(true);
+  //     const res = await axios.put(
+  //       `/api/teacher/subjects/${subjectid}/add-leacture/${lectureid}/ispublished`
+  //     );
+  //     const response = await axios.get(
+  //       `/api/teacher/subjects/${subjectid}/add-leacture/${lectureid}/preview`
+  //     );
+  //     if (response.data.success) {
+  //       setLecture(response.data.data);
+  //       return;
+  //     }
+  //     toast.success(res.data.message);
+  //   } catch (error) {
+  //     console.log("failed to handel isPublished leacture!", error);
+  //   } finally {
+  //     setIsDisabled(false);
+  //   }
+  // };
   return (
     <div className="min-h-screen bg-gradient-to-br from-zinc-900 to-zinc-800">
       <div className="container mx-auto px-4 py-8">
@@ -145,7 +145,7 @@ const LecturePreviewPage = () => {
         ) : lecture ? (
           <div className="space-y-8">
             {/* Publication Status */}
-            <div className="flex items-center gap-4 bg-zinc-800/50 backdrop-blur-sm p-4 rounded-xl border border-zinc-700/50 shadow-lg">
+            {/* <div className="flex items-center gap-4 bg-zinc-800/50 backdrop-blur-sm p-4 rounded-xl border border-zinc-700/50 shadow-lg">
               <div className="flex items-center gap-3">
                 <span className="text-zinc-300 font-medium">
                   {lecture.isPublished ? "Published" : "Unpublished"}
@@ -165,7 +165,7 @@ const LecturePreviewPage = () => {
                   dateStyle: "medium",
                 })}
               </span>
-            </div>
+            </div> */}
 
             {/* Video Player Section */}
             <div className="bg-zinc-800/70 backdrop-blur-md rounded-2xl border-2 border-zinc-700/50 shadow-2xl overflow-hidden transition-all hover:border-zinc-600/50">

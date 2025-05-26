@@ -13,7 +13,7 @@ const classSchema = new Schema(
     description: {
       type: String,
       trim: true,
-      maxlength: 500,
+      maxlength: 5000,
     },
     subjects: [
       {
