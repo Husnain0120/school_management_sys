@@ -52,7 +52,7 @@ export default function LMSAttendanceSystem() {
     reason: "",
   });
 
-  // Fetch attendance records
+  // Fetch attendance records from API
   const fetchAttendanceRecords = async () => {
     try {
       setFetchingRecords(true);
@@ -76,7 +76,7 @@ export default function LMSAttendanceSystem() {
     }
   };
 
-  // Submit attendance
+  // Submit attendance to API
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.status) return;
@@ -94,9 +94,9 @@ export default function LMSAttendanceSystem() {
         setMessage(response.data.message);
         setMessageType("success");
         setFormData({ status: "", reason: "" });
-        // Refresh attendance records immediately
+        // Refresh attendance records immediately after submission
         await fetchAttendanceRecords();
-        // Clear message after 3 seconds
+        // Clear success message after 3 seconds
         setTimeout(() => {
           setMessage("");
           setMessageType("");
@@ -113,18 +113,20 @@ export default function LMSAttendanceSystem() {
     }
   };
 
-  // Load attendance records on component mount
+  // Load attendance records when component mounts
   useEffect(() => {
     fetchAttendanceRecords();
   }, []);
 
+  // Static class information
   const currentClass = {
     subject: "Advanced JavaScript",
     instructor: "Prof. Muhammad Ali",
-    room: "Room 205",
-    time: "10:00 AM - 12:00 PM",
+    room: "Attendance Time",
+    time: "09:00 AM - 11:00 AM",
   };
 
+  // Create status badge component with icons
   const getStatusBadge = (status) => {
     switch (status) {
       case "present":
@@ -146,6 +148,7 @@ export default function LMSAttendanceSystem() {
     }
   };
 
+  // Calculate attendance statistics
   const stats = {
     present: Array.isArray(attendanceRecords)
       ? attendanceRecords.filter((r) => r.status === "present").length
@@ -155,70 +158,63 @@ export default function LMSAttendanceSystem() {
       : 0,
   };
 
+  // Calculate total records and percentages
   const totalRecords = stats.present + stats.absent;
   const presentPercentage =
     totalRecords > 0 ? Math.round((stats.present / totalRecords) * 100) : 0;
   const absentPercentage =
     totalRecords > 0 ? Math.round((stats.absent / totalRecords) * 100) : 0;
 
-  // Prepare chart data from attendance records
+  // Prepare chart data with only two bars (Present and Absent)
   const prepareChartData = () => {
-    if (!Array.isArray(attendanceRecords) || attendanceRecords.length === 0) {
-      return [];
-    }
+    // Create simple two-bar chart data
+    const chartData = [
+      {
+        status: "Present",
+        percentage: presentPercentage,
+        count: stats.present,
+        fill: "hsl(142, 76%, 36%)", // Green color for present
+      },
+      {
+        status: "Absent",
+        percentage: absentPercentage,
+        count: stats.absent,
+        fill: "hsl(0, 84%, 60%)", // Red color for absent
+      },
+    ];
 
-    // Create data for each date with status and count
-    const chartData = attendanceRecords.slice(0, 10).map((record) => {
-      const date = new Date(record.date).toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-      });
-
-      return {
-        date: date,
-        count: 1,
-        status: record.status,
-        fill:
-          record.status === "present"
-            ? "hsl(142, 76%, 36%)"
-            : "hsl(0, 84%, 60%)",
-      };
-    });
-
-    return chartData.reverse(); // Show latest dates at top
+    return chartData;
   };
 
   const chartData = prepareChartData();
 
+  // Chart configuration for styling
   const chartConfig = {
-    count: {
-      label: "Count",
+    percentage: {
+      label: "Percentage",
     },
     present: {
       label: "Present",
-      color: "hsl(142, 76%, 36%)", // emerald-600
+      color: "hsl(142, 76%, 36%)", // Green
     },
     absent: {
       label: "Absent",
-      color: "hsl(0, 84%, 60%)", // rose-500
+      color: "hsl(0, 84%, 60%)", // Red
     },
   };
 
-  // Calculate trend
+  // Calculate attendance trend for footer
   const calculateTrend = () => {
-    if (chartData.length < 2) return { percentage: 0, isPositive: true };
+    // Simple trend calculation based on present vs absent
+    const isPositive = stats.present > stats.absent;
+    const difference = Math.abs(stats.present - stats.absent);
+    const percentage =
+      totalRecords > 0 ? Math.round((difference / totalRecords) * 100) : 0;
 
-    const lastMonth = chartData[chartData.length - 1];
-    const previousMonth = chartData[chartData.length - 2];
-
-    const lastMonthPresent = lastMonth.present;
-    const previousMonthPresent = previousMonth.present;
-
-    if (previousMonthPresent === 0) return { percentage: 0, isPositive: true };
-
-    const change =
-      ((lastMonthPresent - previousMonthPresent) / previousMonthPresent) * 100;
-    return { percentage: Math.abs(change).toFixed(1), isPositive: change >= 0 };
+    return {
+      percentage: percentage,
+      isPositive: isPositive,
+    };
   };
 
   const trend = calculateTrend();
@@ -226,7 +222,7 @@ export default function LMSAttendanceSystem() {
   return (
     <div className="min-h-screen bg-slate-50 p-3 sm:p-4 lg:p-6">
       <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
-        {/* Current Class Info */}
+        {/* Header section with class information */}
         <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-xl sm:rounded-2xl shadow-lg text-white p-4 sm:p-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
             <div className="flex items-center space-x-3 sm:space-x-4">
@@ -256,7 +252,7 @@ export default function LMSAttendanceSystem() {
           </div>
         </div>
 
-        {/* Message Display */}
+        {/* Success/Error message display */}
         {message && (
           <div
             className={`rounded-xl p-4 ${
@@ -270,10 +266,11 @@ export default function LMSAttendanceSystem() {
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6">
-          {/* Attendance Form */}
+          {/* Left sidebar with form and stats */}
           <div className="lg:col-span-1">
-            <Card className="shadow-sm pt-0 border-slate-200 h-fit">
-              <CardHeader className="bg-slate-900 text-white rounded-t-xl">
+            {/* Attendance submission form */}
+            <Card className="shadow-sm pt-0  border-slate-200 h-fit">
+              <CardHeader className="bg-slate-900 p-2 text-white rounded-t-xl">
                 <CardTitle className="flex items-center space-x-2 text-base sm:text-lg">
                   <User className="w-4 h-4 sm:w-5 sm:h-5" />
                   <span>Mark Attendance</span>
@@ -292,6 +289,7 @@ export default function LMSAttendanceSystem() {
                       Select Status
                     </Label>
                     <div className="space-y-3">
+                      {/* Present button */}
                       <Button
                         type="button"
                         variant="outline"
@@ -315,6 +313,7 @@ export default function LMSAttendanceSystem() {
                         </div>
                       </Button>
 
+                      {/* Absent button */}
                       <Button
                         type="button"
                         variant="outline"
@@ -340,6 +339,7 @@ export default function LMSAttendanceSystem() {
                     </div>
                   </div>
 
+                  {/* Reason input field (only shown when absent is selected) */}
                   {formData.status === "absent" && (
                     <div className="space-y-2">
                       <Label
@@ -360,6 +360,7 @@ export default function LMSAttendanceSystem() {
                     </div>
                   )}
 
+                  {/* Submit button */}
                   <Button
                     type="submit"
                     className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 sm:py-3 disabled:opacity-50"
@@ -371,8 +372,9 @@ export default function LMSAttendanceSystem() {
               </CardContent>
             </Card>
 
-            {/* Stats Cards */}
+            {/* Statistics cards */}
             <div className="grid grid-cols-1 gap-3 sm:gap-4 mt-4">
+              {/* Present count card */}
               <Card className="border-emerald-200 bg-emerald-50">
                 <CardContent className="p-3 sm:p-4 text-center">
                   <div className="text-xl sm:text-2xl font-bold text-emerald-700">
@@ -384,6 +386,7 @@ export default function LMSAttendanceSystem() {
                 </CardContent>
               </Card>
 
+              {/* Absent count card */}
               <Card className="border-rose-200 bg-rose-50">
                 <CardContent className="p-3 sm:p-4 text-center">
                   <div className="text-xl sm:text-2xl font-bold text-rose-700">
@@ -395,7 +398,7 @@ export default function LMSAttendanceSystem() {
                 </CardContent>
               </Card>
 
-              {/* Attendance Chart */}
+              {/* Progress bar overview */}
               <Card className="border-slate-200 bg-white">
                 <CardContent className="p-3 sm:p-4">
                   <div className="flex items-center space-x-2 mb-3">
@@ -405,7 +408,7 @@ export default function LMSAttendanceSystem() {
                     </span>
                   </div>
                   <div className="space-y-3">
-                    {/* Present Bar */}
+                    {/* Present progress bar */}
                     <div>
                       <div className="flex justify-between text-xs mb-1">
                         <span className="text-emerald-600">Present</span>
@@ -420,7 +423,7 @@ export default function LMSAttendanceSystem() {
                         ></div>
                       </div>
                     </div>
-                    {/* Absent Bar */}
+                    {/* Absent progress bar */}
                     <div>
                       <div className="flex justify-between text-xs mb-1">
                         <span className="text-rose-600">Absent</span>
@@ -446,13 +449,15 @@ export default function LMSAttendanceSystem() {
             </div>
           </div>
 
-          {/* Charts and Table */}
+          {/* Right side with chart and table */}
           <div className="lg:col-span-3 space-y-4">
-            {/* Bar Chart */}
+            {/* Two-bar chart showing Present vs Absent percentages */}
             <Card>
               <CardHeader>
-                <CardTitle>Daily Attendance - Bar Chart</CardTitle>
-                <CardDescription>Present vs Absent by date</CardDescription>
+                <CardTitle>Attendance Summary - Present vs Absent</CardTitle>
+                <CardDescription>
+                  Overall attendance percentage breakdown
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <ChartContainer config={chartConfig}>
@@ -464,27 +469,45 @@ export default function LMSAttendanceSystem() {
                       left: 0,
                     }}
                   >
+                    {/* Y-axis showing Present/Absent labels */}
                     <YAxis
-                      dataKey="date"
+                      dataKey="status"
                       type="category"
                       tickLine={false}
                       tickMargin={10}
                       axisLine={false}
                       tickFormatter={(value) => value}
                     />
-                    <XAxis dataKey="count" type="number" hide />
+                    {/* X-axis showing percentage values (hidden) */}
+                    <XAxis dataKey="percentage" type="number" hide />
+                    {/* Tooltip showing details on hover */}
                     <ChartTooltip
                       cursor={false}
-                      content={<ChartTooltipContent hideLabel />}
+                      content={
+                        <ChartTooltipContent
+                          hideLabel
+                          formatter={(value, name) => [
+                            `${value}% (${
+                              chartData.find((d) => d.status === name)?.count ||
+                              0
+                            } days)`,
+                            name,
+                          ]}
+                        />
+                      }
                     />
-                    <Bar dataKey="count" layout="vertical" radius={5} />
+                    {/* Bar component with percentage data */}
+                    <Bar dataKey="percentage" layout="vertical" radius={5} />
                   </BarChart>
                 </ChartContainer>
               </CardContent>
               <CardFooter className="flex-col items-start gap-2 text-sm">
                 <div className="flex gap-2 font-medium leading-none">
-                  {trend.isPositive ? "Trending up" : "Trending down"} by{" "}
-                  {trend.percentage}% this month
+                  {/* Show trend based on which status is higher */}
+                  {trend.isPositive
+                    ? "Present attendance is higher"
+                    : "Absent records are higher"}{" "}
+                  by {trend.percentage}%
                   <TrendingUp
                     className={`h-4 w-4 ${
                       trend.isPositive
@@ -494,14 +517,12 @@ export default function LMSAttendanceSystem() {
                   />
                 </div>
                 <div className="leading-none text-muted-foreground">
-                  {stats.present > stats.absent
-                    ? "Present attendance is higher"
-                    : "Absent records are higher"}
+                  Total attendance records: {totalRecords} days
                 </div>
               </CardFooter>
             </Card>
 
-            {/* Attendance Records Table */}
+            {/* Attendance records table */}
             <Card className="shadow-sm border-slate-200">
               <CardHeader className="p-4 sm:p-6">
                 <CardTitle className="flex items-center space-x-2 text-base sm:text-lg">
@@ -513,6 +534,7 @@ export default function LMSAttendanceSystem() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="p-0">
+                {/* Loading state */}
                 {fetchingRecords ? (
                   <div className="p-8 text-center text-slate-500">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
@@ -520,13 +542,16 @@ export default function LMSAttendanceSystem() {
                   </div>
                 ) : Array.isArray(attendanceRecords) &&
                   attendanceRecords.length === 0 ? (
+                  /* Empty state */
                   <div className="p-8 text-center text-slate-500">
                     <CalendarDays className="w-12 h-12 mx-auto mb-4 text-slate-300" />
                     <p>No attendance records found</p>
                   </div>
                 ) : (
+                  /* Table with scrollable content */
                   <div className="max-h-80 overflow-y-auto">
                     <Table>
+                      {/* Sticky table header */}
                       <TableHeader className="sticky top-0 bg-slate-50 z-10">
                         <TableRow>
                           <TableHead className="font-semibold text-xs sm:text-sm">
@@ -544,11 +569,13 @@ export default function LMSAttendanceSystem() {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
+                        {/* Map through attendance records */}
                         {attendanceRecords.map((record) => (
                           <TableRow
                             key={record._id}
                             className="hover:bg-slate-50"
                           >
+                            {/* Date column */}
                             <TableCell className="font-medium text-xs sm:text-sm">
                               {new Date(record.date).toLocaleDateString(
                                 "en-US",
@@ -559,6 +586,7 @@ export default function LMSAttendanceSystem() {
                                 }
                               )}
                             </TableCell>
+                            {/* Created at column (hidden on mobile) */}
                             <TableCell className="text-xs sm:text-sm text-slate-600 hidden sm:table-cell">
                               {new Date(record.createdAt).toLocaleDateString(
                                 "en-US",
@@ -576,9 +604,11 @@ export default function LMSAttendanceSystem() {
                                 }
                               )}
                             </TableCell>
+                            {/* Status column with badge */}
                             <TableCell>
                               {getStatusBadge(record.status)}
                             </TableCell>
+                            {/* Reason column (hidden on mobile) */}
                             <TableCell className="text-xs sm:text-sm text-slate-600 hidden md:table-cell">
                               {record.reason === "..." ? "-" : record.reason}
                             </TableCell>
