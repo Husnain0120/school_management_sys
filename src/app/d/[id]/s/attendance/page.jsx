@@ -38,7 +38,27 @@ import {
   MapPin,
   User,
   BarChart3,
+  AlertCircle,
+  Info,
 } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+
+// Utility function to handle MongoDB date format
+const formatMongoDate = (dateObj) => {
+  if (!dateObj) return null;
+
+  // Handle MongoDB date format: {"$date": "2024-04-05T00:00:00.000Z"}
+  if (typeof dateObj === "object" && dateObj.$date) {
+    return new Date(dateObj.$date);
+  }
+
+  // Handle regular ISO string
+  if (typeof dateObj === "string") {
+    return new Date(dateObj);
+  }
+
+  return new Date(dateObj);
+};
 
 export default function LMSAttendanceSystem() {
   const [attendanceRecords, setAttendanceRecords] = useState([]);
@@ -51,6 +71,26 @@ export default function LMSAttendanceSystem() {
     status: "",
     reason: "",
   });
+
+  // Attendance settings state
+  const [isLoadingSettings, setIsLoadingSettings] = useState(true);
+  const [settingsDetails, setSettingsDetails] = useState(null);
+
+  // Fetch attendance settings
+  const fetchSettings = async () => {
+    try {
+      setIsLoadingSettings(true);
+      const res = await axios.get(`/api/admin/attendance-setting`);
+      if (res.data?.success === true && res.data?.data) {
+        const data = res.data.data;
+        setSettingsDetails(data);
+      }
+    } catch (error) {
+      console.error("Error fetching settings:", error);
+    } finally {
+      setIsLoadingSettings(false);
+    }
+  };
 
   // Fetch attendance records from API
   const fetchAttendanceRecords = async () => {
@@ -80,6 +120,15 @@ export default function LMSAttendanceSystem() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.status) return;
+
+    // Check if system is enabled
+    if (!settingsDetails?.isSystemEnabled) {
+      setMessage(
+        "Attendance system is currently disabled. Please try again later."
+      );
+      setMessageType("error");
+      return;
+    }
 
     try {
       setLoading(true);
@@ -113,8 +162,9 @@ export default function LMSAttendanceSystem() {
     }
   };
 
-  // Load attendance records when component mounts
+  // Load data when component mounts
   useEffect(() => {
+    fetchSettings();
     fetchAttendanceRecords();
   }, []);
 
@@ -167,7 +217,6 @@ export default function LMSAttendanceSystem() {
 
   // Prepare chart data with only two bars (Present and Absent)
   const prepareChartData = () => {
-    // Create simple two-bar chart data
     const chartData = [
       {
         status: "Present",
@@ -205,7 +254,6 @@ export default function LMSAttendanceSystem() {
 
   // Calculate attendance trend for footer
   const calculateTrend = () => {
-    // Simple trend calculation based on present vs absent
     const isPositive = stats.present > stats.absent;
     const difference = Math.abs(stats.present - stats.absent);
     const percentage =
@@ -219,11 +267,69 @@ export default function LMSAttendanceSystem() {
 
   const trend = calculateTrend();
 
+  if (isLoadingSettings) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-slate-600">Loading attendance system...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Format start date for display
+  const formatStartDate = (dateObj) => {
+    if (!dateObj) return "Not set";
+    const date = formatMongoDate(dateObj);
+    return date.toLocaleDateString("en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 p-3 sm:p-4 lg:p-6">
       <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
+        {/* System Status Alert */}
+        {!settingsDetails?.isSystemEnabled && (
+          <Alert className="border-amber-200 bg-amber-50">
+            <AlertCircle className="h-4 w-4 text-amber-600" />
+            <AlertDescription className="text-amber-800">
+              <div className="space-y-2">
+                <p className="font-medium">
+                  Attendance Session is Currently Not Open
+                </p>
+                <p className="text-sm">
+                  The attendance system will be available starting{" "}
+                  <span className="font-semibold">
+                    {formatStartDate(settingsDetails?.startDate)}
+                  </span>
+                  {settingsDetails?.openingTime &&
+                    settingsDetails?.closingTime && (
+                      <span>
+                        {" "}
+                        from {settingsDetails.openingTime} to{" "}
+                        {settingsDetails.closingTime}
+                      </span>
+                    )}
+                  . Please check back later.
+                </p>
+              </div>
+            </AlertDescription>
+          </Alert>
+        )}
+
         {/* Header section with class information */}
-        <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-xl sm:rounded-2xl shadow-lg text-white p-4 sm:p-6">
+        <div
+          className={`rounded-xl sm:rounded-2xl shadow-lg text-white p-4 sm:p-6 ${
+            settingsDetails?.isSystemEnabled
+              ? "bg-gradient-to-r from-blue-600 to-indigo-700"
+              : "bg-gradient-to-r from-gray-600 to-gray-700"
+          }`}
+        >
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
             <div className="flex items-center space-x-3 sm:space-x-4">
               <div className="p-2 sm:p-3 bg-white/20 rounded-lg sm:rounded-xl">
@@ -233,21 +339,62 @@ export default function LMSAttendanceSystem() {
                 <h3 className="text-lg sm:text-xl font-semibold">
                   {currentClass.subject}
                 </h3>
-                <p className="text-blue-100 text-sm sm:text-base">
+                <p
+                  className={`text-sm sm:text-base ${
+                    settingsDetails?.isSystemEnabled
+                      ? "text-blue-100"
+                      : "text-gray-300"
+                  }`}
+                >
                   Instructor: {currentClass.instructor}
                 </p>
+                {!settingsDetails?.isSystemEnabled && (
+                  <p className="text-gray-300 text-sm mt-1">
+                    <Info className="w-4 h-4 inline mr-1" />
+                    System will open on{" "}
+                    {formatStartDate(settingsDetails?.startDate)}
+                  </p>
+                )}
               </div>
             </div>
 
             <div className="flex flex-col sm:text-right space-y-1">
-              <div className="flex items-center space-x-2 text-blue-100 text-sm">
+              <div
+                className={`flex items-center space-x-2 text-sm ${
+                  settingsDetails?.isSystemEnabled
+                    ? "text-blue-100"
+                    : "text-gray-300"
+                }`}
+              >
                 <MapPin className="w-4 h-4" />
                 <span>{currentClass.room}</span>
               </div>
-              <div className="flex items-center space-x-2 text-blue-100 text-sm">
+              <div
+                className={`flex items-center space-x-2 text-sm ${
+                  settingsDetails?.isSystemEnabled
+                    ? "text-blue-100"
+                    : "text-gray-300"
+                }`}
+              >
                 <Clock className="w-4 h-4" />
-                <span>{currentClass.time}</span>
+                <span>
+                  {settingsDetails?.openingTime || "09:00"} -{" "}
+                  {settingsDetails?.closingTime || "18:00"}
+                </span>
               </div>
+              {settingsDetails?.gracePeriod && (
+                <div
+                  className={`flex items-center space-x-2 text-xs ${
+                    settingsDetails?.isSystemEnabled
+                      ? "text-blue-100"
+                      : "text-gray-300"
+                  }`}
+                >
+                  <span>
+                    Grace Period: {settingsDetails.gracePeriod} minutes
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -269,14 +416,32 @@ export default function LMSAttendanceSystem() {
           {/* Left sidebar with form and stats */}
           <div className="lg:col-span-1">
             {/* Attendance submission form */}
-            <Card className="shadow-sm pt-0  border-slate-200 h-fit">
-              <CardHeader className="bg-slate-900 p-2 text-white rounded-t-xl">
+            <Card
+              className={`shadow-sm pt-0 border-slate-200 h-fit ${
+                !settingsDetails?.isSystemEnabled ? "opacity-60" : ""
+              }`}
+            >
+              <CardHeader
+                className={`p-2 text-white rounded-t-xl ${
+                  settingsDetails?.isSystemEnabled
+                    ? "bg-slate-900"
+                    : "bg-gray-600"
+                }`}
+              >
                 <CardTitle className="flex items-center space-x-2 text-base sm:text-lg">
                   <User className="w-4 h-4 sm:w-5 sm:h-5" />
                   <span>Mark Attendance</span>
                 </CardTitle>
-                <CardDescription className="text-slate-300 text-sm">
-                  Select your attendance status
+                <CardDescription
+                  className={`text-sm ${
+                    settingsDetails?.isSystemEnabled
+                      ? "text-slate-300"
+                      : "text-gray-300"
+                  }`}
+                >
+                  {settingsDetails?.isSystemEnabled
+                    ? "Select your attendance status"
+                    : "System currently disabled"}
                 </CardDescription>
               </CardHeader>
               <CardContent className="p-4 sm:p-6">
@@ -293,12 +458,18 @@ export default function LMSAttendanceSystem() {
                       <Button
                         type="button"
                         variant="outline"
+                        disabled={!settingsDetails?.isSystemEnabled}
                         className={`w-full p-3 sm:p-4 h-auto justify-start space-x-3 transition-all duration-200 ${
                           formData.status === "present"
                             ? "bg-emerald-50 border-emerald-300 text-emerald-700"
                             : "border-slate-200 hover:border-emerald-300 hover:bg-emerald-50"
+                        } ${
+                          !settingsDetails?.isSystemEnabled
+                            ? "cursor-not-allowed"
+                            : ""
                         }`}
                         onClick={() =>
+                          settingsDetails?.isSystemEnabled &&
                           setFormData({ ...formData, status: "present" })
                         }
                       >
@@ -317,12 +488,18 @@ export default function LMSAttendanceSystem() {
                       <Button
                         type="button"
                         variant="outline"
+                        disabled={!settingsDetails?.isSystemEnabled}
                         className={`w-full p-3 sm:p-4 h-auto justify-start space-x-3 transition-all duration-200 ${
                           formData.status === "absent"
                             ? "bg-rose-50 border-rose-300 text-rose-700"
                             : "border-slate-200 hover:border-rose-300 hover:bg-rose-50"
+                        } ${
+                          !settingsDetails?.isSystemEnabled
+                            ? "cursor-not-allowed"
+                            : ""
                         }`}
                         onClick={() =>
+                          settingsDetails?.isSystemEnabled &&
                           setFormData({ ...formData, status: "absent" })
                         }
                       >
@@ -340,33 +517,46 @@ export default function LMSAttendanceSystem() {
                   </div>
 
                   {/* Reason input field (only shown when absent is selected) */}
-                  {formData.status === "absent" && (
-                    <div className="space-y-2">
-                      <Label
-                        htmlFor="reason"
-                        className="text-sm font-medium text-slate-700"
-                      >
-                        Reason (Optional)
-                      </Label>
-                      <Input
-                        id="reason"
-                        placeholder="Enter reason..."
-                        value={formData.reason}
-                        onChange={(e) =>
-                          setFormData({ ...formData, reason: e.target.value })
-                        }
-                        className="border-slate-200 focus:border-blue-500"
-                      />
-                    </div>
-                  )}
+                  {formData.status === "absent" &&
+                    settingsDetails?.isSystemEnabled && (
+                      <div className="space-y-2">
+                        <Label
+                          htmlFor="reason"
+                          className="text-sm font-medium text-slate-700"
+                        >
+                          Reason (Optional)
+                        </Label>
+                        <Input
+                          id="reason"
+                          placeholder="Enter reason..."
+                          value={formData.reason}
+                          onChange={(e) =>
+                            setFormData({ ...formData, reason: e.target.value })
+                          }
+                          className="border-slate-200 focus:border-blue-500"
+                        />
+                      </div>
+                    )}
 
                   {/* Submit button */}
                   <Button
                     type="submit"
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 sm:py-3 disabled:opacity-50"
-                    disabled={!formData.status || loading}
+                    className={`w-full py-2 sm:py-3 text-white disabled:opacity-50 ${
+                      settingsDetails?.isSystemEnabled
+                        ? "bg-blue-600 hover:bg-blue-700"
+                        : "bg-gray-500 cursor-not-allowed"
+                    }`}
+                    disabled={
+                      !formData.status ||
+                      loading ||
+                      !settingsDetails?.isSystemEnabled
+                    }
                   >
-                    {loading ? "Submitting..." : "Submit Attendance"}
+                    {loading
+                      ? "Submitting..."
+                      : !settingsDetails?.isSystemEnabled
+                      ? "System Disabled"
+                      : "Submit Attendance"}
                   </Button>
                 </form>
               </CardContent>
@@ -469,7 +659,6 @@ export default function LMSAttendanceSystem() {
                       left: 0,
                     }}
                   >
-                    {/* Y-axis showing Present/Absent labels */}
                     <YAxis
                       dataKey="status"
                       type="category"
@@ -478,9 +667,7 @@ export default function LMSAttendanceSystem() {
                       axisLine={false}
                       tickFormatter={(value) => value}
                     />
-                    {/* X-axis showing percentage values (hidden) */}
                     <XAxis dataKey="percentage" type="number" hide />
-                    {/* Tooltip showing details on hover */}
                     <ChartTooltip
                       cursor={false}
                       content={
@@ -496,14 +683,12 @@ export default function LMSAttendanceSystem() {
                         />
                       }
                     />
-                    {/* Bar component with percentage data */}
                     <Bar dataKey="percentage" layout="vertical" radius={5} />
                   </BarChart>
                 </ChartContainer>
               </CardContent>
               <CardFooter className="flex-col items-start gap-2 text-sm">
                 <div className="flex gap-2 font-medium leading-none">
-                  {/* Show trend based on which status is higher */}
                   {trend.isPositive
                     ? "Present attendance is higher"
                     : "Absent records are higher"}{" "}
@@ -534,7 +719,6 @@ export default function LMSAttendanceSystem() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="p-0">
-                {/* Loading state */}
                 {fetchingRecords ? (
                   <div className="p-8 text-center text-slate-500">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
@@ -542,16 +726,13 @@ export default function LMSAttendanceSystem() {
                   </div>
                 ) : Array.isArray(attendanceRecords) &&
                   attendanceRecords.length === 0 ? (
-                  /* Empty state */
                   <div className="p-8 text-center text-slate-500">
                     <CalendarDays className="w-12 h-12 mx-auto mb-4 text-slate-300" />
                     <p>No attendance records found</p>
                   </div>
                 ) : (
-                  /* Table with scrollable content */
                   <div className="max-h-80 overflow-y-auto">
                     <Table>
-                      {/* Sticky table header */}
                       <TableHeader className="sticky top-0 bg-slate-50 z-10">
                         <TableRow>
                           <TableHead className="font-semibold text-xs sm:text-sm">
@@ -569,13 +750,11 @@ export default function LMSAttendanceSystem() {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {/* Map through attendance records */}
                         {attendanceRecords.map((record) => (
                           <TableRow
                             key={record._id}
                             className="hover:bg-slate-50"
                           >
-                            {/* Date column */}
                             <TableCell className="font-medium text-xs sm:text-sm">
                               {new Date(record.date).toLocaleDateString(
                                 "en-US",
@@ -586,7 +765,6 @@ export default function LMSAttendanceSystem() {
                                 }
                               )}
                             </TableCell>
-                            {/* Created at column (hidden on mobile) */}
                             <TableCell className="text-xs sm:text-sm text-slate-600 hidden sm:table-cell">
                               {new Date(record.createdAt).toLocaleDateString(
                                 "en-US",
@@ -604,11 +782,9 @@ export default function LMSAttendanceSystem() {
                                 }
                               )}
                             </TableCell>
-                            {/* Status column with badge */}
                             <TableCell>
                               {getStatusBadge(record.status)}
                             </TableCell>
-                            {/* Reason column (hidden on mobile) */}
                             <TableCell className="text-xs sm:text-sm text-slate-600 hidden md:table-cell">
                               {record.reason === "..." ? "-" : record.reason}
                             </TableCell>

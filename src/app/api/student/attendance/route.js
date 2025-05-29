@@ -1,6 +1,8 @@
 import dbConnect from "@/DataBase/db";
 import { getUserFromToken } from "@/lib/getUserFromToken";
 import Attendance from "@/model/attendance.model";
+import AttendanceSetting from "@/model/attendanceSetting/AttendanceSetting.model";
+// Make sure this path is correct
 import { NextResponse } from "next/server";
 
 export async function POST(req) {
@@ -19,33 +21,105 @@ export async function POST(req) {
       );
     }
 
-    // ✅ Get current Pakistan time (in hours and minutes)
-    const now = new Date(
-      new Date().toLocaleString("en-US", { timeZone: "Asia/Karachi" })
-    );
+    // ✅ Get attendance settings from database
+    const settings = await AttendanceSetting.findOne();
 
-    const currentHour = now.getHours(); // returns 0-23
-    const currentMinute = now.getMinutes();
+    if (!settings) {
+      return NextResponse.json(
+        {
+          message: "Attendance settings not configured. Please contact admin.",
+          success: false,
+        },
+        { status: 500 }
+      );
+    }
 
-    // ✅ Allow attendance ONLY from 9:00 to 10:59 AM
-    if (currentHour < 9 || currentHour >= 11) {
+    // ✅ Check if attendance system is enabled
+    if (!settings.isSystemEnabled) {
       return NextResponse.json(
         {
           message:
-            "Attendance can only be marked between 9:00 AM to 11:00 AM (PKT)",
+            "Attendance system is currently disabled. Please try again later.",
           success: false,
         },
         { status: 403 }
       );
     }
 
-    // ✅ Get today's Pakistan date (YYYY-MM-DD)
+    // ✅ Get current Pakistan time and date
+    const nowPKT = new Date().toLocaleString("en-US", {
+      timeZone: "Asia/Karachi",
+    });
+    const now = new Date(nowPKT);
+
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+    const currentTimeInMinutes = currentHour * 60 + currentMinute;
+
+    // ✅ Parse opening and closing times from settings
+    const [openingHour, openingMinute] = settings.openingTime
+      .split(":")
+      .map(Number);
+    const [closingHour, closingMinute] = settings.closingTime
+      .split(":")
+      .map(Number);
+
+    const openingTimeInMinutes = openingHour * 60 + openingMinute;
+    const closingTimeInMinutes =
+      closingHour * 60 + closingMinute + (settings.gracePeriod || 0);
+
+    // ✅ Check if current time is within attendance window (including grace period)
+    if (
+      currentTimeInMinutes < openingTimeInMinutes ||
+      currentTimeInMinutes > closingTimeInMinutes
+    ) {
+      const graceText = settings.gracePeriod
+        ? ` (${settings.gracePeriod} minutes grace period included)`
+        : "";
+      return NextResponse.json(
+        {
+          message: `Attendance can only be marked between ${settings.openingTime} to ${settings.closingTime} (PKT)${graceText}`,
+          success: false,
+        },
+        { status: 403 }
+      );
+    }
+
+    // ✅ Check if current date is after start date (using Pakistan timezone)
+    const currentDatePKT = new Date(nowPKT);
+    const startDate = new Date(settings.startDate);
+
+    // Reset time to compare only dates
+    currentDatePKT.setHours(0, 0, 0, 0);
+    startDate.setHours(0, 0, 0, 0);
+
+    if (currentDatePKT < startDate) {
+      return NextResponse.json(
+        {
+          message: `Attendance system will start from ${startDate.toLocaleDateString(
+            "en-US",
+            {
+              weekday: "long",
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            }
+          )}`,
+          success: false,
+        },
+        { status: 403 }
+      );
+    }
+
+    // ✅ Get today's Pakistan date (YYYY-MM-DD) - Fixed timezone issue
     const today = new Intl.DateTimeFormat("en-CA", {
       timeZone: "Asia/Karachi",
       year: "numeric",
       month: "2-digit",
       day: "2-digit",
     }).format(new Date());
+
+    console.log("Today's date (PKT):", today); // Debug log
 
     // ✅ Check if attendance is already marked
     const existing = await Attendance.findOne({
@@ -84,22 +158,37 @@ export async function POST(req) {
       reason: reason || "...",
     });
 
-    // // ✅ Auto-mark all previous missed dates as "absent"
-    const start = new Date("2025-05-05"); // Session start date
-    const now01 = new Date();
-    let loopDate = new Date(start);
+    // ✅ Auto-mark all previous missed dates as "absent" using dynamic start date
+    const sessionStartDate = new Date(settings.startDate);
+    const currentDateTime = new Date(nowPKT);
+    let loopDate = new Date(sessionStartDate);
 
-    while (loopDate < now01) {
-      const formatted = loopDate.toISOString().split("T")[0];
+    // Reset time for proper date comparison
+    currentDateTime.setHours(23, 59, 59, 999);
+
+    while (loopDate < currentDateTime) {
+      // ✅ Get formatted date for Pakistan timezone
+      const formatted = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "Asia/Karachi",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      }).format(loopDate);
 
       // ✅ Check if it's Sunday (0 = Sunday, 6 = Saturday)
       const isSunday = loopDate.getDay() === 0;
       if (isSunday) {
-        loopDate.setDate(loopDate.getDate() + 1); // ⏩ skip to next day
+        loopDate.setDate(loopDate.getDate() + 1);
         continue;
       }
 
-      // ✅ Check attendance already exists
+      // ✅ Skip today's date (already handled above)
+      if (formatted === today) {
+        loopDate.setDate(loopDate.getDate() + 1);
+        continue;
+      }
+
+      // ✅ Check if attendance already exists
       const alreadyExists = await Attendance.findOne({
         studentId: userid,
         date: formatted,
@@ -126,11 +215,12 @@ export async function POST(req) {
       { status: 200 }
     );
   } catch (error) {
-    console.error("Attendance Error:", error);
+    console.error("Attendance POST Error:", error);
     return NextResponse.json(
       {
         message: "Failed to create attendance!",
         success: false,
+        error: error.message, // Add error details for debugging
       },
       { status: 500 }
     );
@@ -138,42 +228,68 @@ export async function POST(req) {
 }
 
 /// Get Attendance by user
-
 export async function GET(req) {
   try {
-    await dbConnect(); // ✅ Connect to MongoDB
+    await dbConnect();
 
-    const userid = await getUserFromToken(req); // ✅ Get user ID from JWT token
+    const userid = await getUserFromToken(req);
+    console.log("User ID:", userid); // Debug log
 
-    // ✅ Correct usage of find with condition object
-    const findAttendanceById = await Attendance.find({ studentId: userid });
-
-    // ✅ If no attendance found, return 404
-    if (!findAttendanceById || findAttendanceById.length === 0) {
-      return NextResponse.json(
-        {
-          message: "No attendance records found!",
-          success: false,
-        },
-        { status: 404 }
-      );
+    // ✅ Get attendance settings - with error handling
+    let settings = null;
+    try {
+      settings = await AttendanceSetting.findOne();
+      console.log("Settings found:", settings ? "Yes" : "No"); // Debug log
+    } catch (settingsError) {
+      console.error("Error fetching settings:", settingsError);
+      // Continue without settings for now
     }
 
-    // ✅ Return all attendance records
+    // ✅ Fetch attendance records
+    const findAttendanceById = await Attendance.find({
+      studentId: userid,
+    }).sort({ date: -1 });
+    console.log("Attendance records found:", findAttendanceById.length); // Debug log
+
+    // ✅ Prepare settings data (with fallbacks)
+    const settingsData = settings
+      ? {
+          isSystemEnabled: settings.isSystemEnabled,
+          startDate: settings.startDate,
+          openingTime: settings.openingTime,
+          closingTime: settings.closingTime,
+          gracePeriod: settings.gracePeriod,
+        }
+      : {
+          isSystemEnabled: false,
+          startDate: null,
+          openingTime: "09:00",
+          closingTime: "18:00",
+          gracePeriod: 15,
+        };
+
+    // ✅ Return response (even if no records found)
     return NextResponse.json(
       {
-        message: "Student attendance fetched successfully!",
+        message:
+          findAttendanceById.length > 0
+            ? "Student attendance fetched successfully!"
+            : "No attendance records found!",
         success: true,
         data: findAttendanceById,
+        settings: settingsData,
       },
       { status: 200 }
     );
   } catch (error) {
-    console.error("Failed to get student attendance:", error); // ✅ Log error to server console
+    console.error("Failed to get student attendance:", error);
+    console.error("Error stack:", error.stack); // More detailed error logging
+
     return NextResponse.json(
       {
         message: "Internal server error while fetching attendance!",
         success: false,
+        error: error.message, // Add error details for debugging
       },
       { status: 500 }
     );
