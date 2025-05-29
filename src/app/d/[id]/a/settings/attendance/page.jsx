@@ -74,43 +74,9 @@ export default function AttendanceSettingsPage() {
   const [gracePeriod, setGracePeriod] = useState(15);
   const [isSystemEnabled, setIsSystemEnabled] = useState(true);
 
-  // API data and status
-  const [originalData, setOriginalData] = useState(null);
-  const [hasChanges, setHasChanges] = useState(false);
+  // Status messages
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-
-  // Track changes
-  useEffect(() => {
-    if (originalData) {
-      const currentData = {
-        startDate,
-        openingTime,
-        closingTime,
-        gracePeriod: Number(gracePeriod),
-        isSystemEnabled,
-      };
-
-      const hasChanged =
-        JSON.stringify(currentData) !==
-        JSON.stringify({
-          startDate: formatDateForInput(originalData.startDate),
-          openingTime: originalData.openingTime || "08:00",
-          closingTime: originalData.closingTime || "17:00",
-          gracePeriod: originalData.gracePeriod || 15,
-          isSystemEnabled: originalData.isSystemEnabled ?? true,
-        });
-
-      setHasChanges(hasChanged);
-    }
-  }, [
-    startDate,
-    openingTime,
-    closingTime,
-    gracePeriod,
-    isSystemEnabled,
-    originalData,
-  ]);
 
   // Fetch settings data
   const fetchSettingsDetails = async () => {
@@ -122,7 +88,6 @@ export default function AttendanceSettingsPage() {
 
       if (res.data?.success === true && res.data?.data) {
         const data = res.data.data;
-        setOriginalData(data);
 
         // Convert and set the start date
         const formattedStartDate = formatDateForInput(data.startDate);
@@ -133,9 +98,6 @@ export default function AttendanceSettingsPage() {
         setClosingTime(data.closingTime || "17:00");
         setGracePeriod(data.gracePeriod || 15);
         setIsSystemEnabled(data.isSystemEnabled ?? true);
-      } else {
-        // No data found, keep default values
-        setOriginalData({});
       }
     } catch (error) {
       console.error("Error fetching settings:", error);
@@ -300,16 +262,6 @@ export default function AttendanceSettingsPage() {
           </Alert>
         )}
 
-        {/* Changes Indicator */}
-        {hasChanges && (
-          <Alert className="mb-6 border-amber-200 bg-amber-50">
-            <Info className="h-4 w-4 text-amber-600" />
-            <AlertDescription className="text-amber-700">
-              You have unsaved changes. Click "Save Settings" to apply them.
-            </AlertDescription>
-          </Alert>
-        )}
-
         {/* Important Notice */}
         <div className="bg-amber-50 border mb-3 border-amber-200 rounded-lg p-6">
           <div className="flex items-start gap-3">
@@ -470,7 +422,7 @@ export default function AttendanceSettingsPage() {
                   <div className="flex gap-3">
                     <Button
                       onClick={handleSaveSettings}
-                      disabled={isSaving || !hasChanges}
+                      disabled={isSaving}
                       className="bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50"
                     >
                       {isSaving ? (
@@ -628,14 +580,6 @@ export default function AttendanceSettingsPage() {
                     {gracePeriod} min
                   </span>
                 </div>
-
-                {hasChanges && (
-                  <div className="pt-4 mt-4 border-t border-gray-100">
-                    <div className="text-xs text-amber-600 font-medium">
-                      Unsaved Changes Detected
-                    </div>
-                  </div>
-                )}
 
                 <div className="pt-4 mt-4 border-t border-gray-100">
                   <button className="text-sm text-blue-600 hover:text-blue-800 font-medium flex items-center">
