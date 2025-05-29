@@ -1,27 +1,12 @@
-import {
-  Settings2,
-  Users,
-  Bell,
-  Shield,
-  Database,
-  Mail,
-  Smartphone,
-  Globe,
-  Lock,
-  ChevronRight,
-  Search,
-  BookOpen,
-  Calendar,
-  FileText,
-  BarChart3,
-  Clock,
-  Award,
-  HelpCircle,
-  LogOut,
-} from "lucide-react";
+"use client";
+
+import { Users, ChevronRight, LogOut, KeyRound } from "lucide-react";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 
 export default function SettingsPage() {
+  const param = useParams();
+  const id = param.id;
   const settingsCategories = [
     {
       title: "Attendance Settings",
@@ -32,14 +17,14 @@ export default function SettingsPage() {
       badgeColor: "bg-green-100 text-green-700",
     },
     // Uncomment these to see how it behaves with more items
-    // {
-    //   title: "Course Management",
-    //   description: "Manage courses, modules, and learning materials",
-    //   icon: BookOpen,
-    //   href: "/settings/courses",
-    //   badge: "24 Courses",
-    //   badgeColor: "bg-blue-100 text-blue-700",
-    // },
+    {
+      title: "Change Password",
+      description: "Change Password | setup strong Password",
+      icon: KeyRound,
+      href: `/d/${id}/profile/edit`,
+      badge: "Security",
+      badgeColor: "bg-blue-100 text-blue-700",
+    },
     // {
     //   title: "Academic Calendar",
     //   description: "Configure semesters, terms and important dates",

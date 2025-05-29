@@ -40,6 +40,7 @@ export async function PUT(req) {
         { status: 404 }
       );
     }
+
     if (newPassword !== confirmPassword) {
       return NextResponse.json(
         {
@@ -49,11 +50,19 @@ export async function PUT(req) {
         { status: 400 }
       );
     }
-    // Hash and update new password
-    const hashNewPassword = await bcrypt.hash(newPassword, 10);
-    user.password = hashNewPassword;
 
-    await user.save(); // 🔥 just update and save
+    // Hash new password
+    const hashNewPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update only the password field using findByIdAndUpdate to avoid full document validation
+    await AdmissionForm.findByIdAndUpdate(
+      userid,
+      { $set: { password: hashNewPassword } },
+      {
+        runValidators: false, // Skip validation to avoid the class field issue
+        new: true,
+      }
+    );
 
     return NextResponse.json(
       {

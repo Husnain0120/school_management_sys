@@ -9,7 +9,6 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -131,8 +130,15 @@ const ActualProfileEditPage = ({ userData }) => {
     setLoading(true);
 
     try {
+      const setMessageWithTimeout = (msg) => {
+        setMessage(msg);
+        setTimeout(() => {
+          setMessage({ text: "", type: "" });
+        }, 5000);
+      };
+
       if (newPassword !== confirmPassword) {
-        setMessage({
+        setMessageWithTimeout({
           text: "New password and confirm password don't match",
           type: "error",
         });
@@ -146,19 +152,22 @@ const ActualProfileEditPage = ({ userData }) => {
       });
 
       if (res.data.success) {
-        setMessage({ text: "Password updated successfully!", type: "success" });
+        setMessageWithTimeout({
+          text: "Password updated successfully!",
+          type: "success",
+        });
         setOldPassword("");
         setNewPassword("");
         setConfirmPassword("");
       } else {
-        setMessage({
+        setMessageWithTimeout({
           text: res.data.message || "Failed to update password",
           type: "error",
         });
       }
     } catch (error) {
       console.error("Password update error:", error);
-      setMessage({
+      setMessageWithTimeout({
         text: error.response?.data?.message || "Failed to update password",
         type: "error",
       });
