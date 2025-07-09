@@ -1,18 +1,17 @@
-// next.config.js
+// next.config.mjs
 
-import withPWA from "next-pwa";
+import pkg from "next-pwa";
+const withPWA = pkg.default || pkg; // CommonJS compatibility
 
-/** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
     domains: ["img.freepik.com"],
   },
+  pwa: {
+    dest: "public",
+    register: true,
+    skipWaiting: true,
+  },
 };
 
-export default withPWA({
-  ...nextConfig,
-  // PWA settings
-  dest: "public",
-  register: true,
-  skipWaiting: true,
-});
+export default withPWA(nextConfig);
