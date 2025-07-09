@@ -578,9 +578,9 @@ export default function LandingPage() {
         </motion.section>
 
         {/* Statistics Section */}
-        <section className="mb-16 sm:mb-20 py-12 sm:py-16 bg-gray-50 rounded-2xl">
+        <section className="mb-16 sm:mb-20 py-12 sm:py-25 from-gray-200 via-black/60 text-white to-gray-300 bg-gradient-to-tl rounded-2xl border shadow-2xl">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <h3 className="mb-10 sm:mb-12 text-center text-2xl sm:text-3xl font-bold text-gray-900">
+            <h3 className="mb-10 sm:mb-12 text-center text-2xl sm:text-3xl font-bold text-gray-50">
               Trusted by{" "}
               <span className="text-gradient">Educational Institutions</span>
             </h3>
@@ -591,7 +591,7 @@ export default function LandingPage() {
                 <div className="text-2xl sm:text-4xl font-bold mb-1 sm:mb-2 text-gradient">
                   500+
                 </div>
-                <p className="text-sm sm:text-base text-gray-600">Schools</p>
+                <p className="text-sm sm:text-base text-gray-200">Schools</p>
               </div>
 
               {/* Students */}
@@ -602,7 +602,7 @@ export default function LandingPage() {
                 <div className="text-2xl sm:text-4xl font-bold mb-1 sm:mb-2 text-gradient">
                   50,000+
                 </div>
-                <p className="text-sm sm:text-base text-gray-600">Students</p>
+                <p className="text-sm sm:text-base text-gray-200">Students</p>
               </div>
 
               {/* Teachers */}
@@ -613,7 +613,7 @@ export default function LandingPage() {
                 <div className="text-2xl sm:text-4xl font-bold mb-1 sm:mb-2 text-gradient">
                   5,000+
                 </div>
-                <p className="text-sm sm:text-base text-gray-600">Teachers</p>
+                <p className="text-sm sm:text-base text-gray-200">Teachers</p>
               </div>
 
               {/* Countries */}
@@ -624,7 +624,7 @@ export default function LandingPage() {
                 <div className="text-2xl sm:text-4xl font-bold mb-1 sm:mb-2 text-gradient">
                   20+
                 </div>
-                <p className="text-sm sm:text-base text-gray-600">Countries</p>
+                <p className="text-sm sm:text-base text-gray-200">Countries</p>
               </div>
             </div>
           </div>
