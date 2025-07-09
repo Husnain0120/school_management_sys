@@ -91,7 +91,9 @@ Use the following credentials to log in as admin:
 
 Portal ID: edu255476728
 
-Password: edu@123
+Password01: 123456789
+          OR
+Password02: edu@123
 
 After login:
 
