@@ -1,21 +1,15 @@
-import withPWA from "next-pwa";
-
+/** @type {import('next').NextConfig} */
 const nextConfig = {
+  images: {
+    domains: ["img.freepik.com"],
+    unoptimized: true,
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   typescript: {
     ignoreBuildErrors: true,
   },
 };
 
-export default withPWA({
-  dest: "public",
-  register: true,
-  skipWaiting: true,
-  disable: process.env.NODE_ENV === "development",
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  images: {
-    domains: ["img.freepik.com"],
-    unoptimized: true,
-  },
-})(nextConfig);
+export default nextConfig;
