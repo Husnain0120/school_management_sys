@@ -1,23 +1,24 @@
 // next.config.mjs
 
 import pkg from "next-pwa";
-const withPWA = pkg.default || pkg; // CommonJS compatibility
+const withPWA = pkg.default || pkg; // for CommonJS compatibility
 
-/** @type {import('next').NextConfig} */
+// ✅ ONLY Next.js config here
 const nextConfig = {
   images: {
-    domains: ["img.freepik.com"], // ✅ Image domains config
+    domains: ["img.freepik.com"],
   },
 };
 
-// ✅ Pass nextConfig & PWA config separately
+// ✅ Wrap the config and attach `pwa` inside the second-level object
 export default withPWA({
-  ...nextConfig,
+  ...nextConfig, // this stays here
+  // ⬇️ PWA config MUST go in `pwa` key – not flat
   pwa: {
     dest: "public",
     register: true,
     skipWaiting: true,
-    disable: process.env.NODE_ENV === "development", // optional: disables PWA in dev mode
-    // swSrc: "service-worker.js", // optional: if you want custom service worker
+    disable: process.env.NODE_ENV === "development",
+    // swSrc: "service-worker.js", // if you have custom SW
   },
 });
