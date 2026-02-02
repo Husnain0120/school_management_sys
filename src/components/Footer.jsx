@@ -85,7 +85,7 @@ export default function Footer() {
           onClick={() => {
             router.push('/pages/contact');
           }}
-          className="group bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-full p-4 shadow-2xl hover:shadow-orange-500/30 transition-all duration-300 flex items-center gap-3 animate-pulse hover:animate-none"
+          className="group bg-gradient-to-r cursor-pointer from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-full p-4 shadow-2xl hover:shadow-orange-500/30 transition-all duration-300 flex items-center gap-3 animate-pulse hover:animate-none"
         >
           <MessageSquare className="w-5 h-5" />
           <span className="font-semibold text-sm hidden sm:inline">
