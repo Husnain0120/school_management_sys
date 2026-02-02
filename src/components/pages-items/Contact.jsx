@@ -1,383 +1,589 @@
-"use client";
+'use client';
 
-import { useRouter } from "next/navigation";
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import {
-  Phone,
+  ArrowRight,
+  Award,
+  BookOpen,
+  Building,
+  Calendar,
+  CheckCircle2,
+  ChevronDown,
+  ChevronUp,
+  Clock,
+  GraduationCap,
+  HelpCircle,
+  Loader2,
   Mail,
   MapPin,
-  Clock,
+  MessageSquare,
+  Phone,
   Send,
-  Home,
-  CheckCircle2,
-} from "lucide-react";
-import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { useState } from "react";
+  Shield,
+  Sparkles,
+  Users,
+} from 'lucide-react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 export default function ContactPage() {
   const router = useRouter();
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    message: "",
+    name: '',
+    email: '',
+    phone: '',
+    message: '',
+    subject: '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [expandedFaq, setExpandedFaq] = useState(null);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = e => {
     e.preventDefault();
     setIsSubmitting(true);
     setTimeout(() => {
       setIsSubmitting(false);
-      router.push("/contact-success");
+      router.push('/contact-success');
     }, 1500);
   };
 
-  const handleChange = (e) => {
+  const handleChange = e => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  // Animation variants
-  const fadeIn = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
+  const toggleFaq = index => {
+    setExpandedFaq(expandedFaq === index ? null : index);
   };
 
-  // Expanded FAQ data
   const faqs = [
     {
       question: "What's the admission process timeline?",
       answer:
         "Our admission process typically takes 7-10 working days from application submission to final decision. You'll receive email updates at each stage including document verification, payment confirmation, and final enrollment.",
+      category: 'Admissions',
     },
     {
-      question: "What documents are required for admission?",
+      question: 'What documents are required for admission?',
       answer:
-        "Required documents include: Birth certificate, CNIC/B-form, 4 passport-sized photographs, previous school transcripts, and a medical fitness certificate. All documents must be attested.",
+        'Required documents include: Birth certificate, CNIC/B-form, 4 passport-sized photographs, previous school transcripts, and a medical fitness certificate. All documents must be attested.',
+      category: 'Admissions',
     },
     {
-      question: "Do you offer financial aid or scholarships?",
+      question: 'Do you offer financial aid or scholarships?',
       answer:
-        "Yes, we offer merit-based scholarships covering 25-100% of tuition fees. Need-based financial aid is also available. Applications open annually in March.",
+        'Yes, we offer merit-based scholarships covering 25-100% of tuition fees. Need-based financial aid is also available. Applications open annually in March.',
+      category: 'Financial',
     },
     {
-      question: "What are the school hours?",
+      question: 'What are the school hours?',
       answer:
-        "Regular school hours are 8:00 AM to 2:00 PM. Extended care program available until 4:30 PM. Friday hours are 8:00 AM to 12:30 PM.",
+        'Regular school hours are 8:00 AM to 2:00 PM. Extended care program available until 4:30 PM. Friday hours are 8:00 AM to 12:30 PM.',
+      category: 'General',
     },
     {
-      question: "How is the curriculum structured?",
+      question: 'How is the curriculum structured?',
       answer:
-        "We follow the National Curriculum with enhancements in STEM education. Our program includes robotics, coding from Grade 3, and advanced mathematics from Grade 6.",
+        'We follow the National Curriculum with enhancements in STEM education. Our program includes robotics, coding from Grade 3, and advanced mathematics from Grade 6.',
+      category: 'Academic',
     },
     {
-      question: "What extracurricular activities are available?",
+      question: 'What technology is used in classrooms?',
       answer:
-        "We offer 30+ activities including sports (swimming, cricket, basketball), arts (music, drama, fine arts), and clubs (robotics, debate, environmental club).",
+        'Smart classrooms with interactive whiteboards, 1:1 iPad program from Grade 5, and dedicated computer labs with latest software for programming and design.',
+      category: 'Academic',
     },
     {
-      question: "What safety measures are in place?",
+      question: 'What safety measures are in place?',
       answer:
-        "Campus features 24/7 security, CCTV surveillance, biometric entry, and trained medical staff. Regular safety drills conducted monthly.",
+        'Campus features 24/7 security, CCTV surveillance, biometric entry, and trained medical staff. Regular safety drills conducted monthly.',
+      category: 'Safety',
     },
     {
-      question: "What technology is used in classrooms?",
+      question: 'What are the transportation options?',
       answer:
-        "Smart classrooms with interactive whiteboards, 1:1 iPad program from Grade 5, and dedicated computer labs with latest software for programming and design.",
+        'Air-conditioned buses with GPS tracking cover all major areas. Female attendants on each route. Transportation fees range based on distance.',
+      category: 'Services',
+    },
+  ];
+
+  const contactMethods = [
+    {
+      icon: Phone,
+      title: 'Phone Support',
+      details: '+1 (555) 123-4567',
+      description: 'Mon-Fri, 8:00 AM - 6:00 PM',
+      gradient: 'from-orange-500 to-orange-600',
+      color: 'orange',
     },
     {
-      question: "What are the transportation options?",
-      answer:
-        "Air-conditioned buses with GPS tracking cover all major areas. Female attendants on each route. Transportation fees range from Rs. 3,500-6,000/month based on distance.",
+      icon: Mail,
+      title: 'Email Support',
+      details: 'support@edumanage.com',
+      description: 'Response within 24 hours',
+      gradient: 'from-gray-900 to-black',
+      color: 'gray',
     },
     {
-      question: "What parent involvement is expected?",
-      answer:
-        "Monthly parent-teacher meetings, optional workshops, and access to parent portal for real-time academic tracking. Volunteer opportunities for school events.",
+      icon: MapPin,
+      title: 'Visit Campus',
+      details: '123 Education Street, City',
+      description: 'Mon-Sat, 9:00 AM - 4:00 PM',
+      gradient: 'from-orange-500 to-orange-600',
+      color: 'orange',
+    },
+    {
+      icon: MessageSquare,
+      title: 'Live Chat',
+      details: 'Available on website',
+      description: 'Real-time support 24/7',
+      gradient: 'from-gray-900 to-black',
+      color: 'gray',
     },
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50/20">
+    <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <div className="relative bg-[url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80')] bg-cover bg-center h-96 flex items-center justify-center before:absolute before:inset-0 before:bg-black/40">
-        <motion.div
-          initial="hidden"
-          animate="visible"
-          variants={fadeIn}
-          className="text-center z-10 px-4"
-        >
-          <h1 className="text-5xl md:text-6xl font-bold text-white mb-4 font-serif tracking-tight">
-            Contact Us
-          </h1>
-          <p className="text-xl text-white/90 max-w-2xl mx-auto">
-            Premium Educational Consultations & Admissions Support
-          </p>
-        </motion.div>
-      </div>
+      <div className="relative overflow-hidden bg-gradient-to-b from-white to-gray-50 pt-32 pb-20 px-4">
+        {/* Background Pattern */}
+        <div className="absolute top-40 right-40 w-96 h-96 bg-orange-500/5 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-40 left-40 w-96 h-96 bg-gray-900/5 rounded-full blur-3xl"></div>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
-        <motion.div
-          initial="hidden"
-          animate="visible"
-          variants={fadeIn}
-          className="grid grid-cols-1 lg:grid-cols-2 gap-16"
-        >
-          {/* Contact Information */}
-          <div className="bg-white rounded-xl shadow-2xl overflow-hidden border border-gray-100/50">
-            <div className="p-10">
-              <h2 className="text-3xl font-bold text-gray-900 mb-8 font-serif border-b pb-4">
-                Direct Connections
-              </h2>
-
-              <div className="space-y-8">
-                <div className="flex items-start gap-6 p-4 hover:bg-blue-50 rounded-xl transition-colors">
-                  <div className="bg-blue-600/10 p-3 rounded-lg flex-shrink-0">
-                    <Phone className="h-6 w-6 text-blue-700" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-lg text-gray-800 mb-1">
-                      Phone Support
-                    </h3>
-                    <p className="text-gray-600">
-                      +92 300 123 4567 (Admissions)
-                    </p>
-                    <p className="text-gray-600">+92 42 123 4567 (General)</p>
-                    <div className="mt-3">
-                      <p className="text-sm text-blue-600 font-medium">
-                        <Clock className="inline mr-2 h-4 w-4" />
-                        Phone Hours: Mon-Sat 8:00 AM - 6:00 PM
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-6 p-4 hover:bg-blue-50 rounded-xl transition-colors">
-                  <div className="bg-blue-600/10 p-3 rounded-lg flex-shrink-0">
-                    <Mail className="h-6 w-6 text-blue-700" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-lg text-gray-800 mb-1">
-                      Email Support
-                    </h3>
-                    <p className="text-gray-600">admissions@edumanage.edu.pk</p>
-                    <p className="text-gray-600">support@edumanage.edu.pk</p>
-                    <div className="mt-3">
-                      <p className="text-sm text-blue-600 font-medium">
-                        <Clock className="inline mr-2 h-4 w-4" />
-                        Response Time: 24 business hours
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-6 p-4 hover:bg-blue-50 rounded-xl transition-colors">
-                  <div className="bg-blue-600/10 p-3 rounded-lg flex-shrink-0">
-                    <MapPin className="h-6 w-6 text-blue-700" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-lg text-gray-800 mb-1">
-                      Campus Visit
-                    </h3>
-                    <p className="text-gray-600">123 Education Street</p>
-                    <p className="text-gray-600">Lahore, Punjab 54000</p>
-                    <div className="mt-3">
-                      <p className="text-sm text-blue-600 font-medium">
-                        <Clock className="inline mr-2 h-4 w-4" />
-                        Visiting Hours: Mon-Sat 9:00 AM - 4:00 PM
-                      </p>
-                    </div>
-                  </div>
-                </div>
+        <div className="relative z-10 max-w-6xl mx-auto">
+          <div className="flex flex-col items-center text-center mb-12">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center shadow-lg">
+                <GraduationCap className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold">
+                  <span className="text-gray-900">Edu</span>
+                  <span className="text-orange-600">Manage</span>
+                </h1>
+                <p className="text-sm text-gray-500">Support Center</p>
               </div>
             </div>
 
-            {/* Map Section */}
-            <div className="h-80 w-full relative border-t">
-              <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3403.036989863575!2d74.3584973151049!3d31.48120998138589!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39190483e58107d9%3A0xc23abe6ccc7e2462!2sLahore!5e0!3m2!1sen!2s!4v1620000000000!5m2!1sen!2s"
-                width="100%"
-                height="100%"
-                style={{ border: 0 }}
-                allowFullScreen
-                loading="lazy"
-                className="absolute inset-0"
-              ></iframe>
-            </div>
-          </div>
-
-          {/* Premium Contact Form */}
-          <div className="bg-white rounded-xl shadow-2xl p-10 border border-gray-100/50">
-            <div className="mb-8">
-              <h2 className="text-3xl font-bold text-gray-900 font-serif mb-2">
-                Priority Inquiry Form
-              </h2>
-              <p className="text-gray-600 text-lg">
-                Complete this form for expedited response (4-hour guarantee)
-              </p>
-            </div>
-
-            <form onSubmit={handleSubmit} className="space-y-8">
-              <div className="relative">
-                <Input
-                  id="name"
-                  name="name"
-                  type="text"
-                  required
-                  value={formData.name}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-0 peer"
-                />
-                <label
-                  htmlFor="name"
-                  className="absolute left-4 top-3 px-1 bg-white text-gray-500 transition-all 
-                    peer-focus:-top-2 peer-focus:text-sm peer-focus:text-blue-600
-                    peer-valid:-top-2 peer-valid:text-sm"
-                >
-                  Full Name *
-                </label>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="relative">
-                  <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    required
-                    value={formData.email}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-0 peer"
-                  />
-                  <label
-                    htmlFor="email"
-                    className="absolute left-4 top-3 px-1 bg-white text-gray-500 transition-all 
-                      peer-focus:-top-2 peer-focus:text-sm peer-focus:text-blue-600
-                      peer-valid:-top-2 peer-valid:text-sm"
-                  >
-                    Email *
-                  </label>
-                </div>
-
-                <div className="relative">
-                  <Input
-                    id="phone"
-                    name="phone"
-                    type="tel"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-0 peer"
-                  />
-                  <label
-                    htmlFor="phone"
-                    className="absolute left-4 top-3 px-1 bg-white text-gray-500 transition-all 
-                      peer-focus:-top-2 peer-focus:text-sm peer-focus:text-blue-600
-                      peer-valid:-top-2 peer-valid:text-sm"
-                  >
-                    Phone Number
-                  </label>
-                </div>
-              </div>
-
-              <div className="relative">
-                <Textarea
-                  id="message"
-                  name="message"
-                  rows={6}
-                  required
-                  value={formData.message}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-0 peer"
-                />
-                <label
-                  htmlFor="message"
-                  className="absolute left-4 top-3 px-1 bg-white text-gray-500 transition-all 
-                    peer-focus:-top-2 peer-focus:text-sm peer-focus:text-blue-600
-                    peer-valid:-top-2 peer-valid:text-sm"
-                >
-                  Detailed Message *
-                </label>
-              </div>
-
-              <div className="flex justify-end">
-                <Button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white px-8 py-6 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 flex items-center gap-2 group"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <svg
-                        className="animate-spin h-5 w-5 text-white"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                        ></circle>
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                        ></path>
-                      </svg>
-                      <span className="font-medium">Processing Inquiry...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Send className="h-5 w-5 transition-transform group-hover:translate-x-1" />
-                      <span className="font-medium">Send Priority Message</span>
-                    </>
-                  )}
-                </Button>
-              </div>
-            </form>
-          </div>
-        </motion.div>
-
-        {/* Premium FAQ Section */}
-        <motion.div
-          initial="hidden"
-          animate="visible"
-          variants={fadeIn}
-          className="mt-28"
-        >
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gray-900 font-serif mb-4">
-              Admissions Handbook
-            </h2>
+            <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
+              How can we{' '}
+              <span className="text-transparent bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text">
+                help you
+              </span>{' '}
+              today?
+            </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Comprehensive guide to our educational programs and policies
+              Get answers to your questions or reach out to our support team.
+              We're here to help.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {faqs.map((item, index) => (
+          {/* Stats */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto mb-12">
+            <div className="bg-white rounded-xl p-4 border border-gray-200 text-center">
+              <div className="text-2xl font-bold text-orange-600">24/7</div>
+              <div className="text-sm text-gray-600">Support</div>
+            </div>
+            <div className="bg-white rounded-xl p-4 border border-gray-200 text-center">
+              <div className="text-2xl font-bold text-gray-900">2h</div>
+              <div className="text-sm text-gray-600">Avg Response Time</div>
+            </div>
+            <div className="bg-white rounded-xl p-4 border border-gray-200 text-center">
+              <div className="text-2xl font-bold text-gray-900">95%</div>
+              <div className="text-sm text-gray-600">Satisfaction</div>
+            </div>
+            <div className="bg-white rounded-xl p-4 border border-gray-200 text-center">
+              <div className="text-2xl font-bold text-gray-900">500+</div>
+              <div className="text-sm text-gray-600">Schools Helped</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="grid lg:grid-cols-3 gap-12">
+          {/* Contact Methods */}
+          <div className="lg:col-span-2">
+            <div className="mb-12">
+              <h2 className="text-3xl font-bold text-gray-900 mb-8 flex items-center gap-3">
+                <HelpCircle className="h-8 w-8 text-orange-600" />
+                Contact Options
+              </h2>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {contactMethods.map((method, index) => (
+                  <div
+                    key={index}
+                    className="bg-white rounded-xl p-6 border border-gray-200 hover:border-orange-300 hover:shadow-lg transition-all duration-300 group"
+                  >
+                    <div className="flex items-start gap-4">
+                      <div
+                        className={`w-12 h-12 rounded-lg bg-gradient-to-br ${method.gradient} flex items-center justify-center group-hover:scale-110 transition-transform`}
+                      >
+                        <method.icon className="h-6 w-6 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-bold text-gray-900 text-lg mb-1">
+                          {method.title}
+                        </h3>
+                        <p className="text-gray-900 font-semibold">
+                          {method.details}
+                        </p>
+                        <p className="text-gray-500 text-sm mt-2 flex items-center gap-1">
+                          <Clock className="h-3 w-3" />
+                          {method.description}
+                        </p>
+                      </div>
+                    </div>
+                    <Button
+                      variant="outline"
+                      className={`mt-4 w-full border-${method.color}-300 text-${method.color}-600 hover:bg-${method.color}-50 hover:border-${method.color}-400`}
+                    >
+                      {method.title === 'Live Chat'
+                        ? 'Start Chat'
+                        : 'Contact Now'}
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Contact Form */}
+            <div className="bg-white rounded-2xl border border-gray-200 p-8 shadow-lg">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center">
+                  <Send className="h-5 w-5 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900">
+                    Send us a Message
+                  </h2>
+                  <p className="text-gray-600">
+                    We'll get back to you as soon as possible.
+                  </p>
+                </div>
+              </div>
+
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold text-gray-700 block mb-2">
+                      Full Name *
+                    </label>
+                    <Input
+                      name="name"
+                      type="text"
+                      required
+                      value={formData.name}
+                      onChange={handleChange}
+                      placeholder="John Doe"
+                      className="rounded-lg border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold text-gray-700 block mb-2">
+                      Email *
+                    </label>
+                    <Input
+                      name="email"
+                      type="email"
+                      required
+                      value={formData.email}
+                      onChange={handleChange}
+                      placeholder="john@example.com"
+                      className="rounded-lg border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold text-gray-700 block mb-2">
+                      Phone Number
+                    </label>
+                    <Input
+                      name="phone"
+                      type="tel"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      placeholder="+1 (555) 123-4567"
+                      className="rounded-lg border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold text-gray-700 block mb-2">
+                      Subject *
+                    </label>
+                    <Input
+                      name="subject"
+                      type="text"
+                      required
+                      value={formData.subject}
+                      onChange={handleChange}
+                      placeholder="How can we help?"
+                      className="rounded-lg border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-gray-700 block mb-2">
+                    Message *
+                  </label>
+                  <Textarea
+                    name="message"
+                    rows={5}
+                    required
+                    value={formData.message}
+                    onChange={handleChange}
+                    placeholder="Please describe your issue or question in detail..."
+                    className="rounded-lg border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 resize-none"
+                  />
+                </div>
+
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white py-6 rounded-lg font-semibold shadow-lg hover:shadow-orange-500/30 transition-all duration-300"
+                >
+                  {isSubmitting ? (
+                    <div className="flex items-center justify-center gap-2">
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                      <span>Sending Message...</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-center gap-2">
+                      <Send className="h-5 w-5" />
+                      <span>Send Message</span>
+                    </div>
+                  )}
+                </Button>
+              </form>
+            </div>
+          </div>
+
+          {/* Sidebar */}
+          <div className="space-y-8">
+            {/* Quick Help */}
+            <div className="bg-gradient-to-br from-orange-50 to-orange-100/30 rounded-2xl p-6 border border-orange-100">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center">
+                  <Sparkles className="h-5 w-5 text-white" />
+                </div>
+                <h3 className="font-bold text-gray-900">Quick Help</h3>
+              </div>
+              <ul className="space-y-3">
+                <li>
+                  <Link
+                    href="/pages/admission"
+                    className="text-gray-700 hover:text-orange-600 hover:underline flex items-center gap-2"
+                  >
+                    <BookOpen className="h-4 w-4" />
+                    Admission Process
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="#"
+                    className="text-gray-700 hover:text-orange-600 hover:underline flex items-center gap-2"
+                  >
+                    <Calendar className="h-4 w-4" />
+                    Schedule a Tour
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="#"
+                    className="text-gray-700 hover:text-orange-600 hover:underline flex items-center gap-2"
+                  >
+                    <Award className="h-4 w-4" />
+                    Scholarships
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="#"
+                    className="text-gray-700 hover:text-orange-600 hover:underline flex items-center gap-2"
+                  >
+                    <Building className="h-4 w-4" />
+                    Campus Facilities
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            {/* Support Hours */}
+            <div className="bg-white rounded-2xl border border-gray-200 p-6">
+              <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <Clock className="h-5 w-5 text-orange-600" />
+                Support Hours
+              </h3>
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Monday - Friday</span>
+                  <span className="text-sm font-semibold text-gray-900">
+                    8:00 AM - 6:00 PM
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Saturday</span>
+                  <span className="text-sm font-semibold text-gray-900">
+                    9:00 AM - 4:00 PM
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Sunday</span>
+                  <span className="text-sm font-semibold text-gray-900">
+                    Emergency Only
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Trust Badges */}
+            <div className="bg-gradient-to-br from-gray-900 to-black rounded-2xl text-white p-6">
+              <h3 className="font-bold mb-4 flex items-center gap-2">
+                <Shield className="h-5 w-5 text-orange-400" />
+                Trust & Security
+              </h3>
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-green-400" />
+                  <span className="text-sm">GDPR Compliant</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-green-400" />
+                  <span className="text-sm">Secure Data Encryption</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-green-400" />
+                  <span className="text-sm">24/7 System Monitoring</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Live Support */}
+            <div className="bg-white rounded-2xl border border-gray-200 p-6 text-center">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center">
+                <Users className="h-8 w-8 text-white" />
+              </div>
+              <h3 className="font-bold text-gray-900 mb-2">
+                Live Support Available
+              </h3>
+              <p className="text-gray-600 text-sm mb-4">
+                Connect with our support team in real-time
+              </p>
+              <Button className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white">
+                Start Live Chat
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {/* FAQ Section */}
+        <div className="mt-20">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              Frequently Asked Questions
+            </h2>
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+              Find quick answers to common questions about admissions, programs,
+              and campus life
+            </p>
+          </div>
+
+          <div className="max-w-4xl mx-auto">
+            {faqs.map((faq, index) => (
               <div
                 key={index}
-                className="bg-white p-6 rounded-xl shadow-lg border border-gray-100 hover:shadow-xl transition-all"
+                className="bg-white rounded-xl border border-gray-200 mb-4 overflow-hidden hover:border-orange-300 transition-all"
               >
-                <div className="flex items-start gap-4 mb-4">
-                  <CheckCircle2 className="h-6 w-6 text-blue-600 flex-shrink-0" />
-                  <h3 className="text-xl font-semibold text-gray-800">
-                    {item.question}
-                  </h3>
-                </div>
-                <p className="text-gray-600 pl-10">{item.answer}</p>
+                <button
+                  onClick={() => toggleFaq(index)}
+                  className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gray-50 transition-colors"
+                >
+                  <div className="flex items-start gap-4">
+                    <div
+                      className={`w-8 h-8 rounded-lg flex items-center justify-center mt-1 ${
+                        faq.category === 'Admissions'
+                          ? 'bg-orange-100 text-orange-600'
+                          : faq.category === 'Financial'
+                            ? 'bg-blue-100 text-blue-600'
+                            : faq.category === 'Academic'
+                              ? 'bg-green-100 text-green-600'
+                              : 'bg-gray-100 text-gray-600'
+                      }`}
+                    >
+                      {faq.category === 'Admissions' ? (
+                        <GraduationCap className="h-4 w-4" />
+                      ) : faq.category === 'Financial' ? (
+                        <Award className="h-4 w-4" />
+                      ) : faq.category === 'Academic' ? (
+                        <BookOpen className="h-4 w-4" />
+                      ) : (
+                        <HelpCircle className="h-4 w-4" />
+                      )}
+                    </div>
+                    <div>
+                      <span className="text-xs font-semibold text-gray-500 mb-1 block">
+                        {faq.category}
+                      </span>
+                      <h3 className="font-semibold text-gray-900">
+                        {faq.question}
+                      </h3>
+                    </div>
+                  </div>
+                  {expandedFaq === index ? (
+                    <ChevronUp className="h-5 w-5 text-gray-500 flex-shrink-0" />
+                  ) : (
+                    <ChevronDown className="h-5 w-5 text-gray-500 flex-shrink-0" />
+                  )}
+                </button>
+
+                {expandedFaq === index && (
+                  <div className="px-6 pb-6 pl-16">
+                    <p className="text-gray-600 leading-relaxed">
+                      {faq.answer}
+                    </p>
+                  </div>
+                )}
               </div>
             ))}
           </div>
-        </motion.div>
+        </div>
+      </div>
+
+      {/* CTA Section */}
+      <div className="bg-gradient-to-r from-orange-50 to-orange-100/30 border-y border-orange-100 mt-20 py-16">
+        <div className="max-w-6xl mx-auto px-4 text-center">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-full text-sm font-semibold mb-6">
+            <Sparkles className="h-4 w-4" />
+            Ready to Get Started?
+          </div>
+
+          <h3 className="text-4xl font-bold text-gray-900 mb-4">
+            Join hundreds of schools already using EduManage
+          </h3>
+          <p className="text-gray-600 mb-8 text-lg max-w-2xl mx-auto">
+            Start your journey towards educational excellence today
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-8 py-6 rounded-lg font-semibold shadow-lg hover:shadow-orange-500/30 transition-all">
+              Apply Now
+              <ArrowRight className="h-5 w-5 ml-2" />
+            </Button>
+            <Button
+              variant="outline"
+              className="border-gray-300 text-gray-700 hover:border-orange-500 hover:text-orange-600 hover:bg-orange-50 px-8 py-6 rounded-lg font-semibold"
+            >
+              Schedule Demo
+            </Button>
+          </div>
+        </div>
       </div>
     </div>
   );
