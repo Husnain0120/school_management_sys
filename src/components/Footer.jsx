@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { Poppins } from 'next/font/google';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import {
   FaFacebook,
@@ -75,16 +76,22 @@ export default function Footer() {
       { label: 'Accessibility', href: '#' },
     ],
   };
-
+  const router = useRouter();
   return (
     <>
       {/* Support Button - Floating */}
       <div className="fixed bottom-6 right-6 z-50">
-        <button className="group bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-full p-4 shadow-2xl hover:shadow-orange-500/30 transition-all duration-300 flex items-center gap-3 animate-pulse hover:animate-none">
+        <button
+          onClick={() => {
+            router.push('/pages/contact');
+          }}
+          className="group bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-full p-4 shadow-2xl hover:shadow-orange-500/30 transition-all duration-300 flex items-center gap-3 animate-pulse hover:animate-none"
+        >
           <MessageSquare className="w-5 h-5" />
           <span className="font-semibold text-sm hidden sm:inline">
             Need Help?
           </span>
+
           <div className="absolute -top-2 -right-2 w-4 h-4 bg-red-500 rounded-full animate-ping"></div>
         </button>
       </div>
