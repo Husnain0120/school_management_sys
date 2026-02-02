@@ -76,7 +76,9 @@ export default function Footer() {
       { label: 'Accessibility', href: '#' },
     ],
   };
+
   const router = useRouter();
+
   return (
     <>
       {/* Support Button - Floating */}
@@ -91,7 +93,6 @@ export default function Footer() {
           <span className="font-semibold text-sm hidden sm:inline">
             Need Help?
           </span>
-
           <div className="absolute -top-2 -right-2 w-4 h-4 bg-red-500 rounded-full animate-ping"></div>
         </button>
       </div>
@@ -100,30 +101,30 @@ export default function Footer() {
       <footer className="w-full bg-white text-gray-900 border-t border-gray-100">
         {/* Top Support Section */}
         <div className="bg-gradient-to-r from-orange-50 to-orange-100/30 border-y border-orange-100">
-          <div className="w-full max-w-[1600px] mx-auto px-6 md:px-12 lg:px-16 py-12">
-            <div className="grid md:grid-cols-3 gap-8">
+          <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 md:px-12 lg:px-16 py-8 sm:py-12">
+            <div className="grid md:grid-cols-3 gap-6 md:gap-8">
               {/* Support Info */}
               <div className="md:col-span-2">
-                <h2 className="text-2xl font-bold mb-4 flex items-center gap-3 text-gray-900">
-                  <HelpCircle className="w-6 h-6 text-orange-600" />
+                <h2 className="text-xl sm:text-2xl font-bold mb-4 flex items-center gap-3 text-gray-900">
+                  <HelpCircle className="w-5 h-5 sm:w-6 sm:h-6 text-orange-600" />
                   We're Here to Help
                 </h2>
-                <p className="text-gray-600 mb-6">
+                <p className="text-gray-600 mb-6 text-sm sm:text-base">
                   Get instant support, schedule a demo, or explore our extensive
                   documentation.
                 </p>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   <a
                     href="/pages/contact"
-                    className="bg-white hover:border-orange-300 border border-gray-200 hover:shadow-lg rounded-xl p-4 transition-all group"
+                    className="bg-white hover:border-orange-300 border border-gray-200 hover:shadow-lg rounded-xl p-3 sm:p-4 transition-all group"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <Mail className="w-5 h-5 text-white" />
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <Mail className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                       </div>
                       <div>
-                        <div className="font-semibold text-gray-900">
+                        <div className="font-semibold text-gray-900 text-sm sm:text-base">
                           Email Support
                         </div>
                         <div className="text-xs text-gray-500">
@@ -135,14 +136,14 @@ export default function Footer() {
 
                   <a
                     href="#"
-                    className="bg-white hover:border-orange-300 border border-gray-200 hover:shadow-lg rounded-xl p-4 transition-all group"
+                    className="bg-white hover:border-orange-300 border border-gray-200 hover:shadow-lg rounded-xl p-3 sm:p-4 transition-all group"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <Phone className="w-5 h-5 text-white" />
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <Phone className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                       </div>
                       <div>
-                        <div className="font-semibold text-gray-900">
+                        <div className="font-semibold text-gray-900 text-sm sm:text-base">
                           Call Us
                         </div>
                         <div className="text-xs text-gray-500">
@@ -154,14 +155,14 @@ export default function Footer() {
 
                   <a
                     href="#"
-                    className="bg-white hover:border-orange-300 border border-gray-200 hover:shadow-lg rounded-xl p-4 transition-all group"
+                    className="bg-white hover:border-orange-300 border border-gray-200 hover:shadow-lg rounded-xl p-3 sm:p-4 transition-all group"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <BookOpen className="w-5 h-5 text-white" />
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <BookOpen className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                       </div>
                       <div>
-                        <div className="font-semibold text-gray-900">
+                        <div className="font-semibold text-gray-900 text-sm sm:text-base">
                           Knowledge Base
                         </div>
                         <div className="text-xs text-gray-500">
@@ -174,20 +175,20 @@ export default function Footer() {
               </div>
 
               {/* Newsletter */}
-              <div className="bg-white border border-orange-200 rounded-xl p-6 shadow-sm">
-                <h3 className="font-bold text-lg mb-3 text-gray-900">
+              <div className="bg-white border border-orange-200 rounded-xl p-4 sm:p-6 shadow-sm mt-4 md:mt-0">
+                <h3 className="font-bold text-base sm:text-lg mb-3 text-gray-900">
                   Stay Updated
                 </h3>
-                <p className="text-sm text-gray-600 mb-4">
+                <p className="text-xs sm:text-sm text-gray-600 mb-4">
                   Get the latest features and educational insights.
                 </p>
-                <div className="flex gap-2">
+                <div className="flex flex-col sm:flex-row gap-2">
                   <input
                     type="email"
                     placeholder="Your email"
                     className="flex-1 bg-gray-50 border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500"
                   />
-                  <button className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2">
+                  <button className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center justify-center gap-2 mt-2 sm:mt-0">
                     Subscribe
                     <ArrowRight className="w-3 h-3" />
                   </button>
@@ -198,53 +199,53 @@ export default function Footer() {
         </div>
 
         {/* Main Footer Content */}
-        <div className="w-full max-w-[1600px] mx-auto px-6 md:px-12 lg:px-16 py-12">
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 lg:gap-8">
+        <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 md:px-12 lg:px-16 py-8 sm:py-12">
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-8">
             {/* Brand & Language Section */}
-            <div className="lg:col-span-2 flex flex-col gap-8">
+            <div className="lg:col-span-2 flex flex-col gap-6 sm:gap-8">
               {/* Brand */}
               <div className="flex flex-col gap-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center shadow-md">
-                    <GraduationCap className="w-6 h-6 text-white" />
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center shadow-md">
+                    <GraduationCap className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                   </div>
                   <div>
-                    <h1 className="text-2xl font-bold">
+                    <h1 className="text-xl sm:text-2xl font-bold">
                       <span className="text-gray-900">Edu</span>
                       <span className="text-orange-600">Manage</span>
                     </h1>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-xs sm:text-sm text-gray-500">
                       Transforming Education Since 2015
                     </p>
                   </div>
                 </div>
 
                 {/* Trust Badges */}
-                <div className="flex flex-wrap gap-3 mt-2">
-                  <div className="flex items-center gap-2 text-xs bg-orange-50 text-orange-700 rounded-lg px-3 py-1.5 border border-orange-100">
+                <div className="flex flex-wrap gap-2 mt-2">
+                  <div className="flex items-center gap-2 text-xs bg-orange-50 text-orange-700 rounded-lg px-2 py-1 sm:px-3 sm:py-1.5 border border-orange-100">
                     <Shield className="w-3 h-3" />
-                    <span>GDPR Compliant</span>
+                    <span className="text-xs">GDPR Compliant</span>
                   </div>
-                  <div className="flex items-center gap-2 text-xs bg-gray-50 text-gray-700 rounded-lg px-3 py-1.5 border border-gray-200">
+                  <div className="flex items-center gap-2 text-xs bg-gray-50 text-gray-700 rounded-lg px-2 py-1 sm:px-3 sm:py-1.5 border border-gray-200">
                     <Award className="w-3 h-3" />
-                    <span>EdTech Award 2024</span>
+                    <span className="text-xs">EdTech Award 2024</span>
                   </div>
-                  <div className="flex items-center gap-2 text-xs bg-gray-50 text-gray-700 rounded-lg px-3 py-1.5 border border-gray-200">
+                  <div className="flex items-center gap-2 text-xs bg-gray-50 text-gray-700 rounded-lg px-2 py-1 sm:px-3 sm:py-1.5 border border-gray-200">
                     <Users className="w-3 h-3" />
-                    <span>500+ Schools</span>
+                    <span className="text-xs">500+ Schools</span>
                   </div>
                 </div>
               </div>
 
               {/* Language Selector */}
-              <div className="relative w-full max-w-[200px]">
+              <div className="relative w-full max-w-[180px] sm:max-w-[200px]">
                 <p className="text-xs font-semibold uppercase tracking-wide mb-2 text-gray-600">
                   <Globe className="w-3 h-3 inline mr-1" />
                   Language
                 </p>
                 <button
                   onClick={() => setShowLanguageMenu(!showLanguageMenu)}
-                  className="w-full flex items-center justify-between rounded-lg border border-gray-300 bg-gray-50 hover:bg-gray-100 hover:border-orange-500 transition-all px-4 py-2.5 text-sm font-medium cursor-pointer"
+                  className="w-full flex items-center justify-between rounded-lg border border-gray-300 bg-gray-50 hover:bg-gray-100 hover:border-orange-500 transition-all px-3 sm:px-4 py-2 sm:py-2.5 text-sm font-medium cursor-pointer"
                 >
                   <div className="flex items-center gap-2">
                     <span className="w-5 h-4 relative overflow-hidden rounded-sm">
@@ -254,7 +255,9 @@ export default function Footer() {
                         className="w-full h-full object-cover"
                       />
                     </span>
-                    <span className="text-gray-900">{language}</span>
+                    <span className="text-gray-900 text-sm sm:text-base">
+                      {language}
+                    </span>
                   </div>
                   <ChevronDown
                     className={`w-4 h-4 transition-transform text-gray-500 ${
@@ -296,12 +299,12 @@ export default function Footer() {
                 <p className="text-xs font-semibold uppercase tracking-wide mb-3 text-gray-600">
                   Follow Us
                 </p>
-                <div className="flex gap-3">
+                <div className="flex flex-wrap gap-2 sm:gap-3">
                   {Object.entries(SocialIcons).map(([key, icon]) => (
                     <a
                       key={key}
                       href="#"
-                      className="w-10 h-10 rounded-lg bg-gray-50 hover:bg-orange-50 hover:border-orange-300 hover:scale-110 transition-all flex items-center justify-center border border-gray-200 text-gray-600 hover:text-orange-600"
+                      className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gray-50 hover:bg-orange-50 hover:border-orange-300 hover:scale-110 transition-all flex items-center justify-center border border-gray-200 text-gray-600 hover:text-orange-600"
                       aria-label={key}
                     >
                       {icon}
@@ -312,18 +315,18 @@ export default function Footer() {
             </div>
 
             {/* Links Sections */}
-            <div className="lg:col-span-3 grid grid-cols-2 md:grid-cols-4 gap-8 lg:gap-12">
+            <div className="lg:col-span-3 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 lg:gap-12 mt-8 lg:mt-0">
               {Object.entries(sections).map(([title, links]) => (
-                <div key={title} className="flex flex-col gap-4">
-                  <h3 className="text-sm font-bold uppercase tracking-wider text-gray-700">
+                <div key={title} className="flex flex-col gap-3 sm:gap-4">
+                  <h3 className="text-xs sm:text-sm font-bold uppercase tracking-wider text-gray-700">
                     {title}
                   </h3>
-                  <ul className="flex flex-col gap-3">
+                  <ul className="flex flex-col gap-2 sm:gap-3">
                     {links.map(item => (
                       <li key={item.label}>
                         <a
                           href={item.href}
-                          className="text-gray-600 hover:text-orange-600 hover:translate-x-1 transition-all inline-flex items-center gap-1 text-sm group"
+                          className="text-gray-600 hover:text-orange-600 hover:translate-x-1 transition-all inline-flex items-center gap-1 text-xs sm:text-sm group"
                         >
                           <span className="opacity-0 group-hover:opacity-100 transition-opacity">
                             →
@@ -339,26 +342,26 @@ export default function Footer() {
           </div>
 
           {/* Divider */}
-          <div className="w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent my-8"></div>
+          <div className="w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent my-6 sm:my-8"></div>
 
           {/* Bottom Section */}
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4 sm:gap-6">
             {/* Copyright */}
-            <div className="text-gray-500 text-sm">
+            <div className="text-gray-500 text-xs sm:text-sm text-center md:text-left order-2 md:order-1">
               © 2024 EduManage. All rights reserved.
             </div>
 
             {/* Large Brand Text */}
-            <div className="text-center">
+            <div className="text-center order-1 md:order-2 mb-4 md:mb-0">
               <h1
-                className={`${poppins.className} text-6xl md:text-7xl lg:text-8xl select-none opacity-5 font-extrabold text-gray-900 tracking-wider`}
+                className={`${poppins.className} text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl select-none opacity-5 font-extrabold text-gray-900 tracking-wider`}
               >
                 EDU-MANAGE
               </h1>
             </div>
 
             {/* Additional Links */}
-            <div className="flex items-center gap-6 text-sm">
+            <div className="flex items-center gap-4 sm:gap-6 text-xs sm:text-sm order-3">
               <Link
                 href="/pages/login"
                 className="text-gray-600 hover:text-orange-600 transition-colors font-medium"
@@ -370,13 +373,13 @@ export default function Footer() {
                 className="text-orange-600 hover:text-orange-700 font-semibold flex items-center gap-1"
               >
                 Contact Support
-                <ArrowRight className="w-4 h-4" />
+                <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" />
               </a>
             </div>
           </div>
 
           {/* Inspiration Credit */}
-          <p className="text-xs text-center text-gray-400 mt-8">
+          <p className="text-xs text-center text-gray-400 mt-6 sm:mt-8">
             Design inspired by modern SaaS platforms •
             <Link
               href="https://discord.com/"
