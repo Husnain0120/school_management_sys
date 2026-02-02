@@ -140,7 +140,7 @@ export default function EnhancedProfilePage() {
       studentId: profileData.portalId || 'bc230212199',
       cardType: 'STUDENT CARD',
       validUntil: 'May 2027',
-      universityName: 'Virtual University of Pakistan',
+      universityName: 'EduManage System',
       universityType: 'Federal Government University',
       note1: 'The Student must possess this card while in university campus.',
       note2: 'It is obligatory to produce this card on demand.',
@@ -385,10 +385,10 @@ export default function EnhancedProfilePage() {
               <div class="logo">
                 <div style="display: flex; align-items: center; gap: 10px;">
                   <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #3b82f6, #1d4ed8); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px;">
-                    LNS<br/>LMS
+                    <br/>LMS
                   </div>
                   <div>
-                    <div style="font-size: 12px; font-weight: bold; color: #f97316;">LNS Learning</div>
+                    <div style="font-size: 12px; font-weight: bold; color: #f97316;">LMS Learning</div>
                     <div style="font-size: 10px; color: #cbd5e1;">Management System</div>
                   </div>
                 </div>
