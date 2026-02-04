@@ -53,9 +53,7 @@ export default function AdminDashboard() {
     try {
       setLoading(true);
       setError(null);
-      const response = await axios.get(
-        'http://localhost:3000/api/admin/analytics'
-      );
+      const response = await axios.get('/api/admin/analytics');
       if (response.data && response.data.metaData) {
         setAnalytics(response.data.metaData);
       }
