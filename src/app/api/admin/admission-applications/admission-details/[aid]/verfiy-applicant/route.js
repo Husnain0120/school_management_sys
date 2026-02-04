@@ -1,19 +1,19 @@
-import dbConnect from "@/DataBase/db";
-import AdmissionForm from "@/model/admissionForm.model";
-import Class from "@/model/classes.model";
-import { NextResponse } from "next/server";
+import dbConnect from '@/DataBase/db';
+import AdmissionForm from '@/model/admissionForm.model';
+import Class from '@/model/classes.model';
+import { NextResponse } from 'next/server';
 
 export async function PUT(request, { params }) {
   try {
     await dbConnect();
 
-    const { aid } = params; // Removed await since params is not a promise
+    const { aid } = await params; // Removed await since params is not a promise
 
     // Fetch applicant by ID
     const applicant = await AdmissionForm.findById(aid);
     if (!applicant) {
       return NextResponse.json(
-        { message: "No applicant found to verify.", success: false },
+        { message: 'No applicant found to verify.', success: false },
         { status: 404 }
       );
     }
@@ -24,7 +24,7 @@ export async function PUT(request, { params }) {
 
     if (!classDoc) {
       return NextResponse.json(
-        { message: "Class not found by name!", success: false },
+        { message: 'Class not found by name!', success: false },
         { status: 404 }
       );
     }
@@ -45,11 +45,11 @@ export async function PUT(request, { params }) {
     // Save updated applicant
     await applicant.save();
 
-    const statusMessage = applicant.isVerified ? "verified" : "unverified";
+    const statusMessage = applicant.isVerified ? 'verified' : 'unverified';
     return NextResponse.json(
       {
         message: `Applicant ${statusMessage} successfully. Class ${
-          applicant.isVerified ? "assigned" : "removed"
+          applicant.isVerified ? 'assigned' : 'removed'
         }.`,
         success: true,
         data: {
@@ -60,10 +60,10 @@ export async function PUT(request, { params }) {
       { status: 200 }
     );
   } catch (error) {
-    console.error("Failed to verify applicant:", error);
+    console.error('Failed to verify applicant:', error);
     return NextResponse.json(
       {
-        message: "Failed to verify applicant.",
+        message: 'Failed to verify applicant.',
         success: false,
         error: error.message,
       },

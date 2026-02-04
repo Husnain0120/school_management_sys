@@ -789,9 +789,9 @@ export default function AdmissionForm() {
                               </SelectItem>
                             ))
                           ) : (
-                            <div className="p-2 text-center text-gray-500">
-                              No classes available
-                            </div>
+                            <SelectItem value="No class yet">
+                              No class yet
+                            </SelectItem>
                           )}
                         </SelectContent>
                       </Select>
