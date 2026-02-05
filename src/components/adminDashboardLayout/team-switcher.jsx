@@ -1,21 +1,20 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { GraduationCap } from "lucide-react";
+import { GraduationCap } from 'lucide-react';
 
 import {
   DropdownMenu,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from '@/components/ui/dropdown-menu';
 
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar";
-import { SidebarHeaderSkeleton } from "../skeleton/Sidebar-header-skeleton";
-import AdminVerifiedBadge from "../verify-badge/Admin-verified-badge";
-import TeacherVerifiedBadge from "../verify-badge/Teacher-verified-badge";
+} from '@/components/ui/sidebar';
+import { SidebarHeaderSkeleton } from '../skeleton/Sidebar-header-skeleton';
+import AdminVerifiedBadge from '../verify-badge/Admin-verified-badge';
+import TeacherVerifiedBadge from '../verify-badge/Teacher-verified-badge';
 
 export function TeamSwitcher({ user, loading }) {
   if (loading || !user || !user.role) {
@@ -37,10 +36,10 @@ export function TeamSwitcher({ user, loading }) {
                 <span className="truncate font-semibold">EDU LMS</span>
                 <span className="truncate text-xs flex items-center gap-1">
                   {user.role.toUpperCase()}
-                  {user.role === "admin" ? (
+                  {user.role === 'admin' ? (
                     <AdminVerifiedBadge size={12} />
                   ) : (
-                    user.role === "teacher" && (
+                    user.role === 'teacher' && (
                       <TeacherVerifiedBadge size={12} />
                     )
                   )}

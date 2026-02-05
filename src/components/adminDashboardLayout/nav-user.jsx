@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   BadgeCheck,
@@ -7,9 +7,9 @@ import {
   CreditCard,
   LogOut,
   Sparkles,
-} from "lucide-react";
+} from 'lucide-react';
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,20 +18,18 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from '@/components/ui/dropdown-menu';
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@/components/ui/sidebar";
-import axios from "axios";
-import { toast } from "sonner";
-import { Button } from "../ui/button";
-import { useRouter } from "next/navigation";
-import { SidebarUserSkeleton } from "../skeleton/Sidebar-user-skeleton";
-import { Skeleton } from "../ui/skeleton";
-import Link from "next/link";
+} from '@/components/ui/sidebar';
+import axios from 'axios';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
+import { SidebarUserSkeleton } from '../skeleton/Sidebar-user-skeleton';
 
 export function NavUser({ user, loading }) {
   const { isMobile } = useSidebar();
@@ -40,9 +38,9 @@ export function NavUser({ user, loading }) {
   const handelLogout = async () => {
     try {
       const res = await axios.get(`/api/auth/logout`);
-      toast.success(res.data.message || "Logout Successfully!");
+      toast.success(res.data.message || 'Logout Successfully!');
       if (res.status === 200) {
-        router.push("/pages/login");
+        router.push('/pages/login');
       }
     } catch (error) {
       console.log(error);
@@ -71,9 +69,9 @@ export function NavUser({ user, loading }) {
                 />
                 <AvatarFallback className="bg-primary text-white text-sm">
                   {user.fullName
-                    .split(" ")
-                    .map((n) => n[0])
-                    .join("")}
+                    .split(' ')
+                    .map(n => n[0])
+                    .join('')}
                 </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
@@ -87,7 +85,7 @@ export function NavUser({ user, loading }) {
           </DropdownMenuTrigger>
           <DropdownMenuContent
             className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg bg-white shadow-lg"
-            side={isMobile ? "bottom" : "right"}
+            side={isMobile ? 'bottom' : 'right'}
             align="end"
             sideOffset={8}
             alignOffset={8}
@@ -103,9 +101,9 @@ export function NavUser({ user, loading }) {
                     />
                     <AvatarFallback className="bg-primary text-white">
                       {user.fullName
-                        .split(" ")
-                        .map((n) => n[0])
-                        .join("")}
+                        .split(' ')
+                        .map(n => n[0])
+                        .join('')}
                     </AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1">

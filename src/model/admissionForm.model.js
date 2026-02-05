@@ -1,4 +1,4 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema } from 'mongoose';
 
 // Define schema
 const admissionFormSchema = new Schema(
@@ -7,7 +7,7 @@ const admissionFormSchema = new Schema(
     fullName: {
       type: String,
       required: [true, "Student's full name is required"],
-      minlength: [2, "Full name must be at least 2 characters"],
+      minlength: [2, 'Full name must be at least 2 characters'],
       trim: true,
     },
     fatherName: {
@@ -18,78 +18,78 @@ const admissionFormSchema = new Schema(
     },
     email: {
       type: String,
-      required: [true, "Email is required"],
+      required: [true, 'Email is required'],
       unique: true,
       lowercase: true,
       trim: true,
       match: [
         /^\w+([\.+-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,})+$/,
-        "Please provide a valid email address",
+        'Please provide a valid email address',
       ],
     },
     gender: {
       type: String,
       enum: {
-        values: ["male", "female"],
+        values: ['male', 'female'],
         message: "Gender must be either 'male' or 'female'",
       },
-      required: [true, "Gender is required"],
+      required: [true, 'Gender is required'],
     },
     dateOfBirth: {
       type: Date,
-      required: [true, "Date of birth is required"],
+      required: [true, 'Date of birth is required'],
     },
 
     // Address Information
     currentAddress: {
       type: String,
-      required: [true, "Current address is required"],
+      required: [true, 'Current address is required'],
     },
     permanentAddress: {
       type: String,
-      required: [true, "Permanent address is required"],
+      required: [true, 'Permanent address is required'],
     },
     city: {
       type: String,
-      required: [true, "City is required"],
+      required: [true, 'City is required'],
     },
     zipCode: {
       type: String,
-      required: [true, "Zip Code is required"],
-      match: [/^\d{4,6}$/, "Zip Code must be 4 to 6 digits"],
+      required: [true, 'Zip Code is required'],
+      match: [/^\d{4,6}$/, 'Zip Code must be 4 to 6 digits'],
     },
 
     // Document Uploads (store URLs or file paths)
     studentPhoto: {
       type: String,
-      default: "",
+      default: '',
       //required: [true, "Student photo is required"],
     },
     idProof: {
       type: String,
-      default: "",
+      default: '',
       // required: [true, "ID proof is required"],
     },
     birthCertificate: {
       type: String,
-      default: "",
+      default: '',
       // required: [true, "Birth certificate is required"],
     },
 
     // Academic Information
     admissionClass: {
       type: String,
-      required: [true, "Admission class is required"],
+      required: [true, 'Admission class is required'],
     },
     previousSchool: {
       type: String,
-      default: "",
+      default: '',
     },
 
     subjects: [
       {
         type: Schema.Types.ObjectId,
-        ref: "Subject",
+        ref: 'Subject',
         default: [],
       },
     ],
@@ -98,10 +98,10 @@ const admissionFormSchema = new Schema(
     role: {
       type: String,
       enum: {
-        values: ["admin", "teacher", "student"],
-        message: "Role must be admin, teacher, or student",
+        values: ['admin', 'teacher', 'student'],
+        message: 'Role must be admin, teacher, or student',
       },
-      default: "student",
+      default: 'student',
     },
     isVerified: {
       type: Boolean,
@@ -113,12 +113,12 @@ const admissionFormSchema = new Schema(
       type: String,
       unique: true,
       required: true,
-      default: "",
+      default: '',
     },
     password: {
       type: String,
       required: true,
-      default: "",
+      default: '',
     },
     //Access
     userAccess: {
@@ -127,8 +127,13 @@ const admissionFormSchema = new Schema(
     },
     class: {
       type: Schema.Types.ObjectId,
-      ref: "Class",
+      ref: 'Class',
       default: null, // Starts empty
+    },
+    status: {
+      type: String,
+      enum: ['pending', 'approved', 'rejected'],
+      default: 'pending',
     },
   },
   { timestamps: true }
@@ -137,6 +142,6 @@ const admissionFormSchema = new Schema(
 // Exporting the model
 const AdmissionForm =
   mongoose.models.AdmissionForm ||
-  mongoose.model("AdmissionForm", admissionFormSchema);
+  mongoose.model('AdmissionForm', admissionFormSchema);
 
 export default AdmissionForm;

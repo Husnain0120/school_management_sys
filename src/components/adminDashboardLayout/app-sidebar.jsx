@@ -1,42 +1,27 @@
-"use client";
+'use client';
 
-import * as React from "react";
 import {
-  AudioWaveform,
   BookOpen,
   Frame,
-  GalleryVerticalEnd,
+  GitPullRequestClosed,
   Home,
-  Map,
-  MessageSquareDot,
-  PieChart,
-  Settings2,
-  CalendarDays,
-  Mail,
-  FileText,
   ListTodo,
-  Library,
-  ReceiptText,
-  LineChart,
-  Grid3x3,
-  UserRoundCog,
-  ClipboardCheck,
-  Phone,
-  HelpCircle,
-  BookMarked,
-} from "lucide-react";
+  Map,
+  Settings2,
+} from 'lucide-react';
+import * as React from 'react';
 
-import { NavMain } from "@/components/adminDashboardLayout/nav-man";
-import { NavUser } from "@/components/adminDashboardLayout/nav-user";
+import { NavMain } from '@/components/adminDashboardLayout/nav-man';
+import { NavUser } from '@/components/adminDashboardLayout/nav-user';
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
-} from "@/components/ui/sidebar";
-import { TeamSwitcher } from "./team-switcher";
-import axios from "axios";
+} from '@/components/ui/sidebar';
+import axios from 'axios';
+import { TeamSwitcher } from './team-switcher';
 
 export function AppSidebar({ ...props }) {
   const [profile, setProfile] = React.useState(null);
@@ -49,7 +34,7 @@ export function AppSidebar({ ...props }) {
         const res = await axios.get(`/api/auth/user-profile`);
         setProfile(res.data?.data);
       } catch (error) {
-        console.log("Failed to load user profile", error);
+        console.log('Failed to load user profile', error);
       } finally {
         setIsLoading(false);
       }
@@ -61,12 +46,12 @@ export function AppSidebar({ ...props }) {
   const generateNavRoutes = (role, id) => {
     const base = `d/${id}`;
 
-    if (role === "admin") {
+    if (role === 'admin') {
       return [
-        { title: "Home", url: `${base}/a/home`, icon: Home },
-        { title: "Admissions", url: `${base}/a/admissions`, icon: BookOpen },
-        { title: "Classes", url: `${base}/a/classes`, icon: Frame },
-        { title: "Students", url: `${base}/a/students`, icon: Map },
+        { title: 'Home', url: `${base}/a/home`, icon: Home },
+        { title: 'Admissions', url: `${base}/a/admissions`, icon: BookOpen },
+        { title: 'Classes', url: `${base}/a/classes`, icon: Frame },
+        { title: 'Students', url: `${base}/a/students`, icon: Map },
         // { title: "Teachers", url: `${base}/a/teachers`, icon: AudioWaveform },
         // {
         //   title: "Courses",
@@ -79,14 +64,19 @@ export function AppSidebar({ ...props }) {
         //   url: `${base}/a/noticesboard`,
         //   icon: MessageSquareDot,
         // },
-        { title: "Settings", url: `${base}/a/settings`, icon: Settings2 },
+        {
+          title: 'Rejected Admissions',
+          url: `${base}/a/rejectedAdmission`,
+          icon: GitPullRequestClosed,
+        },
+        { title: 'Settings', url: `${base}/a/settings`, icon: Settings2 },
       ];
     }
 
-    if (role === "teacher") {
+    if (role === 'teacher') {
       return [
-        { title: "Home", url: `${base}/t/home`, icon: Home },
-        { title: "My Subjects", url: `${base}/t/subjects`, icon: Frame },
+        { title: 'Home', url: `${base}/t/home`, icon: Home },
+        { title: 'My Subjects', url: `${base}/t/subjects`, icon: Frame },
         // { title: "Students", url: `${base}/t/students`, icon: Map },
         // {
         //   title: "Courses",
@@ -117,10 +107,10 @@ export function AppSidebar({ ...props }) {
       ];
     }
 
-    if (role === "student") {
+    if (role === 'student') {
       return [
-        { title: "Home", url: `${base}/s/home`, icon: Home },
-        { title: "Attendance", url: `${base}/s/attendance`, icon: ListTodo },
+        { title: 'Home', url: `${base}/s/home`, icon: Home },
+        { title: 'Attendance', url: `${base}/s/attendance`, icon: ListTodo },
         // { title: "Grade Book", url: `${base}/s/grade-book`, icon: Library },
         // {
         //   title: "Account Book",

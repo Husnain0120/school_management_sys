@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import { usePathname } from "next/navigation";
-import { Collapsible, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Collapsible, CollapsibleTrigger } from '@/components/ui/collapsible';
 import {
   SidebarGroup,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar";
-import Link from "next/link";
-import { SidebarMenuSkeleton } from "../skeleton/Sidebar-menu-skeleton";
+} from '@/components/ui/sidebar';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { SidebarMenuSkeleton } from '../skeleton/Sidebar-menu-skeleton';
 
 export function NavMain({ items, loading }) {
   const pathname = usePathname();
@@ -22,9 +22,9 @@ export function NavMain({ items, loading }) {
         </>
       ) : (
         <>
-          {" "}
-          <SidebarMenu className={" border-t pt-1 "}>
-            {items.map((item) => {
+          {' '}
+          <SidebarMenu className={' border-t pt-1 '}>
+            {items.map(item => {
               const isActive = pathname.startsWith(`/${item.url}`);
               if (!item?.title || !item?.url) return null;
               return (
@@ -35,15 +35,15 @@ export function NavMain({ items, loading }) {
                   className="group/collapsible text-[15px] "
                 >
                   <div>
-                    {" "}
+                    {' '}
                     <SidebarMenuItem>
                       <CollapsibleTrigger asChild>
                         <Link href={`/${item.url}`}>
                           <SidebarMenuButton
                             className={`cursor-pointer  ${
                               isActive
-                                ? "bg-white  text-black font-semibold shadow-sm "
-                                : ""
+                                ? 'bg-orange-500  text-white font-semibold shadow-sm '
+                                : ''
                             } mb-2 text-md font-light `}
                             tooltip={item.title}
                           >

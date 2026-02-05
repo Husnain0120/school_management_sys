@@ -33,7 +33,12 @@ export async function PUT(request, { params }) {
 
     // Toggle isVerified field
     applicant.isVerified = !applicant.isVerified;
-
+    //status seting....
+    if (applicant.isVerified) {
+      applicant.status = 'approved';
+    } else {
+      applicant.status = 'pending';
+    }
     if (applicant.isVerified) {
       // If now verified, set the single class reference
       applicant.class = classId;
