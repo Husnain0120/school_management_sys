@@ -4,5 +4,5 @@ export const metadata = {
 };
 
 export default function RejectedAdmissionsLayout({ children }) {
-  return children;
+  return <div>{children}</div>;
 }

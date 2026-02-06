@@ -261,7 +261,7 @@ const RejectedAdmissions = () => {
                         {/* Action Column */}
                         <td className="px-6 py-4 text-sm font-medium">
                           <Link
-                            href={`/${user._id}/rejecteduserdetails`}
+                            href={`rejectedAdmission/${user._id}/rejecteduserdetails`}
                             className="text-orange-600 hover:text-orange-900 px-4 py-2 border border-orange-300 rounded-md hover:bg-orange-50 transition-colors inline-flex items-center gap-1"
                           >
                             <svg

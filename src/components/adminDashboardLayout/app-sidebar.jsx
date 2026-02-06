@@ -6,8 +6,8 @@ import {
   GitPullRequestClosed,
   Home,
   ListTodo,
-  Map,
   Settings2,
+  UserPen,
 } from 'lucide-react';
 import * as React from 'react';
 
@@ -51,7 +51,7 @@ export function AppSidebar({ ...props }) {
         { title: 'Home', url: `${base}/a/home`, icon: Home },
         { title: 'Admissions', url: `${base}/a/admissions`, icon: BookOpen },
         { title: 'Classes', url: `${base}/a/classes`, icon: Frame },
-        { title: 'Students', url: `${base}/a/students`, icon: Map },
+        { title: 'Students', url: `${base}/a/students`, icon: UserPen },
         // { title: "Teachers", url: `${base}/a/teachers`, icon: AudioWaveform },
         // {
         //   title: "Courses",
