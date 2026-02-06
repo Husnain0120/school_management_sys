@@ -2,6 +2,7 @@
 
 import {
   BookOpen,
+  ClipboardEdit,
   Frame,
   GitPullRequestClosed,
   Home,
@@ -68,6 +69,12 @@ export function AppSidebar({ ...props }) {
           title: 'Rejected Admissions',
           url: `${base}/a/rejectedAdmission`,
           icon: GitPullRequestClosed,
+        },
+
+        {
+          title: 'Notice Board',
+          url: `${base}/a/noticesboard`,
+          icon: ClipboardEdit,
         },
         { title: 'Settings', url: `${base}/a/settings`, icon: Settings2 },
       ];

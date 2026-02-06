@@ -1,306 +1,380 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { motion } from "framer-motion";
-import { format } from "date-fns";
+import { motion } from 'framer-motion';
 import {
+  ArrowLeft,
   Bell,
-  Calendar,
-  ChevronRight,
+  BookOpen,
   Clock,
+  ExternalLink,
   FileText,
-  Info,
+  GraduationCap,
+  Megaphone,
   Search,
-  AlertCircle,
-  CalendarDays,
-  DollarSign,
-} from "lucide-react";
+  ShieldAlert,
+} from 'lucide-react';
+import { useState } from 'react';
 
-// Enhanced notice data with additional fields for visual richness
-const noticesData = [
+// LMS Notices Data
+const lmsNoticesData = [
   {
     id: 1,
-    title: "Exam Schedule",
-    description: "Midterm exams will start from 15th May.",
-    details:
-      "All students are advised to check the exam timetable on the student portal. No changes will be entertained after 10th May.\n\nExam timings will be from 9:00 AM to 12:00 PM for morning sessions and 1:00 PM to 4:00 PM for afternoon sessions.\n\nStudents must bring their ID cards and admit cards to the examination hall. No student will be allowed to enter without proper identification.\n\nMobile phones and other electronic devices are strictly prohibited in the examination hall.",
-    date: "2025-05-05",
-    type: "academic",
-    priority: "high",
-    icon: CalendarDays,
+    title: 'Opportunity to Participate in a National-level Event',
+    date: 'Feb 06, 2026',
+    type: 'event',
+    description:
+      'Join this prestigious national event showcasing talent and innovation.',
   },
   {
     id: 2,
-    title: "Holiday Notice",
-    description: "Campus will remain closed on 20th May.",
-    details:
-      "On account of public holiday, the campus will remain closed. Classes will resume from 21st May (Tuesday).\n\nAll scheduled assignments and submissions will be postponed to the next working day.\n\nOnline resources and library digital access will remain available during the holiday.\n\nFor any emergencies, students can contact the administration through the emergency helpline.",
-    date: "2025-05-08",
-    type: "administrative",
-    priority: "medium",
-    icon: Info,
+    title:
+      'Postponement of Fall 2025 End Semester Examinations (Punjab Province Only)',
+    date: 'Feb 04, 2026',
+    type: 'exam',
+    description:
+      'Important update regarding examination schedule for Punjab province students.',
   },
   {
     id: 3,
-    title: "Fee Submission",
-    description: "Last date for fee is 25th May.",
-    details:
-      "Students must submit their dues by 25th May to avoid late fine. Payments can be made online or at the accounts office.\n\nA late fine of $50 will be charged after the due date.\n\nStudents facing financial difficulties can apply for installment plans by submitting an application to the financial aid office before the due date.\n\nFor online payments, please ensure that you keep the transaction receipt for future reference.",
-    date: "2025-05-10",
-    type: "financial",
-    priority: "high",
-    icon: DollarSign,
+    title:
+      'Virtual University of Pakistan Holds Webinar on Kashmir Solidarity Day',
+    date: 'Feb 04, 2026',
+    type: 'webinar',
+    description:
+      'Special webinar session commemorating Kashmir Solidarity Day.',
   },
   {
     id: 4,
-    title: "Library Hours Extended",
-    description: "Extended hours during exam period",
-    details:
-      "The main library will extend its operating hours during the examination period from 10th May to 30th May.\n\nNew timings: 7:00 AM to 11:00 PM (Monday to Saturday) and 9:00 AM to 8:00 PM (Sunday).\n\nAdditional study rooms have been arranged to accommodate more students during this period.\n\nPlease maintain silence and follow library rules.",
-    date: "2025-05-07",
-    type: "facility",
-    priority: "medium",
-    icon: Clock,
+    title: 'Results Announced: Winners of Kashmir Solidarity Day Online Debate',
+    date: 'Feb 02, 2026',
+    type: 'result',
+    description:
+      'Congratulations to all winners of the online debate competition.',
   },
   {
     id: 5,
-    title: "Workshop on Research Methods",
-    description: "Mandatory for final year students",
-    details:
-      "A workshop on Advanced Research Methods will be conducted on 18th May for all final year students.\n\nVenue: Auditorium A\nTime: 10:00 AM to 3:00 PM\n\nAttendance is mandatory for all final year students working on research projects.\n\nGuest speakers from various research institutions will be present to guide students on research methodologies and paper writing.",
-    date: "2025-05-12",
-    type: "academic",
-    priority: "medium",
-    icon: FileText,
+    title: 'Join Us for an Informative Webinar on Kashmir Solidarity Day',
+    date: 'Feb 02, 2026',
+    type: 'webinar',
+    description: 'Register now for this informative session.',
+  },
+  {
+    id: 6,
+    title: 'JOIN DEBATE FOR JUSTICE AND PEACE!',
+    date: 'Jan 30, 2026',
+    type: 'event',
+    description: 'Participate in the debate competition on justice and peace.',
+  },
+  {
+    id: 7,
+    title: 'Attention Overseas Students! Urgent: Download VUTES New Version',
+    date: 'Jan 21, 2026',
+    type: 'urgent',
+    description:
+      'Urgent update for overseas students regarding examination software.',
+  },
+  {
+    id: 8,
+    title: 'Unblocking of VUIMS Accounts (20-01-2026)',
+    date: 'Jan 20, 2026',
+    type: 'admin',
+    description: 'Account unblocking process update for affected students.',
+  },
+  {
+    id: 9,
+    title:
+      'Struggling with desk rejections? Turn research into publishable success!',
+    date: 'Jan 20, 2026',
+    type: 'workshop',
+    description: 'Workshop on improving research paper acceptance rates.',
+  },
+  {
+    id: 10,
+    title: 'Overseas Examination Guidelines and Demo Schedule',
+    date: 'Jan 19, 2026',
+    type: 'exam',
+    description: 'Complete guidelines for overseas examination process.',
   },
 ];
 
-// Priority badge component
-const PriorityBadge = ({ priority }) => {
-  const colors = {
-    high: "bg-red-100 text-red-800 border-red-200",
-    medium: "bg-amber-100 text-amber-800 border-amber-200",
-    low: "bg-green-100 text-green-800 border-green-200",
-  };
-
-  return (
-    <span className={`text-xs px-2 py-0.5 rounded-full border `}>
-      {priority}
-    </span>
-  );
-};
-
-// Type badge component
-const TypeBadge = ({ type }) => {
-  const colors = {
-    academic: "bg-indigo-100 text-indigo-800 border-indigo-200",
-    administrative: "bg-purple-100 text-purple-800 border-purple-200",
-    financial: "bg-emerald-100 text-emerald-800 border-emerald-200",
-    facility: "bg-blue-100 text-blue-800 border-blue-200",
-  };
-
-  return (
-    <span className={`text-xs px-2 py-0.5 rounded-full border `}>{type}</span>
-  );
-};
+// Important Links Data
+const importantLinksData = [
+  {
+    id: 1,
+    title: 'Beware of Fake Websites',
+    date: 'Jul 11',
+    icon: ShieldAlert,
+  },
+  {
+    id: 2,
+    title: 'Endowment Fund (Frequently Asked Questions)',
+    date: 'Jun 01',
+    icon: FileText,
+  },
+  {
+    id: 3,
+    title: 'MS Excel Tutorials',
+    date: 'Mar 25',
+    icon: BookOpen,
+  },
+  {
+    id: 4,
+    title: 'Microsoft Office Specialist (MOS) Exam Festival',
+    date: 'Oct 01',
+    icon: Megaphone,
+  },
+  {
+    id: 5,
+    title: 'Virtual University Students Support Services (VUSSS)',
+    date: 'Jan 29',
+    icon: Bell,
+  },
+  {
+    id: 6,
+    title: 'Official Email Policy for Students',
+    date: 'Jul 10',
+    icon: ShieldAlert,
+  },
+  {
+    id: 7,
+    title: 'Protect Your LMS & VU Email Accounts',
+    date: 'Jul 10',
+    icon: ShieldAlert,
+  },
+  {
+    id: 8,
+    title: 'Allowed Softwares & their List',
+    date: 'Jul 11',
+    icon: FileText,
+  },
+  {
+    id: 9,
+    title: 'HEC Plagiarism Policy',
+    date: 'Jun 22',
+    icon: ShieldAlert,
+  },
+  {
+    id: 10,
+    title: 'Coursework: Upcoming Courses',
+    date: 'May 02',
+    icon: BookOpen,
+  },
+];
 
 const NoticeBoardPage = () => {
-  const [selectedNotice, setSelectedNotice] = useState(noticesData[0]);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Filter notices based on search query
-  const filteredNotices = noticesData.filter(
-    (notice) =>
-      notice.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      notice.description.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredNotices = lmsNoticesData.filter(notice =>
+    notice.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const filteredLinks = importantLinksData.filter(link =>
+    link.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  // Handle back button
+  const handleBack = () => {
+    window.history.back();
+  };
+
   return (
-    <div className="max-w-7xl mx-auto p-4 md:p-6 lg:p-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-800">
-          <span className="bg-gradient-to-r from-indigo-600 to-indigo-800 bg-clip-text text-transparent">
-            Notice Board
-          </span>
-        </h1>
-        <p className="text-gray-500 mt-2">
-          Stay updated with the latest announcements and information
-        </p>
-      </div>
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+      {/* Clean Header */}
+      <header className="bg-gradient-to-r from-orange-500 to-orange-600 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            {/* Back Button */}
+            <button
+              onClick={handleBack}
+              className="flex items-center gap-2 text-white hover:bg-white/10 p-2 rounded-lg transition-all"
+            >
+              <ArrowLeft className="w-5 h-5" />
+              <span className="font-medium hidden sm:inline">Back</span>
+            </button>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left: Notice List with Search */}
-        <div className="lg:col-span-1 bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
-          <div className="p-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <Bell className="h-5 w-5 text-indigo-600" />
-                <h2 className="text-lg font-semibold text-gray-800">
-                  Announcements
-                </h2>
+            {/* Center: Logo and Title */}
+            <div className="flex items-center gap-3">
+              <div className="bg-white p-2 rounded-lg">
+                <GraduationCap className="w-7 h-7 text-orange-600" />
               </div>
-              <span className="bg-indigo-100 text-indigo-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
-                {filteredNotices.length} Notices
-              </span>
+              <div className="text-center">
+                <h1 className="text-2xl font-bold text-white">EDU MANAGE</h1>
+                <p className="text-sm text-orange-100">Notice Board</p>
+              </div>
             </div>
 
-            {/* Search box */}
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                <Search className="w-4 h-4 text-gray-400" />
-              </div>
-              <input
-                type="text"
-                className="bg-gray-50 border border-gray-200 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 p-2.5"
-                placeholder="Search notices..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
+            {/* Placeholder for alignment */}
+            <div className="w-20"></div>
           </div>
+        </div>
+      </header>
 
-          <div className="divide-y divide-gray-100 max-h-[500px] overflow-auto">
-            {filteredNotices.length > 0 ? (
-              filteredNotices.map((notice) => (
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-4 py-6">
+        {/* Page Header */}
+        <div className="mb-8">
+          <h2 className="text-3xl font-bold text-gray-900">News & Events</h2>
+          <p className="text-gray-600 mt-2">
+            Stay updated with the latest announcements
+          </p>
+        </div>
+
+        {/* Simple Search Bar */}
+        <div className="mb-8">
+          <div className="relative max-w-2xl">
+            <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+              <Search className="w-5 h-5 text-gray-400" />
+            </div>
+            <input
+              type="text"
+              className="bg-white border border-gray-300 text-gray-900 text-base rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 block w-full pl-12 pr-4 p-4"
+              placeholder="Search for..."
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Left Column - All Notices */}
+          <div className="lg:col-span-2">
+            {/* Notices List */}
+            <div className="space-y-4">
+              {(searchQuery ? filteredNotices : lmsNoticesData).map(notice => (
                 <motion.div
                   key={notice.id}
-                  whileHover={{ x: 4 }}
-                  onClick={() => setSelectedNotice(notice)}
-                  className={`cursor-pointer p-4 hover:bg-gray-50 transition-colors duration-150 ${
-                    selectedNotice.id === notice.id
-                      ? "bg-indigo-50 border-l-4 border-indigo-500"
-                      : ""
-                  }`}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="bg-white rounded-lg border border-gray-200 hover:shadow-md transition-shadow"
                 >
-                  <div className="flex items-start gap-3">
-                    <div
-                      className={`p-2 rounded-lg ${
-                        notice.priority === "high"
-                          ? "bg-red-100 text-red-600"
-                          : notice.priority === "medium"
-                          ? "bg-amber-100 text-amber-600"
-                          : "bg-green-100 text-green-600"
-                      }`}
-                    >
-                      <notice.icon className="h-5 w-5" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between mb-1">
-                        <h3 className="text-sm font-semibold text-gray-800 truncate">
+                  <div className="p-5">
+                    <div className="flex items-start gap-4">
+                      {/* Date Box */}
+                      <div className="flex-shrink-0">
+                        <div className="flex flex-col items-center justify-center w-14 h-14 bg-gray-50 border border-gray-200 rounded">
+                          <span className="text-xs font-medium text-gray-900">
+                            {notice.date.split(' ')[0]}
+                          </span>
+                          <span className="text-lg font-bold text-gray-900">
+                            {notice.date.split(' ')[1]}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Notice Content */}
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-base font-semibold text-gray-900 mb-2">
                           {notice.title}
                         </h3>
-                        <ChevronRight
-                          className={`h-4 w-4 ${
-                            selectedNotice.id === notice.id
-                              ? "text-indigo-500"
-                              : "text-gray-300"
-                          }`}
-                        />
-                      </div>
-                      <p className="text-xs text-gray-500 line-clamp-2">
-                        {notice.description}
-                      </p>
-                      <div className="flex items-center gap-2 mt-2">
-                        <PriorityBadge priority={notice.priority} />
-                        <TypeBadge type={notice.type} />
-                      </div>
-                      <div className="flex items-center mt-2 text-xs text-gray-400">
-                        <Calendar className="h-3 w-3 mr-1" />
-                        {format(new Date(notice.date), "MMM dd, yyyy")}
+
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2 text-sm text-gray-500">
+                            <Clock className="w-4 h-4" />
+                            <span>{notice.date}</span>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </motion.div>
-              ))
-            ) : (
-              <div className="p-8 text-center">
-                <AlertCircle className="h-8 w-8 text-gray-300 mx-auto mb-2" />
-                <p className="text-gray-500">No notices found</p>
-                <p className="text-sm text-gray-400 mt-1">
-                  Try adjusting your search
-                </p>
+              ))}
+
+              {filteredNotices.length === 0 && searchQuery && (
+                <div className="bg-white rounded-lg border border-gray-200 p-8 text-center">
+                  <Search className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-gray-700">
+                    No notices found
+                  </h3>
+                  <p className="text-gray-500 mt-1">
+                    Try different search terms
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Right Column - Important Links */}
+          <div>
+            {/* Important Links Card */}
+            <div className="bg-white rounded-lg border border-gray-200 sticky top-6">
+              <div className="p-5 border-b border-gray-200">
+                <h3 className="text-lg font-bold text-gray-900">
+                  Important Links & Notifications
+                </h3>
               </div>
-            )}
+
+              <div className="divide-y divide-gray-200">
+                {(searchQuery ? filteredLinks : importantLinksData).map(
+                  link => {
+                    const Icon = link.icon;
+                    return (
+                      <div
+                        key={link.id}
+                        className="p-4 hover:bg-gray-50 cursor-pointer transition-colors"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="flex-shrink-0">
+                            <div className="p-2 bg-gray-100 rounded">
+                              <Icon className="w-5 h-5 text-gray-600" />
+                            </div>
+                          </div>
+
+                          <div className="flex-1 min-w-0">
+                            <h4 className="text-sm font-medium text-gray-900">
+                              {link.title}
+                            </h4>
+                            <div className="flex items-center justify-between mt-1">
+                              <span className="text-xs text-gray-500">
+                                {link.date}
+                              </span>
+                            </div>
+                          </div>
+
+                          <ExternalLink className="w-4 h-4 text-gray-300 flex-shrink-0" />
+                        </div>
+                      </div>
+                    );
+                  }
+                )}
+              </div>
+
+              {filteredLinks.length === 0 && searchQuery && (
+                <div className="p-4 text-center text-gray-500">
+                  No links found
+                </div>
+              )}
+            </div>
+
+            {/* Total Notices Count */}
+            <div className="mt-8 bg-white rounded-lg border border-gray-200 p-5">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-600">Total Notices</p>
+                  <p className="text-3xl font-bold text-gray-900">
+                    {lmsNoticesData.length}
+                  </p>
+                </div>
+                <Bell className="w-8 h-8 text-orange-500" />
+              </div>
+              <div className="mt-4 pt-4 border-t border-gray-200">
+                <p className="text-sm text-gray-500">Last updated: Today</p>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Right: Notice Details */}
-        <div className="lg:col-span-2">
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            key={selectedNotice.id}
-            className="bg-white rounded-xl shadow-md border border-gray-100 h-full overflow-hidden"
-          >
-            <div className="p-6 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div
-                    className={`p-2 rounded-lg ${
-                      selectedNotice.priority === "high"
-                        ? "bg-red-100 text-red-600"
-                        : selectedNotice.priority === "medium"
-                        ? "bg-amber-100 text-amber-600"
-                        : "bg-green-100 text-green-600"
-                    }`}
-                  >
-                    <selectedNotice.icon className="h-6 w-6" />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-bold text-gray-800">
-                      {selectedNotice.title}
-                    </h3>
-                    <p className="text-sm text-gray-500">
-                      {selectedNotice.description}
-                    </p>
-                  </div>
-                </div>
-                <div className="hidden md:flex flex-col items-end">
-                  <div className="flex gap-2 mb-1">
-                    <PriorityBadge priority={selectedNotice.priority} />
-                    <TypeBadge type={selectedNotice.type} />
-                  </div>
-                  <div className="text-xs text-gray-400 flex items-center">
-                    <Calendar className="h-3 w-3 mr-1" />
-                    {format(new Date(selectedNotice.date), "MMMM dd, yyyy")}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-6 max-h-[500px] overflow-auto">
-              <div className="prose prose-indigo max-w-none">
-                {selectedNotice.details
-                  .split("\n\n")
-                  .map((paragraph, index) => (
-                    <p
-                      key={index}
-                      className="mb-4 text-gray-700 leading-relaxed"
-                    >
-                      {paragraph}
-                    </p>
-                  ))}
-              </div>
-
-              <div className="mt-8 pt-6 border-t border-gray-100">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-sm text-gray-500">
-                    <Clock className="h-4 w-4" />
-                    <span>
-                      Posted{" "}
-                      {format(new Date(selectedNotice.date), "MMMM dd, yyyy")}
-                    </span>
-                  </div>
-                  <button className="inline-flex items-center gap-1 px-4 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-sm font-medium rounded-lg transition-colors">
-                    <FileText className="h-4 w-4" />
-                    Download PDF
-                  </button>
-                </div>
-              </div>
-            </div>
-          </motion.div>
+        {/* Bottom Info */}
+        <div className="mt-12 pt-8 border-t border-gray-200">
+          <div className="flex flex-col md:flex-row items-center justify-between text-sm text-gray-500">
+            <p>EDU MANAGE Notice Board System</p>
+            <p className="mt-2 md:mt-0">
+              Showing {filteredNotices.length} of {lmsNoticesData.length}{' '}
+              notices
+            </p>
+          </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 };
