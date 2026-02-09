@@ -59,7 +59,7 @@ export default function LoginPage() {
         const { role, _id } = profileRes.data?.data || {};
 
         if (role === 'admin') {
-          router.push(`/d/${_id}/a/home`);
+          router.push(`/d/${_id}/a/admissions`);
         } else if (role === 'teacher') {
           router.push(`/d/${_id}/t/subjects`);
         } else if (role === 'student') {

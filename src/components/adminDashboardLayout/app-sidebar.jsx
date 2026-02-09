@@ -1,14 +1,15 @@
 'use client';
 
 import {
-  BookOpen,
+  ChartArea,
   ClipboardEdit,
   Frame,
   GitPullRequestClosed,
   Home,
   ListTodo,
-  Settings2,
+  Settings,
   UserPen,
+  UsersRound,
 } from 'lucide-react';
 import * as React from 'react';
 
@@ -46,11 +47,19 @@ export function AppSidebar({ ...props }) {
   // 🧠 Role-based route generator
   const generateNavRoutes = (role, id) => {
     const base = `d/${id}`;
-
     if (role === 'admin') {
       return [
-        { title: 'Home', url: `${base}/a/home`, icon: Home },
-        { title: 'Admissions', url: `${base}/a/admissions`, icon: BookOpen },
+        {
+          title: 'Admissions',
+          url: `${base}/a/admissions`,
+          icon: UsersRound,
+        },
+        {
+          title: 'Rejected Admissions',
+          url: `${base}/a/rejectedAdmission`,
+          icon: GitPullRequestClosed,
+        },
+        { title: 'Analytics', url: `${base}/a/analytics`, icon: ChartArea },
         { title: 'Classes', url: `${base}/a/classes`, icon: Frame },
         { title: 'Students', url: `${base}/a/students`, icon: UserPen },
         // { title: "Teachers", url: `${base}/a/teachers`, icon: AudioWaveform },
@@ -65,18 +74,13 @@ export function AppSidebar({ ...props }) {
         //   url: `${base}/a/noticesboard`,
         //   icon: MessageSquareDot,
         // },
-        {
-          title: 'Rejected Admissions',
-          url: `${base}/a/rejectedAdmission`,
-          icon: GitPullRequestClosed,
-        },
 
         {
           title: 'Notice Board',
           url: `${base}/a/noticesboard`,
           icon: ClipboardEdit,
         },
-        { title: 'Settings', url: `${base}/a/settings`, icon: Settings2 },
+        { title: 'Settings', url: `${base}/a/settings`, icon: Settings },
       ];
     }
 

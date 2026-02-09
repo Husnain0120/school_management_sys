@@ -1,125 +1,248 @@
-"use client";
+'use client';
 
-import { Users, ChevronRight, LogOut, KeyRound } from "lucide-react";
-import Link from "next/link";
-import { useParams } from "next/navigation";
+import {
+  Bell,
+  Calendar,
+  ChevronRight,
+  Database,
+  Globe,
+  KeyRound,
+  LogOut,
+  Moon,
+  Settings as SettingsIcon,
+  Shield,
+  User,
+  Users,
+} from 'lucide-react';
+import Link from 'next/link';
+import { useParams } from 'next/navigation';
 
 export default function SettingsPage() {
   const param = useParams();
   const id = param.id;
+
   const settingsCategories = [
     {
-      title: "Attendance Settings",
-      description: "Configure attendance system, dates and tracking options",
+      title: 'Attendance Settings',
+      description: 'Configure attendance system, dates and tracking',
       icon: Users,
-      href: "settings/attendance",
-      badge: "Active",
-      badgeColor: "bg-green-100 text-green-700",
+      href: 'settings/attendance',
+      badge: 'Active',
+      badgeColor: 'bg-orange-100 text-orange-700 border border-orange-200',
     },
-    // Uncomment these to see how it behaves with more items
     {
-      title: "Change Password",
-      description: "Change Password | setup strong Password",
+      title: 'Change Password',
+      description: 'Update your password and security settings',
       icon: KeyRound,
       href: `/d/${id}/profile/edit`,
-      badge: "Security",
-      badgeColor: "bg-blue-100 text-blue-700",
+      badge: 'Security',
+      badgeColor: 'bg-black/5 text-gray-800 border border-gray-300',
     },
-    // {
-    //   title: "Academic Calendar",
-    //   description: "Configure semesters, terms and important dates",
-    //   icon: Calendar,
-    //   href: "/settings/calendar",
-    //   badge: "2023-2024",
-    //   badgeColor: "bg-purple-100 text-purple-700",
-    // },
+    {
+      title: 'Notifications',
+      description: 'Manage email and push notifications',
+      icon: Bell,
+      href: '/settings/notifications',
+      badge: null,
+      badgeColor: '',
+    },
+    {
+      title: 'Privacy & Security',
+      description: 'Control your privacy and security settings',
+      icon: Shield,
+      href: '/settings/privacy',
+      badge: null,
+      badgeColor: '',
+    },
+    {
+      title: 'Data Management',
+      description: 'Backup, restore and manage your data',
+      icon: Database,
+      href: '/settings/data',
+      badge: 'New',
+      badgeColor: 'bg-orange-100 text-orange-700 border border-orange-200',
+    },
+    {
+      title: 'Appearance',
+      description: 'Customize theme and display settings',
+      icon: Moon,
+      href: '/settings/appearance',
+      badge: null,
+      badgeColor: '',
+    },
+    {
+      title: 'Language & Region',
+      description: 'Set language, timezone and regional formats',
+      icon: Globe,
+      href: '/settings/language',
+      badge: null,
+      badgeColor: '',
+    },
+    {
+      title: 'Academic Calendar',
+      description: 'Configure semesters, terms and important dates',
+      icon: Calendar,
+      href: '/settings/calendar',
+      badge: '2023-2024',
+      badgeColor: 'bg-black/5 text-gray-800 border border-gray-300',
+    },
+  ];
+
+  const userSettings = [
+    {
+      title: 'Profile Settings',
+      description: 'Update personal information and preferences',
+      icon: User,
+      href: `/d/${id}/profile`,
+      badge: null,
+      badgeColor: '',
+    },
   ];
 
   return (
-    <div className="flex flex-col  bg-gray-50">
-      <div className="flex-grow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="flex items-center justify-between mb-8">
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="max-w-3xl mx-auto px-4 py-4">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="bg-orange-100 p-2 rounded-lg">
+              <SettingsIcon className="h-6 w-6 text-orange-600" />
+            </div>
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">Settings</h2>
-              <p className="mt-1 text-sm text-gray-500">
-                Manage your LMS system configuration
+              <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
+              <p className="text-sm text-gray-500 mt-0.5">
+                LMS System Configuration
               </p>
             </div>
-            <div className="flex items-center gap-3"></div>
           </div>
+        </div>
+      </div>
 
-          {/* Settings Grid */}
-          <div className="grid grid-cols-1 gap-4 mb-8">
-            {settingsCategories.map((category, index) => {
-              const IconComponent = category.icon;
+      {/* Main Content */}
+      <main className="max-w-3xl mx-auto px-4 py-6">
+        {/* User Settings Section */}
+        <div className="mb-8">
+          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3 px-2">
+            Account
+          </h2>
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+            {userSettings.map((item, index) => {
+              const IconComponent = item.icon;
               return (
-                <Link key={index} href={category.href}>
-                  <div className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow group">
-                    <div className="p-6">
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="bg-gray-100 p-3 rounded-lg group-hover:bg-blue-50 transition-colors">
-                          <IconComponent className="h-6 w-6 text-gray-600 group-hover:text-blue-600 transition-colors" />
-                        </div>
-                        {category.badge && (
-                          <span
-                            className={`text-xs px-2 py-1 rounded-full font-medium ${category.badgeColor}`}
-                          >
-                            {category.badge}
-                          </span>
-                        )}
+                <Link key={index} href={item.href}>
+                  <div
+                    className={`flex items-center justify-between p-4 ${index !== userSettings.length - 1 ? 'border-b border-gray-100' : ''} hover:bg-gray-50 active:bg-gray-100 transition-colors`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="bg-gray-100 p-2.5 rounded-xl">
+                        <IconComponent className="h-5 w-5 text-gray-700" />
                       </div>
-
-                      <h3 className="text-lg font-medium text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
-                        {category.title}
-                      </h3>
-
-                      <p className="text-sm text-gray-500 leading-relaxed">
-                        {category.description}
-                      </p>
+                      <div>
+                        <h3 className="font-medium text-gray-900">
+                          {item.title}
+                        </h3>
+                        <p className="text-sm text-gray-500">
+                          {item.description}
+                        </p>
+                      </div>
                     </div>
-                    <div className="px-6 py-3 bg-gray-50 border-t border-gray-200 flex justify-end">
-                      <span className="text-xs font-medium text-gray-500 group-hover:text-blue-600 transition-colors flex items-center">
-                        Configure
-                        <ChevronRight className="h-3 w-3 ml-1" />
-                      </span>
-                    </div>
+                    <ChevronRight className="h-5 w-5 text-gray-400" />
                   </div>
                 </Link>
               );
             })}
           </div>
         </div>
-      </div>
 
-      {/* Footer - now properly fixed at bottom */}
-      <div className="bg-gray-50 md:mt-59 mt-51 sm:mt-50 border-t border-gray-200 py-4">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row items-center justify-between">
-            <div className="text-sm text-gray-500 mb-2 md:mb-0">
-              <p>LMS Admin Panel v2.1.4</p>
-              <p className="mt-1">
-                © 2024 Education System. All rights reserved.
-              </p>
-            </div>
-            <div className="flex flex-wrap items-center gap-4 justify-center md:justify-end">
-              <button className="text-sm text-gray-500 hover:text-gray-700">
-                Help
-              </button>
-              <button className="text-sm text-gray-500 hover:text-gray-700">
-                Privacy Policy
-              </button>
-              <button className="text-sm text-gray-500 hover:text-gray-700">
-                Terms of Service
-              </button>
-              <button className="flex items-center gap-2 text-sm text-red-600 hover:text-red-700 font-medium">
-                <LogOut className="h-4 w-4" />
-                Sign Out
-              </button>
+        {/* System Settings Section */}
+        <div className="mb-8">
+          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3 px-2">
+            System Configuration
+          </h2>
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+            {settingsCategories.map((item, index) => {
+              const IconComponent = item.icon;
+              return (
+                <Link key={index} href={item.href}>
+                  <div
+                    className={`flex items-center justify-between p-4 ${index !== settingsCategories.length - 1 ? 'border-b border-gray-100' : ''} hover:bg-gray-50 active:bg-gray-100 transition-colors`}
+                  >
+                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                      <div className="bg-gray-100 p-2.5 rounded-xl flex-shrink-0">
+                        <IconComponent className="h-5 w-5 text-gray-700" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-0.5">
+                          <h3 className="font-medium text-gray-900 truncate">
+                            {item.title}
+                          </h3>
+                          {item.badge && (
+                            <span
+                              className={`text-xs px-2 py-0.5 rounded-full font-medium ${item.badgeColor} flex-shrink-0`}
+                            >
+                              {item.badge}
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-sm text-gray-500 truncate">
+                          {item.description}
+                        </p>
+                      </div>
+                    </div>
+                    <ChevronRight className="h-5 w-5 text-gray-400 flex-shrink-0 ml-2" />
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* About Section */}
+        <div className="mb-8">
+          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3 px-2">
+            About
+          </h2>
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+            <div className="p-4">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="font-medium text-gray-900">LMS Admin Panel</h3>
+                  <p className="text-sm text-gray-500">Version 2.1.4</p>
+                </div>
+                <div className="bg-orange-100 text-orange-700 text-xs font-semibold px-3 py-1.5 rounded-full">
+                  Latest
+                </div>
+              </div>
+              <div className="space-y-2">
+                <button className="w-full text-left text-sm text-gray-700 hover:text-orange-600 p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                  Help & Support
+                </button>
+                <button className="w-full text-left text-sm text-gray-700 hover:text-orange-600 p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                  Privacy Policy
+                </button>
+                <button className="w-full text-left text-sm text-gray-700 hover:text-orange-600 p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                  Terms of Service
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+
+        {/* Sign Out Button */}
+        <div className="mt-8">
+          <button className="w-full flex items-center justify-center gap-2 p-4 bg-white border border-gray-200 rounded-2xl text-red-600 font-medium hover:bg-red-50 hover:border-red-200 active:bg-red-100 transition-colors shadow-sm">
+            <LogOut className="h-5 w-5" />
+            Sign Out
+          </button>
+        </div>
+
+        {/* Footer Note */}
+        <div className="mt-8 text-center">
+          <p className="text-xs text-gray-400">
+            © 2024 Education System. All rights reserved.
+          </p>
+        </div>
+      </main>
     </div>
   );
 }
